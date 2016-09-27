@@ -1,12 +1,64 @@
-hostiles-own[incoming-queue
-  finished? ; Is the goal reached ?
-  leader?   ; car leading the convoi convoi
-  to-protect? ; Should this car be protected at all cost ?
-  genlongpath? ; Should the leader compute a new path (but not shortest) ?
-  dead?
-  regenpath? ; doit - on regenerer le path (nouvelle info? ... )
-  speed maxdir ; maximal speed of a car, and max angle
-  last-send-time ; communication historical time-stamp
-
+hostiles-own[
+  velocity
+  speed  
+  maxdir
+  state ;; [ok = 2, touché = 1, mort = 0]
 
   ]
+
+to setup-hostiles
+  if nb-cars-hostile > 0 [
+    ; get the size of the base to deploy the car accordingly
+    let base-min-pxcor min [pxcor] of (patches with [objectif? and pzcor = mapAlt])
+    let base-max-pxcor max [pxcor] of (patches with [objectif? and pzcor = mapAlt])
+    let base-min-pycor min [pycor] of (patches with [objectif? and pzcor = mapAlt])
+    let base-max-pycor max [pycor] of (patches with [objectif? and pzcor = mapAlt])
+
+    ; creation des voitures du convoi et cortege
+    create-hostiles nb-cars-hostile
+    ask hostiles
+    [
+      ; Init apparence NetLogo
+      set shape "car" ;; CHANGER LA SHAPE DES HOSTILE
+      set color red
+      ;;set shape "person soldier" ;; CHANGER LA SHAPE DES HOSTILE
+
+
+      ; Init vars convois
+      set speed 0.05 * simu-speed
+      set maxdir 10 * simu-speed
+      set state 2
+      set heading 0
+      set roll 0
+      set pitch 0
+      
+
+      ; Visu
+      set label who ; display the car names
+    ]
+
+    ; deploying the other car
+    
+    if nb-cars > 1 [
+      ; ask non leader cars
+      ask turtle-set hostiles
+      [
+
+        ; deploying
+        set xcor base-min-pxcor + ((random 10) - 5)
+        set ycor base-max-pycor + ((random 10) - 5)
+        set zcor solAlt
+      ]
+
+    ]
+  ]
+end
+
+
+to hostiles-think 
+  ;ask hostiles [
+  ;  let start-patch min-one-of (patches with [pzcor = mapAlt and not obstacle?]) [distance ?] ; on s'assure de choisir comme patch de depart un patch libre sans obstacle, sinon quand on split un convoi il se peut qu'il soit sur un obstacle et qu'il ne puisse jamais generer de chemin
+  ;  let new-path plan-astar ([patch-at 0 0 (pzcor * -1)] of start-patch) (one-of patches with [base?]) false
+  ;]
+  
+end
