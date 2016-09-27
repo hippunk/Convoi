@@ -150,7 +150,7 @@ GRAPHICS-WINDOW
 0
 70
 0
-0
+10
 1
 1
 1
@@ -223,7 +223,7 @@ INPUTBOX
 159
 115
 nb-mountains
-3
+5
 1
 0
 Number
@@ -279,7 +279,7 @@ SWITCH
 284
 astar-longpath
 astar-longpath
-1
+0
 1
 -1000
 
@@ -362,10 +362,10 @@ A*
 1
 
 BUTTON
-131
-392
-194
-425
+96
+386
+159
+419
 NIL
 go
 T
@@ -384,7 +384,7 @@ INPUTBOX
 178
 569
 new-leader-id
-2
+3
 1
 0
 Number
@@ -422,7 +422,7 @@ INPUTBOX
 369
 567
 regen-path
-2
+3
 1
 0
 Number
@@ -443,6 +443,36 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+320
+64
+494
+97
+mountain-radius
+mountain-radius
+0
+50
+25
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+319
+109
+491
+142
+moutain-angle
+moutain-angle
+0
+360
+96
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -787,7 +817,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 3D 5.3.1
+NetLogo 3D 5.3
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
