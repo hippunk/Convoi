@@ -280,7 +280,7 @@ SWITCH
 284
 astar-longpath
 astar-longpath
-0
+1
 1
 -1000
 
@@ -396,7 +396,7 @@ BUTTON
 171
 501
 make new leader
-make-leader new-leader-id true
+make-leader new-leader-id astar-longpath
 NIL
 1
 T
@@ -445,12 +445,11 @@ NIL
 NIL
 1
 
-<<<<<<< HEAD
 SLIDER
-320
-64
-494
-97
+371
+57
+545
+90
 mountain-radius
 mountain-radius
 0
@@ -462,10 +461,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-319
-109
-491
-142
+370
+102
+542
+135
 moutain-angle
 moutain-angle
 0
@@ -475,18 +474,17 @@ moutain-angle
 1
 NIL
 HORIZONTAL
-=======
+
 INPUTBOX
 275
 56
-360
+365
 116
 nb-cars-hostile
 4
 1
 0
 Number
->>>>>>> d0b0dc9f8d8efa2091f47f868dbe52c0a0afd212
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -705,26 +703,6 @@ Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
 
-person soldier
-false
-0
-Rectangle -7500403 true true 127 79 172 94
-Polygon -10899396 true false 105 90 60 195 90 210 135 105
-Polygon -10899396 true false 195 90 240 195 210 210 165 105
-Circle -7500403 true true 110 5 80
-Polygon -10899396 true false 105 90 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 195 90
-Polygon -6459832 true false 120 90 105 90 180 195 180 165
-Line -6459832 false 109 105 139 105
-Line -6459832 false 122 125 151 117
-Line -6459832 false 137 143 159 134
-Line -6459832 false 158 179 181 158
-Line -6459832 false 146 160 169 146
-Rectangle -6459832 true false 120 193 180 201
-Polygon -6459832 true false 122 4 107 16 102 39 105 53 148 34 192 27 189 17 172 2 145 0
-Polygon -16777216 true false 183 90 240 15 247 22 193 90
-Rectangle -6459832 true false 114 187 128 208
-Rectangle -6459832 true false 177 187 191 208
-
 plant
 false
 0
@@ -851,7 +829,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 3D 5.3
+NetLogo 3D 5.3.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
