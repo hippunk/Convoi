@@ -49,6 +49,7 @@ to setup
     setup-env
     clear-turtles ; reinit the id of the agents
     setup-convois ;
+    setup-hostiles
 
     ifelse nb-cars <= 0 [
       set path-is-possible? true
@@ -444,6 +445,7 @@ NIL
 NIL
 1
 
+<<<<<<< HEAD
 SLIDER
 320
 64
@@ -473,6 +475,18 @@ moutain-angle
 1
 NIL
 HORIZONTAL
+=======
+INPUTBOX
+275
+56
+360
+116
+nb-cars-hostile
+4
+1
+0
+Number
+>>>>>>> d0b0dc9f8d8efa2091f47f868dbe52c0a0afd212
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -690,6 +704,26 @@ Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300
 Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
+
+person soldier
+false
+0
+Rectangle -7500403 true true 127 79 172 94
+Polygon -10899396 true false 105 90 60 195 90 210 135 105
+Polygon -10899396 true false 195 90 240 195 210 210 165 105
+Circle -7500403 true true 110 5 80
+Polygon -10899396 true false 105 90 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 195 90
+Polygon -6459832 true false 120 90 105 90 180 195 180 165
+Line -6459832 false 109 105 139 105
+Line -6459832 false 122 125 151 117
+Line -6459832 false 137 143 159 134
+Line -6459832 false 158 179 181 158
+Line -6459832 false 146 160 169 146
+Rectangle -6459832 true false 120 193 180 201
+Polygon -6459832 true false 122 4 107 16 102 39 105 53 148 34 192 27 189 17 172 2 145 0
+Polygon -16777216 true false 183 90 240 15 247 22 193 90
+Rectangle -6459832 true false 114 187 128 208
+Rectangle -6459832 true false 177 187 191 208
 
 plant
 false
