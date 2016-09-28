@@ -90,7 +90,7 @@ to random-move-path ;Ici, l'idée c'est de générer un chemin vers un patch al�
     foreach sort-on [who] turtle-set hostiles with [finished? and not dead?] [
       let id ([who] of ?) ;id pour gérer avec astar observer hors turtle context
       if [finished?] of (turtle id) [;si pas de chemin on génère
-        let tmp-patch patch ([pxcor] of (turtle 5)) ([pycor] of (turtle 5))  0
+        let tmp-patch patch ([pxcor] of (turtle id)) ([pycor] of (turtle id))  0
         let tmpplan plan-astar ( tmp-patch ) (one-of patches with [not obstacle? and pzcor = mapAlt]) (false)
         ask turtle id [set rand-path tmpplan if not empty? rand-path [set finished? false]]
       ]

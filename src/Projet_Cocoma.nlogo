@@ -327,7 +327,7 @@ simu-speed
 simu-speed
 0
 10
-4
+1
 1
 1
 NIL
@@ -467,7 +467,7 @@ INPUTBOX
 365
 116
 nb-cars-hostile
-2
+10
 1
 0
 Number
