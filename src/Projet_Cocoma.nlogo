@@ -16,7 +16,6 @@ globals [mapAlt solAlt basseAlt hauteAlt ; variables topologiques Z discretise: 
   mission-completed? mission-failed?
   send-interval ; communication period
   is-movie-recording?
-  proj-radius
   ]
 
 patches-own [obstacle? base? hangar? objectif? bridge? ; variables topologiques au niveau mapAlt, permet de definir les patchs praticables et ceux qui sont des obstacles
@@ -127,6 +126,7 @@ end
 
 to go
   convois-think
+  hostiles-think
   tick
 end
 @#$#@#$#@
@@ -225,7 +225,7 @@ INPUTBOX
 159
 115
 nb-mountains
-3
+30
 1
 0
 Number
@@ -281,7 +281,7 @@ SWITCH
 284
 astar-longpath
 astar-longpath
-0
+1
 1
 -1000
 
@@ -292,7 +292,7 @@ SWITCH
 328
 astar-randpath
 astar-randpath
-1
+0
 1
 -1000
 
@@ -327,7 +327,7 @@ simu-speed
 simu-speed
 0
 10
-1
+4
 1
 1
 NIL
@@ -386,7 +386,7 @@ INPUTBOX
 178
 569
 new-leader-id
-3
+2
 1
 0
 Number
@@ -424,7 +424,7 @@ INPUTBOX
 369
 567
 regen-path
-3
+2
 1
 0
 Number
@@ -467,7 +467,7 @@ INPUTBOX
 365
 116
 nb-cars-hostile
-4
+2
 1
 0
 Number

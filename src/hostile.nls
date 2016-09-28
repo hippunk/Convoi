@@ -3,7 +3,9 @@ hostiles-own[
   speed  
   maxdir
   state ;; [ok = 2, touché = 1, mort = 0]
-
+  rand-path
+  finished?
+  dead?
   ]
 
 to setup-hostiles
@@ -28,9 +30,12 @@ to setup-hostiles
       set speed 0.05 * simu-speed
       set maxdir 10 * simu-speed
       set state 2
-      set heading 0
+      set heading random 360
       set roll 0
       set pitch 0
+      set rand-path []
+      set finished? true
+      set dead? false
       
 
       ; Visu
@@ -60,5 +65,105 @@ to hostiles-think
   ;  let start-patch min-one-of (patches with [pzcor = mapAlt and not obstacle?]) [distance ?] ; on s'assure de choisir comme patch de depart un patch libre sans obstacle, sinon quand on split un convoi il se peut qu'il soit sur un obstacle et qu'il ne puisse jamais generer de chemin
   ;  let new-path plan-astar ([patch-at 0 0 (pzcor * -1)] of start-patch) (one-of patches with [base?]) false
   ;]
-  
+  ask hostiles[
+    ;hostile-random-move
+   
+  ]
+   random-move-path
+end
+
+;Hostiles Behaviors
+to hostile-random-move ;Très random, donne des déplacements peu naturels. Marche a peu près, parfois ils sont retard et ils roulent sur les obstacles
+  ;Possibilité de tourner légerement pendant le déplacement
+  ifelse (detect-obstacle 4 15) = false ;si pas d'obstacle devant
+  [fd speed if random 1000 < 10 [set heading random 360]] ;on avance de la vitesse de simulation possibilité de tourner de temps en temps
+  [set heading  random 360] ;si non, on tourne comme un gros débile jusqu'à pouvoir avancer
+end
+
+to random-move-path ;Ici, l'idée c'est de générer un chemin vers un patch aléatoire et de s'y rendre
+  ;let tmp-plan plan-astar patch-here one-of patches with [pzcor = 0 and not obstacle?] false
+  let tmp-visu astar-visu
+  ;set astar-visu false
+  if nb-cars-hostile > 0 [
+
+    ; Calcul du plan AStar pour chaque hostile ayant atteint son arrivée
+    foreach sort-on [who] turtle-set hostiles with [finished? and not dead?] [
+      let id ([who] of ?) ;id pour gérer avec astar observer hors turtle context
+      if [finished?] of (turtle id) [;si pas de chemin on génère
+        let tmp-patch patch ([pxcor] of (turtle 5)) ([pycor] of (turtle 5))  0
+        let tmpplan plan-astar ( tmp-patch ) (one-of patches with [not obstacle? and pzcor = mapAlt]) (false)
+        ask turtle id [set rand-path tmpplan if not empty? rand-path [set finished? false]]
+      ]
+    ]
+
+      ;Déplacements selon les random-paths
+      ask hostiles with [not finished? and not dead?] [ ; Tant qu'on n'a pas atteint le but
+
+      ; Recupere le plan AStar
+      if not empty? rand-path [
+        ; Deplacement par waypoints: on se deplace jusqu'au prochain patch du chemin jusqu'à l'atteindre
+        let next-patch first rand-path
+        let zz pzcor
+        set next-patch [patch-at 0 0 (zz - pzcor)] of next-patch ; mise a niveau de pzcor au cas ou le chemin a ete calculé sur un autre plan
+        ; Deplacement vers le prochain waypoint
+        if next-patch != patch-here [move-hostile next-patch false false]
+        ; Si on a atteint ce patch, on le supprime de la liste, et on va donc continuer vers le prochain patch du chemin
+        if patch-here = next-patch [
+          set rand-path remove-item 0 rand-path
+        ]
+      ]
+
+      ; Critere d'arret: on est a cote de l'objectif
+      if empty? rand-path[
+        set finished? true
+      ]
+    ]
+
+
+  ]
+
+  set astar-visu tmp-visu
+end
+
+to move-hostile [goal slowdown? cortege?]
+  ;show (word "ici:" patch-here " goal:" goal)
+
+  ; Calcule de l'angle avec la cible
+  let headingFlag heading
+  ifelse cortege?
+  [ set headingFlag (towards goal) ] ; Si c'est un cortege, on veut qu'il suive toujours le leader par le chemin le plus court (surtout en play-mode ou le joueur n'est pas limite par le nowrap)
+  [ set headingFlag (towards-nowrap goal) ]
+  let dirCorrection subtract-headings headingFlag heading
+  ; Arrondissement de l'angle (on ne veut pas faire de micro tournant)
+  set dirCorrection precision dirCorrection 2
+  ; Limite de l'angle, pour que ce soit plus realiste (la voiture ne peut pas faire un demi-tour sur place!)
+  ifelse dirCorrection > maxdir [ ; limite a droite
+    set dirCorrection maxdir
+  ]
+  [
+    if dirCorrection < maxdir * -1 [ ; limite a gauche
+      set dirCorrection maxdir * -1
+    ]
+  ]
+
+  ; On tourne
+  rt dirCorrection
+
+  ; Limite de vitesse pour les voitures-cortege (pour pas qu'elles ne rentrent dans la voiture leader)
+  let tmp-speed speed
+  if slowdown? [
+    if distance-nowrap goal < 1.1 [
+      set tmp-speed tmp-speed / 20
+    ]
+    if distance-nowrap goal < 0.9 [
+      set tmp-speed 0
+    ]
+  ]
+
+  ; Deplacement!
+  set pitch 0 ; make sure there's no pitch ever, else the car will disappear in the ground
+  fd tmp-speed ; Avance
+end
+
+to hostile-fire
 end
