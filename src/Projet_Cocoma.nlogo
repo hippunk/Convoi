@@ -151,7 +151,7 @@ GRAPHICS-WINDOW
 0
 70
 0
-10
+20
 1
 1
 1
@@ -280,7 +280,7 @@ SWITCH
 284
 astar-longpath
 astar-longpath
-1
+0
 1
 -1000
 
@@ -446,30 +446,15 @@ NIL
 1
 
 SLIDER
-371
-57
-545
-90
-mountain-radius
-mountain-radius
-0
-50
-25
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-370
-102
 542
-135
-moutain-angle
-moutain-angle
+111
+714
+144
+mountain-angle
+mountain-angle
 0
-360
-96
+130
+30
 1
 1
 NIL
