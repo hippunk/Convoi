@@ -83,7 +83,7 @@ end
 to random-move-path ;Ici, l'idée c'est de générer un chemin vers un patch aléatoire et de s'y rendre
   ;let tmp-plan plan-astar patch-here one-of patches with [pzcor = 0 and not obstacle?] false
   let tmp-visu astar-visu
-  ;set astar-visu false
+  set astar-visu false
   if nb-cars-hostile > 0 [
 
     ; Calcul du plan AStar pour chaque hostile ayant atteint son arrivée
