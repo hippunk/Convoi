@@ -126,6 +126,7 @@ end
 
 to go
   convois-think
+  hostiles-think
   tick
 end
 @#$#@#$#@
@@ -151,7 +152,7 @@ GRAPHICS-WINDOW
 0
 70
 0
-10
+20
 1
 1
 1
@@ -224,7 +225,7 @@ INPUTBOX
 159
 115
 nb-mountains
-5
+30
 1
 0
 Number
@@ -291,7 +292,7 @@ SWITCH
 328
 astar-randpath
 astar-randpath
-1
+0
 1
 -1000
 
@@ -385,7 +386,7 @@ INPUTBOX
 178
 569
 new-leader-id
-3
+2
 1
 0
 Number
@@ -423,7 +424,7 @@ INPUTBOX
 369
 567
 regen-path
-3
+2
 1
 0
 Number
@@ -446,30 +447,15 @@ NIL
 1
 
 SLIDER
-371
-57
-545
-90
-mountain-radius
-mountain-radius
-0
-50
-25
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-370
-102
 542
-135
-moutain-angle
-moutain-angle
+111
+714
+144
+mountain-angle
+mountain-angle
 0
-360
-96
+130
+30
 1
 1
 NIL
@@ -481,7 +467,7 @@ INPUTBOX
 365
 116
 nb-cars-hostile
-4
+10
 1
 0
 Number

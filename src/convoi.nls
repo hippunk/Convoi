@@ -149,8 +149,8 @@ to convois-think
   ]
 end
 
-to-report detect-obstacle
- if any? other patches in-cone 10 60 with [obstacle?] [report true]
+to-report detect-obstacle [radius angle]
+ if any? other patches in-cone radius angle with [obstacle?] [report true]
 ; if any? other patches in-cone 10 90 [report true]
 ; if any? other patches in-cone 3 270 [report true]
  report false
