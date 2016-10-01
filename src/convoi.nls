@@ -29,6 +29,7 @@ to setup-convois
       set genlongpath? false
       set dead? false
       set regenpath? false
+      set state 2
 
       ; Visu
       set label who ; display the car names
@@ -247,4 +248,20 @@ to make-leader [num-new-leader takelongpath?]
     set genlongpath? takelongpath?
   ]
   remove-convoi-links-between num-new-leader num-new-leader - 1
+end
+
+to toucher
+  set state state - 1
+  set color color - 1
+  
+  ifelse state = 0 [ 
+    set dead? true
+    print word (word who) " : Je suis Mort " 
+    set nb-cars nb-cars - 1 ;; ATTENTION < 0
+    die
+  ]
+  [
+    print word (word who) " : Je suis Blessé "
+  ]
+  
 end

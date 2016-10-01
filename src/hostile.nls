@@ -21,9 +21,9 @@ to setup-hostiles
     ask hostiles
     [
       ; Init apparence NetLogo
-      set shape "car" ;; CHANGER LA SHAPE DES HOSTILE
-      set color red
-      ;;set shape "person soldier" ;; CHANGER LA SHAPE DES HOSTILE
+      ;set shape "car" ;; CHANGER LA SHAPE DES HOSTILE
+      ;set color red
+      set shape "person soldier" ;; CHANGER LA SHAPE DES HOSTILE
 
 
       ; Init vars convois
@@ -61,64 +61,11 @@ end
 
 
 to hostiles-think 
-<<<<<<< HEAD
-
-  if nb-cars > 0 [
-
-    let first-car min [who] of convois
-
-    ; Calcul du plan AStar pour chaque leader si necessaire
-    foreach sort-on [who] turtle-set hostiles [
-      let id ([who] of ?) - first-car
-      ; Recalcule le chemin si nécessaire (par exemple au début de la simulation ou quand le convoi se sépare)
-      ; Note: on est oblige de le faire en dehors du ask sinon on ne peut pas acceder a tous les patchs
-      if empty? as-path or length as-path < (id + 1) or empty? (item id as-path)  or [regenpath?] of ? [ ; s'il n'y a pas encore de chemin du tout, ou pas de chemin pour cette voiture, on cree un plan AStar
-        ; Cree le plan AStar (attention a ca que le patch start soit au niveau ou il y a les obstacles, ici pzcor = mapAlt pour les obstacles)
-        let start-patch min-one-of (patches with [pzcor = mapAlt and not obstacle?]) [distance ?] ; on s'assure de choisir comme patch de depart un patch libre sans obstacle, sinon quand on split un convoi il se peut qu'il soit sur un obstacle et qu'il ne puisse jamais generer de chemin
-        let new-path plan-astar ([patch-at 0 0 (pzcor * -1)] of start-patch) (one-of patches with [objectif?]) ([genlongpath?] of ?)
-        ; S'il n'y a pas de plan et qu'on a essayé de trouver un long chemin, on attend la prochaine iteration et on reessaie mais avec un plan court
-        if empty? new-path and [genlongpath?] of ? [ ask ? [ set genlongpath? false ] ]
-        ; S'il n'y a pas deja une entree pour cette voiture on la cree
-        
-        
-        if [regenpath?] of ? [ ask ? [ 
-            set regenpath? false
-            set genlongpath? false
-            ] ]
-        
-        ifelse length as-path < (id + 1) [
-          set as-path lput new-path as-path
-        ]
-        ; Sinon on remplace l'entree pour cette voiture par le nouveau plan
-        [
-          set as-path replace-item id as-path new-path
-        ]
-      ]
-    ]
-
-    ; Deplacement des leaders sur le chemin AStar
-    ask convois with [leader? and not finished? and not dead?] [ ; Tant qu'on n'a pas atteint le but
-      ;move-convoi-naive ; deplacement naif sans AStar
-
-      ; Recupere le plan AStar
-      let my-as-path item (who - first-car) as-path
-      if not empty? my-as-path [
-        ; Deplacement par waypoints: on se deplace jusqu'au prochain patch du chemin jusqu'à l'atteindre
-        let next-patch first my-as-path
-        let zz pzcor
-        set next-patch [patch-at 0 0 (zz - pzcor)] of next-patch ; mise a niveau de pzcor au cas ou le chemin a ete calculé sur un autre plan
-        ; Deplacement vers le prochain waypoint
-        if next-patch != patch-here [move-convoi next-patch false false]
-        ; Si on a atteint ce patch, on le supprime de la liste, et on va donc continuer vers le prochain patch du chemin
-        if patch-here = next-patch [
-          set my-as-path remove-item 0 my-as-path
-          set as-path replace-item (who - first-car) as-path my-as-path
-          if debug [ show (word "Waypoint atteint: " patch-here ", prochain: " next-patch ) ]
-=======
   ;ask hostiles [
   ;  let start-patch min-one-of (patches with [pzcor = mapAlt and not obstacle?]) [distance ?] ; on s'assure de choisir comme patch de depart un patch libre sans obstacle, sinon quand on split un convoi il se peut qu'il soit sur un obstacle et qu'il ne puisse jamais generer de chemin
   ;  let new-path plan-astar ([patch-at 0 0 (pzcor * -1)] of start-patch) (one-of patches with [base?]) false
   ;]
+
   ask hostiles[
     ;hostile-random-move
    
@@ -136,6 +83,7 @@ end
 
 to random-move-path ;Ici, l'idée c'est de générer un chemin vers un patch aléatoire et de s'y rendre
   ;let tmp-plan plan-astar patch-here one-of patches with [pzcor = 0 and not obstacle?] false
+
   let tmp-visu astar-visu
   set astar-visu false
   if nb-cars-hostile > 0 [
@@ -164,30 +112,10 @@ to random-move-path ;Ici, l'idée c'est de générer un chemin vers un patch al�
         ; Si on a atteint ce patch, on le supprime de la liste, et on va donc continuer vers le prochain patch du chemin
         if patch-here = next-patch [
           set rand-path remove-item 0 rand-path
->>>>>>> 782858f279b171a33dc4674cde18e992721bdc23
         ]
       ]
 
       ; Critere d'arret: on est a cote de l'objectif
-<<<<<<< HEAD
-      check-convoi-finished
-
-    ]
-
-    ; Deplacement des voitures-cortege: elles ne font que suivre la voiture devant eux (avec laquelle elles sont liées)
-    ask convois with [not leader? and not finished? and not dead?] [
-      ifelse any? my-out-convoi-links [
-        move-convoi ([patch-here] of one-of out-convoi-link-neighbors) true true
-      ]
-      ; S'il n'y a pas de lien devant, c'est probablement que la voiture est morte, donc on devient leader
-      [
-        set leader? true
-        set genlongpath? true
-        if not to-protect? [ set color orange ]
-      ]
-    ]
-  ]
-=======
       if empty? rand-path[
         set finished? true
       ]
@@ -240,5 +168,17 @@ to move-hostile [goal slowdown? cortege?]
 end
 
 to hostile-fire
->>>>>>> 782858f279b171a33dc4674cde18e992721bdc23
+  
+ ask hostiles [
+   let tmp convois in-cone 5 60 
+   if count tmp > 0 [
+     ask tmp [
+       set convoi-position lput list int xcor int ycor convoi-position
+     ]
+     ask n-of 1 tmp [
+       
+       toucher
+     ]
+   ]
+ ]
 end

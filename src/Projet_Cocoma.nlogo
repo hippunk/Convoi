@@ -16,6 +16,9 @@ globals [mapAlt solAlt basseAlt hauteAlt ; variables topologiques Z discretise: 
   mission-completed? mission-failed?
   send-interval ; communication period
   is-movie-recording?
+
+  convoi-position
+
   ]
 
 patches-own [obstacle? base? hangar? objectif? bridge? ; variables topologiques au niveau mapAlt, permet de definir les patchs praticables et ceux qui sont des obstacles
@@ -30,6 +33,7 @@ convois-own[incoming-queue
   regenpath? ; doit - on regenerer le path (nouvelle info? ... )
   speed maxdir ; maximal speed of a car, and max angle
   last-send-time ; communication historical time-stamp
+  state ;; [ok = 2, touché = 1, mort = 0]
 
 
   ]
@@ -48,8 +52,8 @@ to setup
     setup-globals
     setup-env
     clear-turtles ; reinit the id of the agents
-    setup-convois ;
     setup-hostiles
+    setup-convois ;
 
     ifelse nb-cars <= 0 [
       set path-is-possible? true
@@ -70,6 +74,8 @@ to setup
   setup-precache
   display ; reenable gui display
   reset-ticks
+
+  set convoi-position []
 end
 
 ; Initial parameters
@@ -127,17 +133,19 @@ end
 to go
   convois-think
   hostiles-think
+  hostile-fire
   tick
+  print convoi-position
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 0
 0
-720
-741
+1430
+1451
 -1
 -1
-10.0
+20.0
 1
 10
 1
@@ -197,7 +205,7 @@ INPUTBOX
 70
 115
 nb-cars
-5
+2
 1
 0
 Number
@@ -225,7 +233,7 @@ INPUTBOX
 159
 115
 nb-mountains
-30
+10
 1
 0
 Number
@@ -292,7 +300,7 @@ SWITCH
 328
 astar-randpath
 astar-randpath
-0
+1
 1
 -1000
 
@@ -314,7 +322,7 @@ SWITCH
 373
 astar-visu
 astar-visu
-0
+1
 1
 -1000
 
@@ -327,7 +335,7 @@ simu-speed
 simu-speed
 0
 10
-1
+6
 1
 1
 NIL
@@ -447,10 +455,10 @@ NIL
 1
 
 SLIDER
-542
-111
-714
-144
+78
+123
+250
+156
 mountain-angle
 mountain-angle
 0
@@ -688,6 +696,26 @@ Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300
 Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
+
+person soldier
+false
+0
+Rectangle -7500403 true true 127 79 172 94
+Polygon -10899396 true false 105 90 60 195 90 210 135 105
+Polygon -10899396 true false 195 90 240 195 210 210 165 105
+Circle -7500403 true true 110 5 80
+Polygon -10899396 true false 105 90 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 195 90
+Polygon -6459832 true false 120 90 105 90 180 195 180 165
+Line -6459832 false 109 105 139 105
+Line -6459832 false 122 125 151 117
+Line -6459832 false 137 143 159 134
+Line -6459832 false 158 179 181 158
+Line -6459832 false 146 160 169 146
+Rectangle -6459832 true false 120 193 180 201
+Polygon -6459832 true false 122 4 107 16 102 39 105 53 148 34 192 27 189 17 172 2 145 0
+Polygon -16777216 true false 183 90 240 15 247 22 193 90
+Rectangle -6459832 true false 114 187 128 208
+Rectangle -6459832 true false 177 187 191 208
 
 plant
 false
