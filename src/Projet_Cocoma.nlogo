@@ -109,13 +109,6 @@ to setup-precache
 end
 
 
-
-
-
-
-
-
-
 ;------------------------------------------------------------
 ;------------- functions ------------------------------------
 ;------------------------------------------------------------
@@ -131,22 +124,21 @@ report neighbors6 with
 ]
 end
 
-
 to go
   convois-think
   hostiles-think
   hostile-fire
-  tick
   ;;print convoi-position
   update-bullets
+  tick
 
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 0
 0
-430
-451
+630
+651
 -1
 -1
 20.0
@@ -160,9 +152,9 @@ GRAPHICS-WINDOW
 1
 1
 0
-20
+30
 0
-20
+30
 0
 20
 1
@@ -237,7 +229,7 @@ INPUTBOX
 159
 115
 nb-mountains
-0
+5
 1
 0
 Number
@@ -248,7 +240,7 @@ INPUTBOX
 214
 115
 nb-lakes
-0
+2
 1
 0
 Number
@@ -259,7 +251,7 @@ INPUTBOX
 279
 114
 nb-rivers
-0
+2
 1
 0
 Number
@@ -398,7 +390,7 @@ INPUTBOX
 102
 569
 new-leader-id
-2
+4
 1
 0
 Number
@@ -436,7 +428,7 @@ INPUTBOX
 222
 565
 regen-path
-2
+4
 1
 0
 Number
@@ -479,7 +471,7 @@ INPUTBOX
 373
 115
 nb-cars-hostile
-3
+10
 1
 0
 Number
@@ -490,7 +482,7 @@ INPUTBOX
 347
 574
 cooldown
-15
+20
 1
 0
 Number
@@ -516,6 +508,21 @@ bullet-speed
 .1
 0.07
 0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+357
+517
+449
+550
+total-life
+total-life
+1
+50
+50
+1
 1
 NIL
 HORIZONTAL

@@ -249,6 +249,8 @@ to make-leader [num-new-leader takelongpath?]
   remove-convoi-links-between num-new-leader num-new-leader - 1
 end
 
+
+;; Maj de l'etat d'une voiture du convoi quand ellle est touchée
 to toucher
   set state state - 1
   set color color - 1

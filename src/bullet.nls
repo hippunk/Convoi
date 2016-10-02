@@ -1,7 +1,11 @@
 
+bullet-own [
+  life
+]
 
 to shoot ;; creation d'une balle 
   hatch-bullet 1 [
+    set life total-life
     set shape "dot"
     set color red
     set size .5
@@ -11,10 +15,16 @@ end
 
 to update-bullets
   ask bullet [
+    if life = 0 [die] 
+    
+    if pcolor <= grey + 2 and  pcolor >= grey - 2 [die] ;; si je touche un obstacle je die
+    
     fd bullet-speed * simu-speed ;; deplacement de la balle
     if any? convois-here [ ;; si la balle est sur le meme patch qu'un convoi OU DRONE!!!!!!
       ask convois-on patch-here [toucher] ;; Le convoi est touché
       die ;; la balle est détruite 
     ]  
+    set life life - 1
+    set label life
   ]
 end
