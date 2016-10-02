@@ -168,16 +168,36 @@ end
 to hostile-fire
  ask hostiles [
    set cooldown-status cooldown-status  - 1 ;; On diminue le cooldown pour pouvoir tirer 
-   if count convois in-cone 5 60 > 0 and cooldown-status < 1[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
-     set convoi-position lput list int xcor int ycor convoi-position ;; on enregistre la position du convoi
-     ;; Pour l'instant la position du convoi n'est pas utilisé il faudrait un ensemble plutot qu'un tableau
-     ;; aussi pouvoir supprimer des positions plus à jour et fusionner des position "proche" ex [10 10] et [11 10] 
-     set cooldown-status cooldown ;; On met le cooldown au max
+   ifelse count convois in-cone 10 60 > 0 [
+     
+     if cooldown-status < 1[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
+       add-convoi-position xcor ycor zcor;; on enregistre la position du convoi
+                                         ;; Pour l'instant la position du convoi n'est pas utilisé il faudrait un ensemble plutot qu'un tableau
+                                         ;; aussi pouvoir supprimer des positions plus à jour et fusionner des position "proche" ex [10 10] et [11 10] 
+       set cooldown-status cooldown ;; On met le cooldown au max
      
      
-     ;; TODO : Changer l'angle de l'hostile vers la cible 
-     shoot ;; On tire :-)
+                                    ;; TODO : Changer l'angle de l'hostile vers la cible 
+       shoot ;; On tire :-)
+     ]
+   ]
+   [ ;; si je vois personne dans cette zone je la retire des position connu
+     let tmp-list (list xcor / 10 ycor / 10 zcor / 10)
+     if member? tmp-list convoi-position [
+       set convoi-position remove tmp-list convoi-position
+       print "remove"
+     ]
    ]
  ]
 end
  
+ 
+to add-convoi-position [xcord ycord zcord]
+  let tmp-list (list xcor / 10 ycor / 10 zcor / 10)
+  if not member? tmp-list convoi-position [
+       set convoi-position lput tmp-list convoi-position
+       print "add"
+  ]
+  print convoi-position
+  
+end

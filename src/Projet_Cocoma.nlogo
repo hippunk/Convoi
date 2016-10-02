@@ -70,6 +70,15 @@ to setup
   reset-ticks
 
   set convoi-position []
+
+  if debug [
+    ask patches with [pxcor mod 10 = 0 or pycor mod 10 = 0 and pzcor = mapAlt] [
+      set pcolor yellow
+    ]
+    ask patches with [pxcor mod 10 = 0 + 5 and pycor mod 10 = 0 + 5 and pzcor = mapAlt] [
+      set plabel word (word (int (pxcor / 10)) ":") (int (pycor / 10))
+    ]
+  ]
 end
 
 ; Initial parameters
@@ -126,6 +135,7 @@ to go
   tick
 
 end
+
 @#$#@#$#@
 GRAPHICS-WINDOW
 0
@@ -158,9 +168,9 @@ ticks
 
 SWITCH
 20
-266
+310
 123
-299
+343
 debug
 debug
 1
@@ -169,9 +179,9 @@ debug
 
 SWITCH
 21
-305
+349
 167
-338
+382
 debug-verbose
 debug-verbose
 1
@@ -180,9 +190,9 @@ debug-verbose
 
 TEXTBOX
 18
-78
+122
 168
-96
+140
 Environnement \n
 12
 0.0
@@ -190,9 +200,9 @@ Environnement \n
 
 INPUTBOX
 112
-165
+209
 197
-225
+269
 total-nb-cars
 50
 1
@@ -218,9 +228,9 @@ NIL
 
 INPUTBOX
 17
-100
+144
 95
-160
+204
 nb-mountains
 5
 1
@@ -229,9 +239,9 @@ Number
 
 INPUTBOX
 98
-100
+144
 150
-160
+204
 nb-lakes
 2
 1
@@ -240,9 +250,9 @@ Number
 
 INPUTBOX
 162
-99
+143
 226
-159
+203
 nb-rivers
 2
 1
@@ -251,9 +261,9 @@ Number
 
 INPUTBOX
 21
-462
+506
 94
-522
+566
 astar-faster
 20
 1
@@ -262,9 +272,9 @@ Number
 
 INPUTBOX
 99
-462
+506
 197
-522
+566
 astar-max-depth
 10000
 1
@@ -273,9 +283,9 @@ Number
 
 SWITCH
 21
-379
+423
 185
-412
+456
 astar-longpath
 astar-longpath
 1
@@ -284,9 +294,9 @@ astar-longpath
 
 SWITCH
 21
-423
+467
 184
-456
+500
 astar-randpath
 astar-randpath
 1
@@ -295,9 +305,9 @@ astar-randpath
 
 SWITCH
 193
-422
+466
 355
-455
+499
 astar-visu-more
 astar-visu-more
 1
@@ -306,9 +316,9 @@ astar-visu-more
 
 SWITCH
 193
-379
+423
 356
-412
+456
 astar-visu
 astar-visu
 0
@@ -324,7 +334,7 @@ simu-speed
 simu-speed
 0
 10
-3
+4
 1
 1
 NIL
@@ -332,9 +342,9 @@ HORIZONTAL
 
 TEXTBOX
 21
-239
+283
 171
-257
+301
 Debug
 12
 0.0
@@ -352,9 +362,9 @@ Simulation
 
 TEXTBOX
 24
-353
+397
 174
-371
+415
 A*
 12
 0.0
@@ -379,9 +389,9 @@ NIL
 
 INPUTBOX
 26
-609
+653
 111
-669
+713
 new-leader-id
 4
 1
@@ -390,9 +400,9 @@ Number
 
 BUTTON
 25
-568
+612
 145
-601
+645
 make new leader
 make-leader new-leader-id astar-longpath
 NIL
@@ -407,9 +417,9 @@ NIL
 
 TEXTBOX
 24
-543
+587
 107
-561
+605
 New leader
 12
 0.0
@@ -417,9 +427,9 @@ New leader
 
 INPUTBOX
 154
-605
+649
 231
-665
+709
 regen-path
 4
 1
@@ -428,9 +438,9 @@ Number
 
 BUTTON
 159
-568
+612
 271
-601
+645
 set regen path
 ask convoi regen-path [set regenpath? true]
 NIL
@@ -445,9 +455,9 @@ NIL
 
 SLIDER
 232
-100
+144
 371
-133
+177
 mountain-angle
 mountain-angle
 0
@@ -460,9 +470,9 @@ HORIZONTAL
 
 INPUTBOX
 17
-165
+209
 107
-225
+269
 nb-cars-hostile
 50
 1
@@ -471,9 +481,9 @@ Number
 
 INPUTBOX
 205
-264
+308
 266
-324
+368
 cooldown
 20
 1
@@ -482,9 +492,9 @@ Number
 
 TEXTBOX
 208
-240
+284
 358
-258
+302
 bullets\n
 12
 0.0
@@ -492,9 +502,9 @@ bullets\n
 
 SLIDER
 271
-264
+308
 407
-297
+341
 bullet-speed
 bullet-speed
 0.01
@@ -507,9 +517,9 @@ HORIZONTAL
 
 SLIDER
 270
-301
+345
 385
-334
+378
 total-life
 total-life
 30
@@ -539,6 +549,17 @@ MONITOR
 Hostiles
 count hostiles
 0
+1
+11
+
+MONITOR
+12
+73
+311
+118
+NIL
+count convois with [who = total-nb-cars - 1]
+17
 1
 11
 
