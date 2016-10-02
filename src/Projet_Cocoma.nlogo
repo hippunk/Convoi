@@ -1,9 +1,10 @@
-__includes["astar.nls" "convoi.nls" "env.nls" "hostile.nls"]
+__includes["astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls"]
 breed [waypoints waypoint]
 breed [envconstructors envconstructor]
 breed [convois convoi]
 breed [HQs HQ]
 breed [hostiles hostile]
+breed [bullet]
 directed-link-breed [path-links path-link]
 undirected-link-breed [dummy-links dummy-link]
 directed-link-breed [convoi-links convoi-link]
@@ -52,8 +53,9 @@ to setup
     setup-globals
     setup-env
     clear-turtles ; reinit the id of the agents
-    setup-hostiles
     setup-convois ;
+    setup-hostiles
+
 
     ifelse nb-cars <= 0 [
       set path-is-possible? true
@@ -136,13 +138,15 @@ to go
   hostile-fire
   tick
   print convoi-position
+  update-bullets
+
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 0
 0
-1430
-1451
+430
+451
 -1
 -1
 20.0
@@ -156,9 +160,9 @@ GRAPHICS-WINDOW
 1
 1
 0
-70
+20
 0
-70
+20
 0
 20
 1
@@ -233,7 +237,7 @@ INPUTBOX
 159
 115
 nb-mountains
-10
+0
 1
 0
 Number
@@ -244,7 +248,7 @@ INPUTBOX
 214
 115
 nb-lakes
-2
+0
 1
 0
 Number
@@ -255,7 +259,7 @@ INPUTBOX
 271
 115
 nb-rivers
-2
+0
 1
 0
 Number
@@ -322,7 +326,7 @@ SWITCH
 373
 astar-visu
 astar-visu
-1
+0
 1
 -1000
 
@@ -335,7 +339,7 @@ simu-speed
 simu-speed
 0
 10
-6
+1
 1
 1
 NIL
@@ -475,10 +479,46 @@ INPUTBOX
 365
 116
 nb-cars-hostile
-10
+3
 1
 0
 Number
+
+INPUTBOX
+432
+506
+493
+566
+cooldown
+15
+1
+0
+Number
+
+TEXTBOX
+445
+484
+595
+502
+bullets\n
+12
+0.0
+1
+
+SLIDER
+507
+509
+679
+542
+bullet-speed
+bullet-speed
+0.01
+.1
+0.07
+0.01
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?

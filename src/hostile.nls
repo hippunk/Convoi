@@ -6,6 +6,7 @@ hostiles-own[
   rand-path
   finished?
   dead?
+  cooldown-status
   ]
 
 to setup-hostiles
@@ -36,6 +37,7 @@ to setup-hostiles
       set rand-path []
       set finished? true
       set dead? false
+      set cooldown-status 0
       
 
       ; Visu
@@ -168,17 +170,15 @@ to move-hostile [goal slowdown? cortege?]
 end
 
 to hostile-fire
-  
  ask hostiles [
-   let tmp convois in-cone 5 60 
-   if count tmp > 0 [
-     ask tmp [
-       set convoi-position lput list int xcor int ycor convoi-position
-     ]
-     ask n-of 1 tmp [
-       
-       toucher
-     ]
+   set cooldown-status cooldown-status  - 1 ;; On diminue le cooldown pour pouvoir tirer 
+   if count convois in-cone 5 60 > 0 and cooldown-status < 1[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
+     set convoi-position lput list int xcor int ycor convoi-position ;; on enregistre la position du convoi
+     ;; Pour l'instant la position du convoi n'est pas utilisé il faudrait un ensemble plutot qu'un tableau
+     ;; aussi pouvoir supprimer des positions plus à jour et fusionner des position "proche" ex [10 10] et [11 10] 
+     set cooldown-status cooldown ;; On met le cooldown au max
+     shoot ;; On tire :-)
    ]
  ]
 end
+ 

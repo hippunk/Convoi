@@ -1,0 +1,20 @@
+
+
+to shoot ;; creation d'une balle 
+  hatch-bullet 1 [
+    set shape "dot"
+    set color red
+    set size .5
+  ]
+end
+
+
+to update-bullets
+  ask bullet [
+    fd bullet-speed * simu-speed ;; deplacement de la balle
+    if any? convois-here [ ;; si la balle est sur le meme patch qu'un convoi OU DRONE!!!!!!
+      ask convois-on patch-here [toucher] ;; Le convoi est touché
+      die ;; la balle est détruite 
+    ]  
+  ]
+end
