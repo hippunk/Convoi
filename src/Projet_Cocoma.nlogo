@@ -204,7 +204,7 @@ INPUTBOX
 197
 269
 total-nb-cars
-50
+5
 1
 0
 Number
@@ -474,7 +474,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-50
+5
 1
 0
 Number
@@ -555,11 +555,11 @@ count hostiles
 MONITOR
 12
 73
-311
+92
 118
-NIL
+POKERARE
 count convois with [who = total-nb-cars - 1]
-17
+0
 1
 11
 

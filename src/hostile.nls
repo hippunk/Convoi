@@ -169,23 +169,18 @@ to hostile-fire
  ask hostiles [
    set cooldown-status cooldown-status  - 1 ;; On diminue le cooldown pour pouvoir tirer 
    ifelse count convois in-cone 10 60 > 0 [
-     
+     add-convoi-position xcor ycor zcor  ;; on enregistre la position du convoi
+                                         ;; Pour l'instant la position du convoi n'est pas utilisée
      if cooldown-status < 1[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
-       add-convoi-position xcor ycor zcor;; on enregistre la position du convoi
-                                         ;; Pour l'instant la position du convoi n'est pas utilisé il faudrait un ensemble plutot qu'un tableau
-                                         ;; aussi pouvoir supprimer des positions plus à jour et fusionner des position "proche" ex [10 10] et [11 10] 
        set cooldown-status cooldown ;; On met le cooldown au max
-     
-     
                                     ;; TODO : Changer l'angle de l'hostile vers la cible 
        shoot ;; On tire :-)
      ]
    ]
-   [ ;; si je vois personne dans cette zone je la retire des position connu
-     let tmp-list (list xcor / 10 ycor / 10 zcor / 10)
+   [ ;; si je vois personne dans cette zone je la retire des positions connu du convoi
+     let tmp-list (list int (xcor / 10) int (ycor / 10) int (zcor / 10))
      if member? tmp-list convoi-position [
        set convoi-position remove tmp-list convoi-position
-       print "remove"
      ]
    ]
  ]
@@ -193,11 +188,8 @@ end
  
  
 to add-convoi-position [xcord ycord zcord]
-  let tmp-list (list xcor / 10 ycor / 10 zcor / 10)
+  let tmp-list (list int (xcor / 10) int (ycor / 10) int (zcor / 10))
   if not member? tmp-list convoi-position [
        set convoi-position lput tmp-list convoi-position
-       print "add"
   ]
-  print convoi-position
-  
 end
