@@ -1,12 +1,8 @@
 hostiles-own[
   velocity
-  speed  
-  maxdir
-  state ;; [ok = 2, touché = 1, mort = 0]
   rand-path
-  finished?
-  dead?
   cooldown-status
+  finished?
   ]
 
 to setup-hostiles
@@ -177,6 +173,9 @@ to hostile-fire
      ;; Pour l'instant la position du convoi n'est pas utilisé il faudrait un ensemble plutot qu'un tableau
      ;; aussi pouvoir supprimer des positions plus à jour et fusionner des position "proche" ex [10 10] et [11 10] 
      set cooldown-status cooldown ;; On met le cooldown au max
+     
+     
+     ;; TODO : Changer l'angle de l'hostile vers la cible 
      shoot ;; On tire :-)
    ]
  ]

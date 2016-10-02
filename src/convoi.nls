@@ -1,3 +1,13 @@
+convois-own[incoming-queue
+  finished? ; Is the goal reached ?
+  leader?   ; car leading the convoi convoi
+  to-protect? ; Should this car be protected at all cost ?
+  genlongpath? ; Should the leader compute a new path (but not shortest) ?
+  regenpath? ; doit - on regenerer le path (nouvelle info? ... )
+  last-send-time ; communication historical time-stamp
+  ]
+
+
 to setup-convois
   if nb-cars > 0 [
     ; get the size of the base to deploy the car accordingly
@@ -7,6 +17,7 @@ to setup-convois
     let base-max-pycor max [pycor] of (patches with [hangar? and pzcor = mapAlt])
 
     ; creation des voitures du convoi et cortege
+    print nb-cars
     create-convois nb-cars
     ask convois
     [
@@ -253,15 +264,12 @@ end
 ;; Maj de l'etat d'une voiture du convoi quand ellle est touchée
 to toucher
   set state state - 1
-  set color color - 1
-  ifelse state = 0 [ 
+  set color color - 2
+  if state = 0 [ 
     set dead? true
     print word (word who) " : Je suis Mort " 
     set nb-cars nb-cars - 1 ;; ATTENTION < 0
     die
-  ]
-  [
-    print word (word who) " : Je suis Blessé "
   ]
   
 end

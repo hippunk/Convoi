@@ -17,27 +17,19 @@ globals [mapAlt solAlt basseAlt hauteAlt ; variables topologiques Z discretise: 
   mission-completed? mission-failed?
   send-interval ; communication period
   is-movie-recording?
-
-  convoi-position
-
-  ]
+  convoi-position ;; position connu du convoi par les agents hostiles
+  nb-cars
+]
 
 patches-own [obstacle? base? hangar? objectif? bridge? ; variables topologiques au niveau mapAlt, permet de definir les patchs praticables et ceux qui sont des obstacles
   as-closed as-heuristic as-prev-pos ; variables temporaires pour calculer les chemins AStar (effaces a chaque calcul de plan)
-  ]
-convois-own[incoming-queue
-  finished? ; Is the goal reached ?
-  leader?   ; car leading the convoi convoi
-  to-protect? ; Should this car be protected at all cost ?
-  genlongpath? ; Should the leader compute a new path (but not shortest) ?
+]
+
+turtles-own [
+  state ;; [ok = 2, blessé = 1, mort = 0]
   dead?
-  regenpath? ; doit - on regenerer le path (nouvelle info? ... )
   speed maxdir ; maximal speed of a car, and max angle
-  last-send-time ; communication historical time-stamp
-  state ;; [ok = 2, touché = 1, mort = 0]
-
-
-  ]
+]
 
 
 ;***********************
@@ -45,6 +37,7 @@ convois-own[incoming-queue
 ;***********************
 
 to setup
+  clear-output
   ; The setup generates environments until one of them is acceptable (the convoi can accomplish the mission)
   let path-is-possible? false
   while [not path-is-possible?] [
@@ -82,6 +75,7 @@ end
 
 ; Initial parameters
 to setup-globals
+  set nb-cars total-nb-cars
   set mapAlt 0
   set solAlt 1
   set basseAlt (floor max-pzcor / 3 * 2 - 1)
@@ -137,8 +131,8 @@ end
 GRAPHICS-WINDOW
 0
 0
-630
-651
+1430
+1451
 -1
 -1
 20.0
@@ -152,9 +146,9 @@ GRAPHICS-WINDOW
 1
 1
 0
-30
+70
 0
-30
+70
 0
 20
 1
@@ -164,10 +158,10 @@ ticks
 30.0
 
 SWITCH
-15
-190
-118
-223
+27
+296
+130
+329
 debug
 debug
 1
@@ -175,10 +169,10 @@ debug
 -1000
 
 SWITCH
-13
-235
-159
-268
+25
+341
+171
+374
 debug-verbose
 debug-verbose
 1
@@ -186,31 +180,31 @@ debug-verbose
 -1000
 
 TEXTBOX
-13
-22
-163
-40
+18
+78
+168
+96
 Environnement \n
 12
 0.0
 1
 
 INPUTBOX
-20
-55
-70
-115
-nb-cars
-2
+25
+111
+75
+171
+total-nb-cars
+50
 1
 0
 Number
 
 BUTTON
-17
-385
-90
-418
+13
+11
+86
+44
 NIL
 setup
 NIL
@@ -224,10 +218,10 @@ NIL
 1
 
 INPUTBOX
-81
-55
-159
-115
+86
+111
+164
+171
 nb-mountains
 5
 1
@@ -235,10 +229,10 @@ nb-mountains
 Number
 
 INPUTBOX
-162
-55
-214
-115
+167
+111
+219
+171
 nb-lakes
 2
 1
@@ -246,10 +240,10 @@ nb-lakes
 Number
 
 INPUTBOX
-226
-54
-279
-114
+231
+110
+284
+170
 nb-rivers
 2
 1
@@ -257,10 +251,10 @@ nb-rivers
 Number
 
 INPUTBOX
-383
-253
-456
-313
+365
+424
+438
+484
 astar-faster
 20
 1
@@ -268,10 +262,10 @@ astar-faster
 Number
 
 INPUTBOX
-383
-327
-481
-387
+365
+498
+463
+558
 astar-max-depth
 10000
 1
@@ -279,99 +273,99 @@ astar-max-depth
 Number
 
 SWITCH
+17
+423
+181
+456
+astar-longpath
+astar-longpath
+1
+1
+-1000
+
+SWITCH
+17
+467
+180
+500
+astar-randpath
+astar-randpath
+1
+1
+-1000
+
+SWITCH
 191
-251
+474
+353
+507
+astar-visu-more
+astar-visu-more
+1
+1
+-1000
+
+SWITCH
+192
+426
 355
-284
-astar-longpath
-astar-longpath
-1
-1
--1000
-
-SWITCH
-191
-295
-354
-328
-astar-randpath
-astar-randpath
-1
-1
--1000
-
-SWITCH
-188
-388
-350
-421
-astar-visu-more
-astar-visu-more
-1
-1
--1000
-
-SWITCH
-189
-340
-352
-373
+459
 astar-visu
 astar-visu
-0
+1
 1
 -1000
 
 SLIDER
-17
-332
-131
-365
+302
+26
+416
+59
 simu-speed
 simu-speed
 0
 10
-1
+3
 1
 1
 NIL
 HORIZONTAL
 
 TEXTBOX
-9
-156
-159
-174
+21
+262
+171
+280
 Debug
 12
 0.0
 1
 
 TEXTBOX
-11
-302
-161
-320
+308
+10
+458
+28
 Simulation
 12
 0.0
 1
 
 TEXTBOX
-181
-222
-331
-240
+20
+397
+170
+415
 A*
 12
 0.0
 1
 
 BUTTON
-96
-386
-159
-419
+92
+12
+155
+45
 NIL
 go
 T
@@ -385,10 +379,10 @@ NIL
 1
 
 INPUTBOX
-17
-509
-102
-569
+29
+615
+114
+675
 new-leader-id
 4
 1
@@ -396,10 +390,10 @@ new-leader-id
 Number
 
 BUTTON
-16
-468
-136
-501
+28
+574
+148
+607
 make new leader
 make-leader new-leader-id astar-longpath
 NIL
@@ -413,20 +407,20 @@ NIL
 1
 
 TEXTBOX
-15
-443
-98
-461
+27
+549
+110
+567
 New leader
 12
 0.0
 1
 
 INPUTBOX
-145
-505
-222
-565
+157
+611
+234
+671
 regen-path
 4
 1
@@ -434,10 +428,10 @@ regen-path
 Number
 
 BUTTON
-150
-468
-262
-501
+162
+574
+274
+607
 set regen path
 ask convoi regen-path [set regenpath? true]
 NIL
@@ -451,10 +445,10 @@ NIL
 1
 
 SLIDER
-237
-121
-376
-154
+22
+181
+161
+214
 mountain-angle
 mountain-angle
 0
@@ -466,21 +460,21 @@ NIL
 HORIZONTAL
 
 INPUTBOX
-283
-55
-373
-115
+167
+178
+257
+238
 nb-cars-hostile
-10
+50
 1
 0
 Number
 
 INPUTBOX
-286
-514
-347
-574
+195
+333
+256
+393
 cooldown
 20
 1
@@ -488,44 +482,66 @@ cooldown
 Number
 
 TEXTBOX
-299
-444
-449
-462
+208
+263
+358
+281
 bullets\n
 12
 0.0
 1
 
 SLIDER
-280
-468
-416
-501
+189
+287
+325
+320
 bullet-speed
 bullet-speed
 0.01
 .1
-0.07
+0.09
 0.01
 1
 NIL
 HORIZONTAL
 
 SLIDER
-357
-517
-449
-550
+266
+336
+381
+369
 total-life
 total-life
-1
-50
-50
+30
+200
+56
 1
 1
 NIL
 HORIZONTAL
+
+MONITOR
+159
+12
+218
+57
+Convois
+count convois
+0
+1
+11
+
+MONITOR
+227
+12
+293
+57
+Hostiles
+count hostiles
+0
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
