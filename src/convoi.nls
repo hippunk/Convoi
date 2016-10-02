@@ -17,7 +17,6 @@ to setup-convois
     let base-max-pycor max [pycor] of (patches with [hangar? and pzcor = mapAlt])
 
     ; creation des voitures du convoi et cortege
-    print nb-cars
     create-convois nb-cars
     ask convois
     [

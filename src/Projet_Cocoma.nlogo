@@ -37,7 +37,6 @@ turtles-own [
 ;***********************
 
 to setup
-  clear-output
   ; The setup generates environments until one of them is acceptable (the convoi can accomplish the mission)
   let path-is-possible? false
   while [not path-is-possible?] [
@@ -158,10 +157,10 @@ ticks
 30.0
 
 SWITCH
-27
-296
-130
-329
+20
+266
+123
+299
 debug
 debug
 1
@@ -169,10 +168,10 @@ debug
 -1000
 
 SWITCH
-25
-341
-171
-374
+21
+305
+167
+338
 debug-verbose
 debug-verbose
 1
@@ -190,10 +189,10 @@ Environnement \n
 1
 
 INPUTBOX
-25
-111
-75
-171
+112
+165
+197
+225
 total-nb-cars
 50
 1
@@ -218,10 +217,10 @@ NIL
 1
 
 INPUTBOX
-86
-111
-164
-171
+17
+100
+95
+160
 nb-mountains
 5
 1
@@ -229,10 +228,10 @@ nb-mountains
 Number
 
 INPUTBOX
-167
-111
-219
-171
+98
+100
+150
+160
 nb-lakes
 2
 1
@@ -240,10 +239,10 @@ nb-lakes
 Number
 
 INPUTBOX
-231
-110
-284
-170
+162
+99
+226
+159
 nb-rivers
 2
 1
@@ -251,10 +250,10 @@ nb-rivers
 Number
 
 INPUTBOX
-365
-424
-438
-484
+21
+462
+94
+522
 astar-faster
 20
 1
@@ -262,10 +261,10 @@ astar-faster
 Number
 
 INPUTBOX
-365
-498
-463
-558
+99
+462
+197
+522
 astar-max-depth
 10000
 1
@@ -273,21 +272,21 @@ astar-max-depth
 Number
 
 SWITCH
-17
+21
+379
+185
+412
+astar-longpath
+astar-longpath
+1
+1
+-1000
+
+SWITCH
+21
 423
-181
+184
 456
-astar-longpath
-astar-longpath
-1
-1
--1000
-
-SWITCH
-17
-467
-180
-500
 astar-randpath
 astar-randpath
 1
@@ -295,24 +294,24 @@ astar-randpath
 -1000
 
 SWITCH
-191
-474
-353
-507
-astar-visu-more
-astar-visu-more
-1
-1
--1000
-
-SWITCH
-192
-426
+193
+422
 355
-459
-astar-visu
-astar-visu
+455
+astar-visu-more
+astar-visu-more
 1
+1
+-1000
+
+SWITCH
+193
+379
+356
+412
+astar-visu
+astar-visu
+0
 1
 -1000
 
@@ -333,9 +332,9 @@ HORIZONTAL
 
 TEXTBOX
 21
-262
+239
 171
-280
+257
 Debug
 12
 0.0
@@ -352,10 +351,10 @@ Simulation
 1
 
 TEXTBOX
-20
-397
-170
-415
+24
+353
+174
+371
 A*
 12
 0.0
@@ -379,10 +378,10 @@ NIL
 1
 
 INPUTBOX
-29
-615
-114
-675
+26
+609
+111
+669
 new-leader-id
 4
 1
@@ -390,10 +389,10 @@ new-leader-id
 Number
 
 BUTTON
-28
-574
-148
-607
+25
+568
+145
+601
 make new leader
 make-leader new-leader-id astar-longpath
 NIL
@@ -407,20 +406,20 @@ NIL
 1
 
 TEXTBOX
-27
-549
-110
-567
+24
+543
+107
+561
 New leader
 12
 0.0
 1
 
 INPUTBOX
-157
-611
-234
-671
+154
+605
+231
+665
 regen-path
 4
 1
@@ -428,10 +427,10 @@ regen-path
 Number
 
 BUTTON
-162
-574
-274
-607
+159
+568
+271
+601
 set regen path
 ask convoi regen-path [set regenpath? true]
 NIL
@@ -445,25 +444,25 @@ NIL
 1
 
 SLIDER
-22
-181
-161
-214
+232
+100
+371
+133
 mountain-angle
 mountain-angle
 0
 130
-30
+31
 1
 1
 NIL
 HORIZONTAL
 
 INPUTBOX
-167
-178
-257
-238
+17
+165
+107
+225
 nb-cars-hostile
 50
 1
@@ -471,10 +470,10 @@ nb-cars-hostile
 Number
 
 INPUTBOX
-195
-333
-256
-393
+205
+264
+266
+324
 cooldown
 20
 1
@@ -483,19 +482,19 @@ Number
 
 TEXTBOX
 208
-263
+240
 358
-281
+258
 bullets\n
 12
 0.0
 1
 
 SLIDER
-189
-287
-325
-320
+271
+264
+407
+297
 bullet-speed
 bullet-speed
 0.01
@@ -507,10 +506,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-266
-336
-381
-369
+270
+301
+385
+334
 total-life
 total-life
 30
