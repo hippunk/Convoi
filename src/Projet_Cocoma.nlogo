@@ -137,7 +137,7 @@ to go
   hostiles-think
   hostile-fire
   tick
-  print convoi-position
+  ;;print convoi-position
   update-bullets
 
 end
@@ -185,7 +185,7 @@ debug
 SWITCH
 13
 235
-178
+159
 268
 debug-verbose
 debug-verbose
@@ -254,10 +254,10 @@ nb-lakes
 Number
 
 INPUTBOX
-218
-55
-271
-115
+226
+54
+279
+114
 nb-rivers
 0
 1
@@ -265,9 +265,9 @@ nb-rivers
 Number
 
 INPUTBOX
-422
+383
 253
-583
+456
 313
 astar-faster
 20
@@ -276,9 +276,9 @@ astar-faster
 Number
 
 INPUTBOX
-422
+383
 327
-583
+481
 387
 astar-max-depth
 10000
@@ -287,9 +287,9 @@ astar-max-depth
 Number
 
 SWITCH
-230
+191
 251
-394
+355
 284
 astar-longpath
 astar-longpath
@@ -298,9 +298,9 @@ astar-longpath
 -1000
 
 SWITCH
-230
+191
 295
-393
+354
 328
 astar-randpath
 astar-randpath
@@ -309,9 +309,9 @@ astar-randpath
 -1000
 
 SWITCH
-227
+188
 388
-389
+350
 421
 astar-visu-more
 astar-visu-more
@@ -320,9 +320,9 @@ astar-visu-more
 -1000
 
 SWITCH
-228
+189
 340
-391
+352
 373
 astar-visu
 astar-visu
@@ -333,7 +333,7 @@ astar-visu
 SLIDER
 17
 332
-189
+131
 365
 simu-speed
 simu-speed
@@ -366,9 +366,9 @@ Simulation
 1
 
 TEXTBOX
-220
+181
 222
-370
+331
 240
 A*
 12
@@ -395,7 +395,7 @@ NIL
 INPUTBOX
 17
 509
-178
+102
 569
 new-leader-id
 2
@@ -406,7 +406,7 @@ Number
 BUTTON
 16
 468
-171
+136
 501
 make new leader
 make-leader new-leader-id astar-longpath
@@ -423,7 +423,7 @@ NIL
 TEXTBOX
 15
 443
-165
+98
 461
 New leader
 12
@@ -431,10 +431,10 @@ New leader
 1
 
 INPUTBOX
-208
-507
-369
-567
+145
+505
+222
+565
 regen-path
 2
 1
@@ -442,10 +442,10 @@ regen-path
 Number
 
 BUTTON
-213
-470
-353
-503
+150
+468
+262
+501
 set regen path
 ask convoi regen-path [set regenpath? true]
 NIL
@@ -459,10 +459,10 @@ NIL
 1
 
 SLIDER
-78
-123
-250
-156
+237
+121
+376
+154
 mountain-angle
 mountain-angle
 0
@@ -474,10 +474,10 @@ NIL
 HORIZONTAL
 
 INPUTBOX
-275
-56
-365
-116
+283
+55
+373
+115
 nb-cars-hostile
 3
 1
@@ -485,10 +485,10 @@ nb-cars-hostile
 Number
 
 INPUTBOX
-432
-506
-493
-566
+286
+514
+347
+574
 cooldown
 15
 1
@@ -496,20 +496,20 @@ cooldown
 Number
 
 TEXTBOX
-445
-484
-595
-502
+299
+444
+449
+462
 bullets\n
 12
 0.0
 1
 
 SLIDER
-507
-509
-679
-542
+280
+468
+416
+501
 bullet-speed
 bullet-speed
 0.01

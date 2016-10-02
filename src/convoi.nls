@@ -242,7 +242,6 @@ end
 ;; num-new-leader : Identifiant unique du nouveau leader
 ;; takelongpath? : Boolean prendre le long chemin ou non
 to make-leader [num-new-leader takelongpath?]
-  
   ask convoi num-new-leader [
     set leader? true
     set genlongpath? takelongpath?
@@ -253,7 +252,6 @@ end
 to toucher
   set state state - 1
   set color color - 1
-  
   ifelse state = 0 [ 
     set dead? true
     print word (word who) " : Je suis Mort " 
