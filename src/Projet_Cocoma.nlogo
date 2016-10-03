@@ -135,7 +135,6 @@ to go
   tick
 
 end
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 0
@@ -204,7 +203,7 @@ INPUTBOX
 197
 269
 total-nb-cars
-5
+35
 1
 0
 Number
@@ -393,7 +392,7 @@ INPUTBOX
 111
 713
 new-leader-id
-4
+20
 1
 0
 Number
@@ -431,7 +430,7 @@ INPUTBOX
 231
 709
 regen-path
-4
+20
 1
 0
 Number
@@ -474,7 +473,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-5
+50
 1
 0
 Number

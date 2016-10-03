@@ -63,12 +63,8 @@ to hostiles-think
   ;  let start-patch min-one-of (patches with [pzcor = mapAlt and not obstacle?]) [distance ?] ; on s'assure de choisir comme patch de depart un patch libre sans obstacle, sinon quand on split un convoi il se peut qu'il soit sur un obstacle et qu'il ne puisse jamais generer de chemin
   ;  let new-path plan-astar ([patch-at 0 0 (pzcor * -1)] of start-patch) (one-of patches with [base?]) false
   ;]
-
-  ask hostiles[
-    ;hostile-random-move
+ random-move-path
    
-  ]
-   random-move-path
 end
 
 ;Hostiles Behaviors
@@ -125,6 +121,7 @@ to random-move-path ;Ici, l'idée c'est de générer un chemin vers un patch al�
   set astar-visu tmp-visu
 end
 
+
 to move-hostile [goal slowdown? cortege?]
   ;show (word "ici:" patch-here " goal:" goal)
 
@@ -164,6 +161,8 @@ to move-hostile [goal slowdown? cortege?]
   set pitch 0 ; make sure there's no pitch ever, else the car will disappear in the ground
   fd tmp-speed ; Avance
 end
+
+
 
 to hostile-fire
  ask hostiles [
