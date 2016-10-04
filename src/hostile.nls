@@ -66,8 +66,11 @@ to hostiles-think
   
  ;ifelse empty? convoi-position
  ;[
-   random-move-path
-   draw-range
+   random-move-path 
+   ifelse hostile-range-visu? [
+     draw-range
+   ] [clear-drawing] ;posera problème lors de l'utilisation du bout de code avec d'autres unitées
+   
  ;]
  ;[
  ;  let pos last convoi-position
@@ -279,8 +282,10 @@ to draw-range
         pen-up
     
     ]
+    
     die
   ]
+  
   
   
 end

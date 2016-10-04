@@ -132,11 +132,13 @@ report neighbors6 with
 end
 
 to go
+
   convois-think
   hostiles-think
   hostile-fire
   ;;print convoi-position
   update-bullets
+
   tick
 
 end
@@ -463,7 +465,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-3
+20
 1
 0
 Number
@@ -653,11 +655,22 @@ hostile-range
 hostile-range
 3
 15
-6
+8
 1
 1
 NIL
 HORIZONTAL
+
+SWITCH
+510
+207
+702
+240
+hostile-range-visu?
+hostile-range-visu?
+1
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?
