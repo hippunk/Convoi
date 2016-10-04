@@ -1,154 +1,70 @@
-__includes["BDI/communication.nls" "BDI/bdi.nls" "astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls" "drone.nls"]
-breed [waypoints waypoint]
-breed [envconstructors envconstructor]
-breed [convois convoi]
-breed [drones drone]
-breed [HQs HQ]
-breed [hostiles hostile]
 breed [drawers drawer]
-breed [bullet]
-
-directed-link-breed [path-links path-link]
-undirected-link-breed [dummy-links dummy-link]
-directed-link-breed [convoi-links convoi-link]
-
-globals [mapAlt solAlt basseAlt hauteAlt ; variables topologiques Z discretise: definit le niveau ou se trouvent toutes les informations de la carte (obstacles base etc.) car en 2D, niveau au sol ou se trouvent les agents, niveau basse altitude et niveau haute altitude
-  base-patches base-entry base-central ; precache: definit ou se trouvent les patchs de la base d'atterrissage, le patch d'entree sur la piste d'atterrissage, et le patch ou doivent s'arreter les drones pour se recharger. Permet d'evaluer rapidement la distance et les besoins des drones (quand ils doivent rentrer a la base)
-  as-cost as-path ; variables globales pour les chemins AStar: le cout d'un pas sur un patch, et as-path est la liste des plans, un pour chaque convoi leader
-  ;max-fuel max-ammo ; fuel and ammo for drones.
-  ;fuel-dec ; how much fuel will be decremented at each iteration
-  mission-completed? mission-failed?
-  send-interval ; communication period
-  is-movie-recording?
-  convoi-position ;; position connu du convoi par les agents hostiles
-  nb-cars
-]
-
-patches-own [obstacle? base? hangar? objectif? bridge? ; variables topologiques au niveau mapAlt, permet de definir les patchs praticables et ceux qui sont des obstacles
-  as-closed as-heuristic as-prev-pos ; variables temporaires pour calculer les chemins AStar (effaces a chaque calcul de plan)
-]
+breed [units unit]
+patches-own [
+  ]
 
 turtles-own [
-  hp ;; [ok = 2, blessé = 1, mort = 0]
-  dead?
-  speed maxdir ; maximal speed of a car, and max angle
-  beliefs intentions
+
 ]
-
-
-;***********************
-;         SETUP
-;***********************
 
 to setup
-  ; The setup generates environments until one of them is acceptable (the convoi can accomplish the mission)
-  let path-is-possible? false
-  while [not path-is-possible?] [
-    clear-all
-    if not debug and not debug-verbose [no-display] ; disable gui display to speedup processing, the time slider won't influence the setup procedure
-    setup-globals
-    setup-env
-    clear-turtles ; reinit the id of the agents
-    setup-convois ;
-    setup-hostiles
-    setup-drones
-
-
-    ifelse nb-cars <= 0 [
-      set path-is-possible? true
-    ]
-    ; generate a path and check is the convoi can reach its destination. If not, generate a new env
-    [
-      let start-path (plan-astar ([[patch-at 0 0 (pzcor * -1)] of patch-here] of one-of convois with [leader?]) (one-of patches with [objectif?]) false)
-      set as-path replace-item 0 as-path start-path
-      if not empty? start-path [ set path-is-possible? true]
-    ]
-  ]
-  if not debug and not debug-verbose [no-display]
-  ;setup-drones
-  ;setup-enemies
-  ;setup-citizens
-;  setup-hq
-
-  setup-precache
-  display ; reenable gui display
+  clear-turtles
+  clear-drawing
   reset-ticks
 
-  set convoi-position []
+  create-units nb-turtles[
+    set shape "circle"
+    set xcor max-pxcor / 2
+    set ycor max-pxcor / 2
+    set heading random 360]
 
-  if debug [
-    ask patches with [pxcor mod 10 = 0 or pycor mod 10 = 0 and pzcor = mapAlt] [
-      set pcolor yellow
-    ]
-    ask patches with [pxcor mod 10 = 0 + 5 and pycor mod 10 = 0 + 5 and pzcor = mapAlt] [
-      set plabel word (word (int (pxcor / 10)) ":") (int (pycor / 10))
-    ]
+  create-drawers 1 [
+
   ]
-end
 
-; Initial parameters
-to setup-globals
-  set nb-cars total-nb-cars
-  set mapAlt 0
-  set solAlt 1
-  set basseAlt (floor max-pzcor / 3 * 2 - 1)
-  set hauteAlt (floor max-pzcor - 1)
-
-  set mission-completed? false
-  set mission-failed? false
-
-  set as-cost 1 ; cost to move
-  set as-path n-values nb-cars [[]] ; max one path for each car
-
-  set send-interval 10 ; in number of steps
-
- ; set dist-R-set []
-
-  set is-movie-recording? false
-end
-
-
-; Precaches places en global variables for static components in order to speed-up the processes.
-to setup-precache
-  set base-patches (patches with [base? and pzcor = mapAlt]) ; precache to speedup things
-  set base-entry max-one-of (base-patches with-min [pycor]) [pxcor]
-  set base-central min-one-of (base-patches with-min [pxcor]) [pycor]
-end
-
-
-;------------------------------------------------------------
-;------------- functions ------------------------------------
-;------------------------------------------------------------
-
-
-
-; Return the 6 neighbours without the world wrap
-to-report neighbors6-nowrap
-; reports neighbors-nowrap-n or the indicated size
-report neighbors6 with
-[ abs (pxcor - [pxcor] of myself) <= 1
-  and abs (pycor - [pycor] of myself) <= 1
-]
 end
 
 to go
-  convois-think
-  hostiles-think
-  hostile-fire
-  ;;print convoi-position
-  update-bullets
-  tick
+  clear-drawing
+  ask units[
+  fd 0.1
 
+    ;pen-down
+  ]
+  draw-range
+  tick
+end
+
+to draw-range
+  clear-drawing
+  ask drawers[
+    let angle 0
+    foreach sort-on [who] turtle-set units[
+      let id ([who] of ?)
+      set angle 0
+
+      set xcor [xcor] of (turtle id) + range
+      set ycor [ycor] of (turtle id)
+      pen-down
+        while [angle < 360] [
+          set xcor cos(angle) * range + [xcor] of (turtle id)
+          set ycor sin(angle) * range + [ycor] of (turtle id)
+          set angle angle + 6
+        ]
+        pen-up
+
+    ]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-0
-0
-1430
-1451
+226
+10
+669
+474
 -1
 -1
-20.0
+8.5
 1
 10
 1
@@ -159,226 +75,31 @@ GRAPHICS-WINDOW
 1
 1
 0
-70
+50
 0
-70
-0
-20
+50
 1
 1
 1
 ticks
 30.0
 
-SWITCH
-20
-310
-123
-343
-debug
-debug
-1
-1
--1000
-
-SWITCH
-21
-349
-167
-382
-debug-verbose
-debug-verbose
-1
-1
--1000
-
-TEXTBOX
-18
-122
-168
-140
-Environnement \n
-12
-0.0
-1
-
 INPUTBOX
-112
-209
-197
-269
-total-nb-cars
-5
+21
+14
+182
+74
+nb-turtles
+2
 1
 0
 Number
 
 BUTTON
-13
-11
-86
-44
-NIL
-setup
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-INPUTBOX
-17
-144
+103
 95
-204
-nb-mountains
-5
-1
-0
-Number
-
-INPUTBOX
-98
-144
-150
-204
-nb-lakes
-2
-1
-0
-Number
-
-INPUTBOX
-162
-143
-226
-203
-nb-rivers
-2
-1
-0
-Number
-
-INPUTBOX
-21
-506
-94
-566
-astar-faster
-20
-1
-0
-Number
-
-INPUTBOX
-99
-506
-197
-566
-astar-max-depth
-10000
-1
-0
-Number
-
-SWITCH
-21
-423
-185
-456
-astar-longpath
-astar-longpath
-1
-1
--1000
-
-SWITCH
-21
-467
-184
-500
-astar-randpath
-astar-randpath
-1
-1
--1000
-
-SWITCH
-193
-466
-355
-499
-astar-visu-more
-astar-visu-more
-1
-1
--1000
-
-SWITCH
-193
-423
-356
-456
-astar-visu
-astar-visu
-0
-1
--1000
-
-SLIDER
-302
-26
-416
-59
-simu-speed
-simu-speed
-0
-10
-4
-1
-1
-NIL
-HORIZONTAL
-
-TEXTBOX
-21
-283
-171
-301
-Debug
-12
-0.0
-1
-
-TEXTBOX
-308
-10
-458
-28
-Simulation
-12
-0.0
-1
-
-TEXTBOX
-24
-397
-174
-415
-A*
-12
-0.0
-1
-
-BUTTON
-92
-12
-155
-45
+166
+128
 NIL
 go
 T
@@ -391,269 +112,33 @@ NIL
 NIL
 1
 
-INPUTBOX
-26
-653
-111
-713
-new-leader-id
-20
-1
-0
-Number
-
 BUTTON
-25
-612
-145
-645
-make new leader
-make-leader new-leader-id astar-longpath
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-TEXTBOX
-24
-587
-107
-605
-New leader
-12
-0.0
-1
-
-INPUTBOX
-154
-649
-231
-709
-regen-path
-20
-1
-0
-Number
-
-BUTTON
-159
-612
-271
-645
-set regen path
-ask convoi regen-path [set regenpath? true]
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-INPUTBOX
 17
-209
-107
-269
-nb-cars-hostile
-3
-1
-0
-Number
-
-TEXTBOX
-208
-284
-358
-302
-bullets\n
-12
-0.0
-1
-
-SLIDER
-320
-309
-456
-342
-bullet-speed
-bullet-speed
-0.01
-.1
-0.09
-0.01
-1
+93
+90
+126
 NIL
-HORIZONTAL
-
-SLIDER
-207
-349
-322
-382
-total-life
-total-life
-30
-200
-56
-1
-1
+setup
 NIL
-HORIZONTAL
-
-MONITOR
-159
-12
-218
-57
-Convois
-count convois
-0
 1
-11
-
-MONITOR
-227
-12
-293
-57
-Hostiles
-count hostiles
-0
-1
-11
-
-MONITOR
-12
-73
-92
-118
-POKERARE
-count convois with [who = total-nb-cars - 1]
-0
-1
-11
-
-SWITCH
-20
-840
-194
-873
-show_messages
-show_messages
-1
-1
--1000
-
-SWITCH
-24
-780
-195
-813
-show-intentions
-show-intentions
-1
-1
--1000
-
-TEXTBOX
-23
-750
-173
-768
-BDI
-12
-0.0
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
 1
 
 SLIDER
-163
-78
-335
-111
-convois-hp
-convois-hp
-2
+14
+164
+186
+197
+range
+range
+0
 100
-2
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-396
-80
-568
-113
-hostiles-hp
-hostiles-hp
-2
-100
-23
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-207
-309
-312
-342
-cooldown
-cooldown
-2
-100
-10
-1
-1
-NIL
-HORIZONTAL
-
-INPUTBOX
-226
-209
-387
-269
-total-nb-drones
-10
-1
-0
-Number
-
-SLIDER
-619
-83
-791
-116
-drones-hp
-drones-hp
-2
-100
-5
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-498
-136
-670
-169
-hostile-range
-hostile-range
-3
-15
-6
+8
 1
 1
 NIL
@@ -662,7 +147,8 @@ HORIZONTAL
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+Test pour essayer d'avoir une turtle qui tourne autour d'une autre selon un range donné,
+dans le but de pouvoir afficher les ranges des unités dans Convoi
 
 ## HOW IT WORKS
 
@@ -705,13 +191,6 @@ airplane
 true
 0
 Polygon -7500403 true true 150 0 135 15 120 60 120 105 15 165 15 195 120 180 135 240 105 270 120 285 150 270 180 285 210 270 165 240 180 180 285 195 285 165 180 105 180 60 165 15
-
-airplane 2
-true
-0
-Polygon -7500403 true true 150 26 135 30 120 60 120 90 18 105 15 135 120 150 120 165 135 210 135 225 150 285 165 225 165 210 180 165 180 150 285 135 282 105 180 90 180 60 165 30
-Line -7500403 true 120 30 180 30
-Polygon -7500403 true true 105 255 120 240 180 240 195 255 180 270 120 270
 
 arrow
 true
@@ -883,26 +362,6 @@ Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
 
-person soldier
-false
-0
-Rectangle -7500403 true true 127 79 172 94
-Polygon -10899396 true false 105 90 60 195 90 210 135 105
-Polygon -10899396 true false 195 90 240 195 210 210 165 105
-Circle -7500403 true true 110 5 80
-Polygon -10899396 true false 105 90 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 195 90
-Polygon -6459832 true false 120 90 105 90 180 195 180 165
-Line -6459832 false 109 105 139 105
-Line -6459832 false 122 125 151 117
-Line -6459832 false 137 143 159 134
-Line -6459832 false 158 179 181 158
-Line -6459832 false 146 160 169 146
-Rectangle -6459832 true false 120 193 180 201
-Polygon -6459832 true false 122 4 107 16 102 39 105 53 148 34 192 27 189 17 172 2 145 0
-Polygon -16777216 true false 183 90 240 15 247 22 193 90
-Rectangle -6459832 true false 114 187 128 208
-Rectangle -6459832 true false 177 187 191 208
-
 plant
 false
 0
@@ -1029,7 +488,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 3D 5.3.1
+NetLogo 5.3.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@

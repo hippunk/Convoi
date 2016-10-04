@@ -67,6 +67,7 @@ to hostiles-think
  ;ifelse empty? convoi-position
  ;[
    random-move-path
+   draw-range
  ;]
  ;[
  ;  let pos last convoi-position
@@ -179,9 +180,9 @@ end
 to hostile-fire
  ask hostiles [
    set cooldown-status max list (cooldown-status  - 1) 0 ;; On diminue le cooldown pour pouvoir tirer 
-   ifelse count convois in-cone 10 170 > 0 [
+   ifelse count convois in-cone hostile-range 170 > 0 [
      add-convoi-position xcor ycor zcor  ;; on enregistre la position du convoi
-     let cible one-of convois in-cone 10 170                                     ;; Pour l'instant la position du convoi n'est pas utilisée
+     let cible one-of convois in-cone hostile-range 170                                     ;; Pour l'instant la position du convoi n'est pas utilisée
      if cooldown-status < 1[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
        set cooldown-status cooldown ;; On met le cooldown au max
        facexy [xcor] of cible [ycor] of cible
@@ -251,5 +252,36 @@ to move-path-position [dest-patch];Ici, l'idée c'est de générer un chemin ver
   ]
 
   set astar-visu tmp-visu
+end
+
+to draw-range
+  clear-drawing
+  create-drawers 1[
+     set color yellow
+  ]
+  
+  ask drawers[
+    let angle 0
+    
+    foreach sort-on [who] turtle-set hostiles with [not dead?] [
+      let id ([who] of ?)
+      set zcor [zcor] of (turtle id)
+      set angle 0
+      
+      set xcor [xcor] of (turtle id) + hostile-range
+      set ycor [ycor] of (turtle id) 
+      pen-down
+        while [angle <= 360] [
+          set xcor cos(angle) * hostile-range + [xcor] of (turtle id)
+          set ycor sin(angle) * hostile-range + [ycor] of (turtle id)
+          set angle angle + 6
+        ]
+        pen-up
+    
+    ]
+    die
+  ]
+  
+  
 end
 

@@ -6,6 +6,8 @@ drones-own[
   genlongpath? ; Should the leader compute a new path (but not shortest) ?
   regenpath? ; doit - on regenerer le path (nouvelle info? ... )
   last-send-time ; communication historical time-stamp
+  ;beliefs tous les agents ont le BDI ?
+  ;intentions
   ]
 
 
@@ -66,4 +68,9 @@ to setup-drones
     ]
 
   ]
+end
+
+to drones-think 
+
+   
 end
