@@ -1,0 +1,69 @@
+drones-own[
+  incoming-queue
+  finished? ; Is the goal reached ?
+  leader?   ; car leading the convoi convoi
+  to-protect? ; Should this car be protected at all cost ?
+  genlongpath? ; Should the leader compute a new path (but not shortest) ?
+  regenpath? ; doit - on regenerer le path (nouvelle info? ... )
+  last-send-time ; communication historical time-stamp
+  ]
+
+
+
+to setup-drones
+  if total-nb-drones > 0 [
+    ; get the size of the base to deploy the car accordingly
+    let base-min-pxcor min [pxcor] of (patches with [base? and pzcor = mapAlt])
+    let base-max-pxcor max [pxcor] of (patches with [base? and pzcor = mapAlt])
+    let base-min-pycor min [pycor] of (patches with [base? and pzcor = mapAlt])
+    let base-max-pycor max [pycor] of (patches with [base? and pzcor = mapAlt])
+
+    ; creation des voitures du convoi et cortege
+    create-drones total-nb-drones
+    print "azertyuiop"
+    ask drones
+    [
+      ; Init apparence NetLogo
+      set shape "airplane 2"
+      ;set color magenta
+
+      ; Init des structures BDI
+      set incoming-queue [] ; Do not change
+
+      ; Init vars convois
+      set speed 0.1 * simu-speed
+      set maxdir 10 * simu-speed
+      set heading 0
+      set roll 0
+      set pitch 0
+      set finished? false
+      set leader? false
+      set to-protect? false
+      set genlongpath? false
+      set dead? false
+      set regenpath? false
+      set hp drones-hp
+
+      ; Visu
+      set label who ; display the car names
+    ]
+    let first-drone min [who] of drones
+    ask drone first-drone [
+      move-to patch base-min-pxcor base-max-pycor 1
+    ]
+    
+    ; deploying the other car
+    if total-nb-drones > 1 [
+      ; ask non leader cars
+      ask turtle-set sort-on [who] drones with [who > first-drone]
+      [
+        let wwho  who - first-drone
+        ifelse (who - 1) mod 2 = 0 [ set xcor base-min-pxcor ] [ set xcor base-min-pxcor + 1 ] ; a gauche ou a droite selon le nombre (pair ou impair respectivement)
+        set ycor base-max-pycor - (floor (wwho / 2) / (total-nb-drones / 2) * (base-max-pycor - base-min-pycor)) ; d'une rangee de plus en plus basse toutes les deux voitures
+        set zcor solAlt
+      ]
+
+    ]
+
+  ]
+end

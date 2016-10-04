@@ -39,7 +39,7 @@ to setup-convois
       set genlongpath? false
       set dead? false
       set regenpath? false
-      set state 2
+      set hp convois-hp
 
       ; Visu
       set label who ; display the car names
@@ -262,12 +262,13 @@ end
 
 ;; Maj de l'etat d'une voiture du convoi quand ellle est touchée
 to toucher
-  set state state - 1
-  set color color - 2
-  if state = 0 [ 
+  set hp hp - 1
+  ;if hp < int (convois-hp / 2) [set color color - 2]
+  if hp = 1 [set color color - 2]
+  if hp = 0 [ 
     set dead? true
     print word (word who) " : Je suis Mort " 
-    set nb-cars nb-cars - 1 ;; ATTENTION < 0
+    set nb-cars nb-cars - 1
     die
   ]
   

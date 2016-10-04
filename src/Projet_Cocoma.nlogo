@@ -1,10 +1,12 @@
-__includes["astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls"]
+__includes["communication.nls" "bdi.nls" "astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls" "drone.nls"]
 breed [waypoints waypoint]
 breed [envconstructors envconstructor]
 breed [convois convoi]
+breed [drones drone]
 breed [HQs HQ]
 breed [hostiles hostile]
 breed [bullet]
+
 directed-link-breed [path-links path-link]
 undirected-link-breed [dummy-links dummy-link]
 directed-link-breed [convoi-links convoi-link]
@@ -26,9 +28,10 @@ patches-own [obstacle? base? hangar? objectif? bridge? ; variables topologiques 
 ]
 
 turtles-own [
-  state ;; [ok = 2, blessé = 1, mort = 0]
+  hp ;; [ok = 2, blessé = 1, mort = 0]
   dead?
   speed maxdir ; maximal speed of a car, and max angle
+  beliefs intentions
 ]
 
 
@@ -47,6 +50,7 @@ to setup
     clear-turtles ; reinit the id of the agents
     setup-convois ;
     setup-hostiles
+    setup-drones
 
 
     ifelse nb-cars <= 0 [
@@ -203,7 +207,7 @@ INPUTBOX
 197
 269
 total-nb-cars
-35
+5
 1
 0
 Number
@@ -473,18 +477,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-50
-1
-0
-Number
-
-INPUTBOX
-205
-308
-266
-368
-cooldown
-20
+10
 1
 0
 Number
@@ -500,10 +493,10 @@ bullets\n
 1
 
 SLIDER
-271
-308
-407
-341
+320
+309
+456
+342
 bullet-speed
 bullet-speed
 0.01
@@ -515,10 +508,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-270
-345
-385
-378
+207
+349
+322
+382
 total-life
 total-life
 30
@@ -561,6 +554,109 @@ count convois with [who = total-nb-cars - 1]
 0
 1
 11
+
+SWITCH
+20
+840
+194
+873
+show_messages
+show_messages
+1
+1
+-1000
+
+SWITCH
+24
+780
+195
+813
+show-intentions
+show-intentions
+1
+1
+-1000
+
+TEXTBOX
+23
+750
+173
+768
+BDI
+12
+0.0
+1
+
+SLIDER
+163
+78
+335
+111
+convois-hp
+convois-hp
+2
+100
+20
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+396
+80
+568
+113
+hostiles-hp
+hostiles-hp
+2
+100
+23
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+207
+309
+312
+342
+cooldown
+cooldown
+2
+100
+10
+1
+1
+NIL
+HORIZONTAL
+
+INPUTBOX
+226
+209
+387
+269
+total-nb-drones
+10
+1
+0
+Number
+
+SLIDER
+619
+83
+791
+116
+drones-hp
+drones-hp
+2
+100
+5
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -608,6 +704,13 @@ airplane
 true
 0
 Polygon -7500403 true true 150 0 135 15 120 60 120 105 15 165 15 195 120 180 135 240 105 270 120 285 150 270 180 285 210 270 165 240 180 180 285 195 285 165 180 105 180 60 165 15
+
+airplane 2
+true
+0
+Polygon -7500403 true true 150 26 135 30 120 60 120 90 18 105 15 135 120 150 120 165 135 210 135 225 150 285 165 225 165 210 180 165 180 150 285 135 282 105 180 90 180 60 165 30
+Line -7500403 true 120 30 180 30
+Polygon -7500403 true true 105 255 120 240 180 240 195 255 180 270 120 270
 
 arrow
 true
