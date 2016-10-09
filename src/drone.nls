@@ -70,6 +70,12 @@ to setup-drones
 end
 
 to drones-think 
-
+  
    
 end
+
+to folow-convoi
+  
+  
+end
+

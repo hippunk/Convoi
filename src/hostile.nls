@@ -77,7 +77,11 @@ to hostiles-think
    let y (item 1 pos) * zone-size + int (zone-size / 2)
    let z item 2 pos
    
-   move-path-position patch x y mapAlt
+   let dest patch x y z
+   if [obstacle?] of dest [
+     set dest min-one-of patches with [obstacle? = false and pzcor = z] [distance dest]
+   ]
+   move-path-position dest
  ]
    ifelse hostile-range-visu? [
      draw-range

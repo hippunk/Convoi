@@ -236,7 +236,7 @@ INPUTBOX
 95
 204
 nb-mountains
-0
+5
 1
 0
 Number
@@ -247,7 +247,7 @@ INPUTBOX
 150
 204
 nb-lakes
-0
+3
 1
 0
 Number
@@ -258,7 +258,7 @@ INPUTBOX
 226
 203
 nb-rivers
-2
+4
 1
 0
 Number
@@ -325,15 +325,15 @@ SWITCH
 456
 astar-visu
 astar-visu
-1
+0
 1
 -1000
 
 SLIDER
-302
-26
-416
-59
+164
+10
+278
+43
 simu-speed
 simu-speed
 0
@@ -350,16 +350,6 @@ TEXTBOX
 171
 301
 Debug
-12
-0.0
-1
-
-TEXTBOX
-308
-10
-458
-28
-Simulation
 12
 0.0
 1
@@ -469,19 +459,19 @@ nb-cars-hostile
 Number
 
 TEXTBOX
-208
-284
-358
-302
-bullets\n
+300
+282
+450
+300
+Bullets\n
 12
 0.0
 1
 
 SLIDER
-320
+415
 309
-456
+551
 342
 bullet-speed
 bullet-speed
@@ -494,25 +484,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-207
+302
 349
-322
+417
 382
 total-life
 total-life
 30
 200
-56
+50
 1
 1
 NIL
 HORIZONTAL
 
 MONITOR
-159
-12
-218
-57
+99
+69
+158
+114
 Convois
 count convois
 0
@@ -520,10 +510,10 @@ count convois
 11
 
 MONITOR
-227
-12
-293
-57
+167
+69
+233
+114
 Hostiles
 count hostiles
 0
@@ -542,10 +532,10 @@ count convois with [who = total-nb-cars - 1]
 11
 
 SWITCH
-20
-840
-194
-873
+279
+674
+453
+707
 show_messages
 show_messages
 1
@@ -553,10 +543,10 @@ show_messages
 -1000
 
 SWITCH
-24
-780
-195
-813
+283
+614
+454
+647
 show-intentions
 show-intentions
 1
@@ -564,10 +554,10 @@ show-intentions
 -1000
 
 TEXTBOX
-23
-750
-173
-768
+282
+584
+432
+602
 BDI
 12
 0.0
@@ -604,9 +594,9 @@ NIL
 HORIZONTAL
 
 SLIDER
-207
+302
 309
-312
+407
 342
 cooldown
 cooldown
@@ -619,10 +609,10 @@ NIL
 HORIZONTAL
 
 INPUTBOX
-226
-209
-387
-269
+206
+210
+296
+270
 total-nb-drones
 3
 1
@@ -652,7 +642,7 @@ SLIDER
 hostile-range
 hostile-range
 3
-15
+20
 10
 1
 1
@@ -660,10 +650,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-434
-207
-626
-240
+371
+465
+563
+498
 hostile-range-visu?
 hostile-range-visu?
 0
@@ -671,10 +661,10 @@ hostile-range-visu?
 -1000
 
 SWITCH
-256
-782
-397
-815
+138
+310
+279
+343
 debug-path
 debug-path
 0
@@ -682,15 +672,45 @@ debug-path
 -1000
 
 SLIDER
-463
-95
-635
-128
+303
+210
+415
+243
 zone-size
 zone-size
 1
 20
-15
+11
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+437
+122
+609
+155
+convoi-range
+convoi-range
+1
+20
+10
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+437
+80
+609
+113
+drone-range
+drone-range
+1
+20
+10
 1
 1
 NIL
