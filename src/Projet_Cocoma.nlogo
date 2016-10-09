@@ -247,7 +247,7 @@ INPUTBOX
 150
 204
 nb-lakes
-3
+4
 1
 0
 Number
@@ -258,7 +258,7 @@ INPUTBOX
 226
 203
 nb-rivers
-4
+3
 1
 0
 Number
@@ -667,7 +667,7 @@ SWITCH
 343
 debug-path
 debug-path
-0
+1
 1
 -1000
 
@@ -680,7 +680,7 @@ zone-size
 zone-size
 1
 20
-11
+10
 1
 1
 NIL

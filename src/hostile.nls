@@ -34,8 +34,8 @@ to setup-hostiles
       set rand-path []
       set finished? true
       set dead? false
-      set cooldown-status 0
-      set is-random-path? true
+      set cooldown-status 0 ;; Rechargement de l'arme
+      set is-random-path? true ;; indique si le chemin est un chemin random ou pas (pas sûr que ce commentaire soit utile)
       
 
       ; Visu
@@ -77,8 +77,10 @@ to hostiles-think
    let y (item 1 pos) * zone-size + int (zone-size / 2)
    let z item 2 pos
    
-   let dest patch x y z
-   if [obstacle?] of dest [
+   let dest patch x y z 
+   if [obstacle?] of dest [ 
+     ;; Si la destination est un obstacle on trouve le patch le plus près qui n'en est pas un
+     ;; Peut-etre plus intelligent de le faire lors de l'ajout a la liste plutot qu'a chaque fois
      set dest min-one-of patches with [obstacle? = false and pzcor = z] [distance dest]
    ]
    move-path-position dest
