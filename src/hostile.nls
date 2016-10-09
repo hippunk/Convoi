@@ -73,16 +73,12 @@ to hostiles-think
  ]
  [
    let pos last convoi-position
-   let x (item 0 pos) * zone-size + int (zone-size / 2)
-   let y (item 1 pos) * zone-size + int (zone-size / 2)
+   let x item 0 pos
+   let y item 1 pos
    let z item 2 pos
    
-   let dest patch x y z 
-   if [obstacle?] of dest [ 
-     ;; Si la destination est un obstacle on trouve le patch le plus près qui n'en est pas un
-     ;; Peut-etre plus intelligent de le faire lors de l'ajout a la liste plutot qu'a chaque fois
-     set dest min-one-of patches with [obstacle? = false and pzcor = z] [distance dest]
-   ]
+   let dest patch x y z
+   print convoi-position
    move-path-position dest
  ]
    ifelse hostile-range-visu? [
@@ -200,7 +196,7 @@ to hostile-fire
    ifelse count convoi-in-range  > 0 [
      let cible one-of convoi-in-range
      ask cible [
-       add-convoi-position xcor ycor zcor ;; on enregistre la position du convoi
+       add-to-convoi-position xcor ycor zcor ;; on enregistre la position du convoi
      ]
        
      if cooldown-status < 1[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
@@ -210,17 +206,35 @@ to hostile-fire
      ]
    ]
    [ ;; si je vois personne dans cette zone je la retire des positions connu du convoi
-     let tmp-list (list int (xcor / 10) int (ycor / 10) zcor)
-     if member? tmp-list convoi-position [
-       set convoi-position remove tmp-list convoi-position
-     ]
+     remove-from-convoi-position xcor ycor zcor
    ]
  ]
 end
+
+to remove-from-convoi-position [xcord ycord zcord]
+  let x int (xcord / zone-size) * zone-size + int (zone-size / 2)
+  let y int (ycord / zone-size) * zone-size + int (zone-size / 2)
+  let dest patch x y zcord 
+   if [obstacle?] of dest [ 
+     ;; Si la destination est un obstacle on trouve le patch le plus près qui n'en est pas un
+     set dest min-one-of patches with [obstacle? = false and pzcor = zcord] [distance dest]
+   ]
+  let tmp-list (list [pxcor] of dest [pycor] of dest [pzcor] of dest)
+  if member? tmp-list convoi-position [
+       set convoi-position remove tmp-list convoi-position
+     ]
+end
  
  
-to add-convoi-position [xcord ycord zcord]
-  let tmp-list (list int (xcord / zone-size) int (ycord / zone-size) zcor)
+to add-to-convoi-position [xcord ycord zcord]
+  let x int (xcord / zone-size) * zone-size + int (zone-size / 2)
+  let y int (ycord / zone-size) * zone-size + int (zone-size / 2)
+  let dest patch x y zcord 
+   if [obstacle?] of dest [ 
+     ;; Si la destination est un obstacle on trouve le patch le plus près qui n'en est pas un
+     set dest min-one-of patches with [obstacle? = false and pzcor = zcord] [distance dest]
+   ]
+  let tmp-list (list [pxcor] of dest [pycor] of dest [pzcor] of dest)
   if not member? tmp-list convoi-position [
        set convoi-position lput tmp-list convoi-position
   ]
@@ -232,8 +246,6 @@ to move-path-position [dest-patch];Ici, l'idée c'est de générer un chemin ver
  
   if debug-path [ 
     ask dest-patch [set pcolor pink]
-    
-    
   ]
   
   
