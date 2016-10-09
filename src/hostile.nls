@@ -3,6 +3,7 @@ hostiles-own[
   rand-path
   cooldown-status
   finished?
+  is-random-path?
   ]
 
 to setup-hostiles
@@ -34,6 +35,7 @@ to setup-hostiles
       set finished? true
       set dead? false
       set cooldown-status 0
+      set is-random-path? true
       
 
       ; Visu
@@ -63,24 +65,23 @@ to hostiles-think
   ;  let start-patch min-one-of (patches with [pzcor = mapAlt and not obstacle?]) [distance ?] ; on s'assure de choisir comme patch de depart un patch libre sans obstacle, sinon quand on split un convoi il se peut qu'il soit sur un obstacle et qu'il ne puisse jamais generer de chemin
   ;  let new-path plan-astar ([patch-at 0 0 (pzcor * -1)] of start-patch) (one-of patches with [base?]) false
   ;]
-  
- ;ifelse empty? convoi-position
- ;[
+ ask patches with [pcolor = pink] [set pcolor black]
+ 
+ ifelse empty? convoi-position
+ [
    random-move-path 
+ ]
+ [
+   let pos last convoi-position
+   let x (item 0 pos) * zone-size + int (zone-size / 2)
+   let y (item 1 pos) * zone-size + int (zone-size / 2)
+   let z item 2 pos
+   
+   move-path-position patch x y mapAlt
+ ]
    ifelse hostile-range-visu? [
      draw-range
    ] [clear-drawing] ;posera problème lors de l'utilisation du bout de code avec d'autres unitées
-   
- ;]
- ;[
- ;  let pos last convoi-position
- ;  let x (item 0 pos) * 10 + 5
- ;  let y (item 1 pos) * 10 + 5
- ;  let Z item 2 pos
-   
- ;  move-path-position patch x y z
- ;]
-   
 end
 
 ;Hostiles Behaviors
@@ -93,7 +94,7 @@ end
 
 to random-move-path ;Ici, l'idée c'est de générer un chemin vers un patch aléatoire et de s'y rendre
   ;let tmp-plan plan-astar patch-here one-of patches with [pzcor = 0 and not obstacle?] false
-
+  
   let tmp-visu astar-visu
   set astar-visu false
   if nb-cars-hostile > 0 [
@@ -104,7 +105,13 @@ to random-move-path ;Ici, l'idée c'est de générer un chemin vers un patch al�
       if [finished?] of (turtle id) [;si pas de chemin on génère
         let tmp-patch patch ([pxcor] of (turtle id)) ([pycor] of (turtle id))  0
         let tmpplan plan-astar ( tmp-patch ) (one-of patches with [not obstacle? and pzcor = mapAlt]) (false)
-        ask turtle id [set rand-path tmpplan if not empty? rand-path [set finished? false]]
+        ask turtle id [
+          set rand-path tmpplan 
+          if not empty? rand-path [
+            set finished? false
+            set is-random-path? true
+          ]
+        ]
       ]
     ]
 
@@ -183,9 +190,13 @@ end
 to hostile-fire
  ask hostiles [
    set cooldown-status max list (cooldown-status  - 1) 0 ;; On diminue le cooldown pour pouvoir tirer 
-   ifelse count convois in-cone hostile-range 170 > 0 [
-     add-convoi-position xcor ycor zcor  ;; on enregistre la position du convoi
-     let cible one-of convois in-cone hostile-range 170                                     ;; Pour l'instant la position du convoi n'est pas utilisée
+   let convoi-in-range convois in-cone hostile-range 360
+   ifelse count convoi-in-range  > 0 [
+     let cible one-of convoi-in-range
+     ask cible [
+       add-convoi-position xcor ycor zcor ;; on enregistre la position du convoi
+     ]
+       
      if cooldown-status < 1[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
        set cooldown-status cooldown ;; On met le cooldown au max
        facexy [xcor] of cible [ycor] of cible
@@ -193,7 +204,7 @@ to hostile-fire
      ]
    ]
    [ ;; si je vois personne dans cette zone je la retire des positions connu du convoi
-     let tmp-list (list int (xcor / 10) int (ycor / 10) int (zcor / 10))
+     let tmp-list (list int (xcor / 10) int (ycor / 10) zcor)
      if member? tmp-list convoi-position [
        set convoi-position remove tmp-list convoi-position
      ]
@@ -203,7 +214,7 @@ end
  
  
 to add-convoi-position [xcord ycord zcord]
-  let tmp-list (list int (xcor / 10) int (ycor / 10) int (zcor / 10))
+  let tmp-list (list int (xcord / zone-size) int (ycord / zone-size) zcor)
   if not member? tmp-list convoi-position [
        set convoi-position lput tmp-list convoi-position
   ]
@@ -212,19 +223,44 @@ end
 
 to move-path-position [dest-patch];Ici, l'idée c'est de générer un chemin vers un patch aléatoire et de s'y rendre
   ;let tmp-plan plan-astar patch-here one-of patches with [pzcor = 0 and not obstacle?] false
-
+ 
+  if debug-path [ 
+    ask dest-patch [set pcolor pink]
+    
+    
+  ]
+  
+  
   let tmp-visu astar-visu
   set astar-visu false
   if nb-cars-hostile > 0 [
 
     ; Calcul du plan AStar pour chaque hostile ayant atteint son arrivée
-    foreach sort-on [who] turtle-set hostiles with [finished? and not dead?] [
+    foreach sort-on [who] turtle-set hostiles with [(finished? or is-random-path?)  and not dead?] [
       let id ([who] of ?) ;id pour gérer avec astar observer hors turtle context
-      if [finished?] of (turtle id) [;si pas de chemin on génère
-        print word (word (word id) " : je vais en  " ) dest-patch
+      ask turtle id
+      [
+        if not empty? rand-path
+        [
+          let tmp-pos last rand-path
+          let tmp-list (list int ([pxcor] of tmp-pos / zone-size) int ([pycor] of tmp-pos / zone-size) [pzcor] of tmp-pos) 
+          if not member? tmp-list convoi-position [
+            set finished? true
+          ]
+        ]
+      ]
+      
+      if ([finished?] of (turtle id) or [is-random-path?] of (turtle id))[;si pas de chemin on génère
         let tmp-patch patch ([pxcor] of (turtle id)) ([pycor] of (turtle id))  0
         let tmpplan plan-astar ( tmp-patch ) dest-patch (false)
-        ask turtle id [set rand-path tmpplan if not empty? rand-path [set finished? false]]
+        ask turtle id [
+          set rand-path tmpplan 
+          if not empty? rand-path [
+            set finished? false
+            set is-random-path? false 
+          ]
+          
+        ]
       ]
     ]
 

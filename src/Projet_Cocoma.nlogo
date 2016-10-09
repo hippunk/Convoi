@@ -76,13 +76,11 @@ to setup
 
   set convoi-position []
 
-  if debug [
-    ask patches with [pxcor mod 10 = 0 or pycor mod 10 = 0 and pzcor = mapAlt] [
+  if debug-path [
+    ask patches with [pxcor mod zone-size = 0 or pycor mod zone-size = 0 and pzcor = mapAlt] [
       set pcolor yellow
     ]
-    ask patches with [pxcor mod 10 = 0 + 5 and pycor mod 10 = 0 + 5 and pzcor = mapAlt] [
-      set plabel word (word (int (pxcor / 10)) ":") (int (pycor / 10))
-    ]
+
   ]
 end
 
@@ -238,7 +236,7 @@ INPUTBOX
 95
 204
 nb-mountains
-5
+0
 1
 0
 Number
@@ -249,7 +247,7 @@ INPUTBOX
 150
 204
 nb-lakes
-2
+0
 1
 0
 Number
@@ -305,7 +303,7 @@ SWITCH
 500
 astar-randpath
 astar-randpath
-1
+0
 1
 -1000
 
@@ -327,7 +325,7 @@ SWITCH
 456
 astar-visu
 astar-visu
-0
+1
 1
 -1000
 
@@ -465,7 +463,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-20
+2
 1
 0
 Number
@@ -576,10 +574,10 @@ BDI
 1
 
 SLIDER
-163
-78
-335
-111
+247
+119
+419
+152
 convois-hp
 convois-hp
 2
@@ -591,10 +589,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-396
-80
-568
-113
+247
+161
+419
+194
 hostiles-hp
 hostiles-hp
 2
@@ -626,16 +624,16 @@ INPUTBOX
 387
 269
 total-nb-drones
-10
+3
 1
 0
 Number
 
 SLIDER
-619
-83
-791
-116
+245
+80
+417
+113
 drones-hp
 drones-hp
 2
@@ -647,30 +645,56 @@ NIL
 HORIZONTAL
 
 SLIDER
-498
-136
-670
-169
+436
+162
+608
+195
 hostile-range
 hostile-range
 3
 15
-8
+10
 1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-510
+434
 207
-702
+626
 240
 hostile-range-visu?
 hostile-range-visu?
-1
+0
 1
 -1000
+
+SWITCH
+256
+782
+397
+815
+debug-path
+debug-path
+0
+1
+-1000
+
+SLIDER
+463
+95
+635
+128
+zone-size
+zone-size
+1
+20
+15
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?

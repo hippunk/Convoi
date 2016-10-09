@@ -22,7 +22,6 @@ to setup-drones
 
     ; creation des voitures du convoi et cortege
     create-drones total-nb-drones
-    print "azertyuiop"
     ask drones
     [
       ; Init apparence NetLogo
