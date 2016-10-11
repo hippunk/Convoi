@@ -147,3 +147,154 @@ to-report plan-astar [start goal longpath?] ; start et goal sont des patchs
   ; Et on retourne le chemin complet (ou une liste vide si on n'a rien trouve)
   report path
 end
+
+
+
+
+
+
+to-report plan-astar3D [start goal longpath?] ; start et goal sont des patchs
+
+  ; Desactivation du refresh GUI (car calculs internes): Pour etre plus rapide, on dit a NetLogo qu'il peut calculer toute cette fonction sans avoir a updater le GUI (que des calculs internes), comme ca le slider de vitesse n'influencera pas la vitesse de ce code (sinon en slower ca met vraiment beaucoup de temps)
+  if not debug-verbose [no-display]
+
+  ; INIT
+  ; Ajustement du niveau du but par rapport au start, car le plan est en 2D ici
+  let start-pzcor [pzcor] of start
+  ;set goal [patch-at 0 0 ([pzcor] of start - [pzcor] of goal)] of goal
+
+  ; (Re)init des variables AStar sur tous les patchs
+  ;let closed n-values world-height [n-values world-width [0]]
+  ask patches [
+    set as-closed 0 ; sert a savoir si ce patch a deja ete visite. 0 = non visite, 1 = deja visite (et on visite en premier par le chemin optimal comme Djikstra, donc si un noeud a deja ete visite, on est sur qu'il est inutile de le revisiter par un autre chemin puisqu'il sera moins optimal que le premier chemin qui a conduit a ce patch - ceci est assure car on utilise la distance euclidienne a vol d'oiseau qui est une heuristique consistante/monotone, pas juste admissible)
+    set as-heuristic astar-faster * distance-nowrap goal ; si astar-faster > 1 alors on utilise Weighted AStar, ou le chemin est suboptimal avec une limite de cout au plus astar-faster fois supérieur au cout du chemin optimal. (eg: astar-faster = 2 signifie que le chemin sera au pire deux fois moins optimal au pire). Note: si astar-faster = 0 alors h = 0 pour tous les patchs et ca revient à l'algo de Dijkstra.
+  ]
+
+  ; Init de l'algo en utilisant le patch de depart
+  let pos start
+  let h [as-heuristic] of start
+  let g 0
+  let f (g + h)
+
+  ; Init de la liste open (la liste des patchs a explorer) du type [f, g, h, position du patch]
+  let open (list (list f g h pos))
+
+  ; Init des criteres d'arret
+  let found false ; si un chemin a ete trouve
+  let resign false ; si aucun chemin ne peut etre trouve (plus rien dans la liste open)
+  let counter 0 ; si on a visite trop de patchs et que la recherche met trop de temps
+
+  while [not found and not resign] [
+
+    ; Critere d'arret si echec (plus de patch a visiter ou trop de patchs deja visite)
+    ifelse empty? open or (astar-max-depth > 0 and counter > astar-max-depth) [
+      set resign true
+    ]
+    [
+      ; Incremente le counter
+      set counter counter + 1
+
+      ; On reorganise la liste open pour toujours visiter le meilleur patch candidat en premier (celui qui maximise f)
+      set open sort-by [item 0 ?1 < item 0 ?2] open
+      ; Cas particulier: on visite le plus mauvais patch, celui qui minimise f, pour maximiser la longueur du chemin (cool pour tester les drones car l'environnement reste relativement petit)
+      if astar-longpath or longpath? [set open reverse open]
+      ; Autre cas particulier: on visite le chemin au hasard, permet aussi de construire un long chemin (mais moins long) et plus rapidement. C'est un compromis entre l'optimal et la longueur.
+      if astar-randpath [set open shuffle open]
+
+      ; Pop un element de la liste, le meilleur candidat
+      let next first open
+      set open but-first open
+      set pos item 3 next
+      set g item 1 next
+
+      ; Dessin en live du chemin parcouru par astar
+      if debug-verbose [
+      wait 0.01
+      ask pos [ set pcolor red ]
+      ]
+
+      ; Critere d'arret si reussite: on est sur le but donc on a trouve un chemin
+      ifelse pos = goal [
+        set found true
+      ]
+      ; Sinon on va explorer les voisins du patch en cours
+      [
+        ; Expansion du meilleur candidat (expansion = on ajoute les voisins dans la liste open, des noeuds a visiter)
+        ask [neighbors6-nowrap with [as-closed = 0 and not obstacle? and not base?]] of pos [ ; On ne visite que les voisins au meme niveau (astar en 2D, mais on peut etendre ici au 3D facilement!) ET on ne l'a pas deja visite (as-closed = 0) ET il n'y a pas d'obstacle sur ce patch
+          ; Calcul du score f de ce voisin
+          let g2 g + as-cost
+          let h2 as-heuristic
+          let f2 g2 + h2
+
+          ; Ajout dans la liste open des patchs a visiter
+          set open lput (list f2 g2 h2 self) open
+
+          ; Ajout des meta-donnees sur ce patch
+          ;set as-closed min (list ((as-closed + 1) ([as-closed] of pos + 1)) ; Pas necessaire car on est sur qu'on ne visite qu'une fois un noeud dans open, ensuite on lui attribue un nombre dans closed et donc on ne l'ouvrira plus jamais
+          set as-closed ([as-closed] of pos + 1) ; pour savoir que ce patch a deja ete visite + faire astar-visu-more
+          set as-prev-pos pos ; pour backtracker ensuite et trouver le chemin qui mene au but
+        ]
+      ]
+    ]
+  ]
+
+  if debug [print (word "found:" found " - resign:" resign)]
+
+  ; Visualisation de tous les noeuds explores en coloriant selon quand ca a ete explore (score as-closed)
+  if astar-visu-more [
+    let max-closed max [as-closed] of patches ; Récupère la valeur tdval max entre tous les patchs
+    let min-closed min [as-closed] of patches ; Idem pour min tdval
+    if (max-closed != min-closed) [ ; Si on a au moins appris quelquechose (sinon tous les patchs auront la même couleur, ce n'est pas intéressant)
+      ask patches[
+        if debug [set plabel precision as-closed 1]
+        set pcolor (61 + ((as-closed - min-closed) / (max-closed - min-closed)) * 9 )
+      ]
+    ]
+  ]
+
+  ; Extraction du chemin par marche inverse, depuis le goal vers start (grace a as-prev-pos qui memorise depuis quel patch on est arrive a celui en cours, et donc le chemin le plus court puisque l'algo garantie que la premiere exploration est toujours optimale)
+  let path []
+  if not resign [
+    ; On commence du but, goal
+    set pos goal
+    set path lput pos path
+
+    ; Pour la visualisation du chemin, init du premier waypoint
+    if astar-visu [
+      if any? waypoints [
+        ask waypoints [ die ]
+      ]
+      create-waypoints 1 [ hide-turtle move-to [patch-at 0 0 1] of goal ]
+    ]
+
+    ; Tant qu'on a pas reconstruit tout le chemin vers le debut, start
+    ; On va a chaque fois recuperer le noeud parent avec as-prev-pos
+    while [pos != start] [
+
+      ; Visualisation du chemin, on ajoute un lien entre le parent et le noeud en cours
+      if astar-visu [
+        create-waypoints 1 [ hide-turtle move-to [patch-at 0 0 1] of ([as-prev-pos] of pos)
+          create-path-link-to one-of waypoints-on [patch-at 0 0 1] of pos [
+            set color red
+            show-link
+          ]
+        ]
+      ]
+
+      ; Construction inverse du chemin, on ajoute le noeud parent dans le chemin et on va l'explorer
+      ;set pos [min-one-of neighbors6-nowrap [as-closed]] of pos
+      set pos [as-prev-pos] of pos
+      set path lput pos path
+    ]
+
+    ; Chemin construit, on inverse la liste pour qu'elle soit de start a goal au lieu de l'inverse
+    set path reverse path
+    set path but-first path ; on enleve le premier patch, qui est celui sur lequel on est deja
+  ]
+
+  ; Reactivation du refresh GUI
+  display
+
+  ; Et on retourne le chemin complet (ou une liste vide si on n'a rien trouve)
+  report path
+end

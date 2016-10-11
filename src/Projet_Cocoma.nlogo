@@ -133,6 +133,7 @@ to go
 
   convois-think
   hostiles-think
+  drones-think
   hostile-fire
   ;;print convoi-position
   update-bullets
@@ -280,7 +281,7 @@ INPUTBOX
 197
 566
 astar-max-depth
-10000
+1000
 1
 0
 Number
@@ -303,7 +304,7 @@ SWITCH
 500
 astar-randpath
 astar-randpath
-0
+1
 1
 -1000
 
@@ -477,7 +478,7 @@ bullet-speed
 bullet-speed
 0.01
 .1
-0.09
+0.08
 0.01
 1
 NIL
@@ -614,7 +615,7 @@ INPUTBOX
 296
 270
 total-nb-drones
-3
+1
 1
 0
 Number
@@ -667,7 +668,7 @@ SWITCH
 343
 debug-path
 debug-path
-0
+1
 1
 -1000
 
@@ -711,6 +712,21 @@ drone-range
 1
 20
 10
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+440
+212
+620
+245
+drones-max-ammo
+drones-max-ammo
+0
+20
+20
 1
 1
 NIL
@@ -823,9 +839,8 @@ Circle -7500403 true true 0 0 300
 
 circle 2
 false
-0
-Circle -7500403 true true 0 0 300
-Circle -16777216 true false 30 30 240
+3
+Circle -11221820 false false 12 12 277
 
 cow
 false

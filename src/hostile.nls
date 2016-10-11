@@ -78,7 +78,6 @@ to hostiles-think
    let z item 2 pos
    
    let dest patch x y z
-   print convoi-position
    move-path-position dest
  ]
    ifelse hostile-range-visu? [

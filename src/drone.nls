@@ -8,6 +8,13 @@ drones-own[
   last-send-time ; communication historical time-stamp
   ;beliefs tous les agents ont le BDI ?
   ;intentions
+  
+  rand-path
+  
+  ammo
+  cooldown-status
+  armed?
+  
   ]
 
 
@@ -44,7 +51,11 @@ to setup-drones
       set dead? false
       set regenpath? false
       set hp drones-hp
-
+      
+      set cooldown-status 0 ;; Rechargement de l'arme
+      set armed? true
+      set ammo drones-max-ammo
+      set rand-path []
       ; Visu
       set label who ; display the car names
     ]
@@ -70,12 +81,133 @@ to setup-drones
 end
 
 to drones-think 
-  
+  random-move-path-drones
+  drones-fire
    
 end
 
-to folow-convoi
-  
-  
+
+to reload
+  set ammo drones-max-ammo
 end
 
+to drones-fire
+ ask drones [
+   set cooldown-status max list (cooldown-status  - 1) 0 ;; On diminue le cooldown pour pouvoir tirer 
+   let hostiles-in-range hostiles in-cone drone-range 360
+   if count hostiles-in-range  > 0 [
+     let cible one-of hostiles-in-range  
+     if cooldown-status = 0 and ammo > 0[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
+       set cooldown-status cooldown ;; On met le cooldown au max
+       facexy [xcor] of cible [ycor] of cible
+       shoot ;; On tire :-)
+     ]
+   ]
+ ]
+end
+
+
+to random-move-path-drones ;Ici, l'idée c'est de générer un chemin vers un patch aléatoire et de s'y rendre
+  ;let tmp-plan plan-astar patch-here one-of patches with [pzcor = 0 and not obstacle?] false
+  
+  ;let tmp-visu astar-visu
+  ;set astar-visu false
+  if total-nb-drones > 0 [
+
+    ; Calcul du plan AStar pour chaque hostile ayant atteint son arrivée
+    foreach sort-on [who] turtle-set drones with [finished? and not dead?] [
+      let id ([who] of ?) ;id pour gérer avec astar observer hors turtle context
+      if [finished?] of (turtle id) [;si pas de chemin on génère
+        let tmp-patch patch ([pxcor] of (turtle id)) ([pycor] of (turtle id)) ([pzcor] of (turtle id))
+        let goal (one-of patches with [not obstacle?])
+        print goal
+        let tmpplan plan-astar3D ( tmp-patch ) goal (false)
+        ask turtle id [
+          set rand-path tmpplan 
+          if not empty? rand-path [
+            set finished? false
+          ]
+        ]
+      ]
+    ]
+
+      ;Déplacements selon les random-paths
+      ask drones with [not finished? and not dead?] [ ; Tant qu'on n'a pas atteint le but
+
+      ; Recupere le plan AStar
+      if not empty? rand-path [
+        ; Deplacement par waypoints: on se deplace jusqu'au prochain patch du chemin jusqu'à l'atteindre
+        let next-patch first rand-path
+        let zz pzcor
+        set next-patch [patch-at 0 0 0] of next-patch ; mise a niveau de pzcor au cas ou le chemin a ete calculé sur un autre plan
+        ; Deplacement vers le prochain waypoint
+        if next-patch != patch-here [move-drone next-patch false false]
+        ; Si on a atteint ce patch, on le supprime de la liste, et on va donc continuer vers le prochain patch du chemin
+        if patch-here = next-patch [
+          set rand-path remove-item 0 rand-path
+        ]
+      ]
+
+      ; Critere d'arret: on est a cote de l'objectif
+      if empty? rand-path[
+        set finished? true
+      ]
+    ]
+
+
+  ]
+
+  ;set astar-visu tmp-visu
+end
+
+to move-drone [goal slowdown? cortege?]
+  ;show (word "ici:" patch-here " goal:" goal)
+  ; Calcule de l'angle avec la cible
+  let headingFlag heading
+  let pitchFlag pitch
+  ifelse cortege?
+  [ 
+    set headingFlag (towards goal) 
+    set pitchFlag (towards-pitch goal) 
+  ] ; Si c'est un cortege, on veut qu'il suive toujours le leader par le chemin le plus court (surtout en play-mode ou le joueur n'est pas limite par le nowrap)
+  [ 
+    set headingFlag (towards-nowrap goal) 
+    set pitchFlag (towards-pitch-nowrap goal) 
+  ]
+  let dirCorrection subtract-headings headingFlag heading
+  let upCorrection subtract-headings pitchFlag pitch
+  ; Arrondissement de l'angle (on ne veut pas faire de micro tournant)
+  set dirCorrection precision dirCorrection 2
+  set upCorrection precision upCorrection 2
+  ; Limite de l'angle, pour que ce soit plus realiste (la voiture ne peut pas faire un demi-tour sur place!)
+  ifelse dirCorrection > maxdir [ ; limite a droite
+    set dirCorrection maxdir
+  ]
+  [
+    if dirCorrection < maxdir * -1 [ ; limite a gauche
+      set dirCorrection maxdir * -1
+    ]
+  ]
+  
+
+  ; On tourne
+  right dirCorrection
+  ;print upCorrection
+  set pitch pitch + upCorrection
+  
+
+  ; Limite de vitesse pour les voitures-cortege (pour pas qu'elles ne rentrent dans la voiture leader)
+  let tmp-speed speed
+  if slowdown? [
+    if distance-nowrap goal < 1.1 [
+      set tmp-speed tmp-speed / 20
+    ]
+    if distance-nowrap goal < 0.9 [
+      set tmp-speed 0
+    ]
+  ]
+
+  ; Deplacement!
+  ;set pitch 0 ; make sure there's no pitch ever, else the car will disappear in the ground
+  fd tmp-speed ; Avance
+end
