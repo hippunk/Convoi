@@ -140,7 +140,6 @@ end
 
 
 to go
-
   convois-think
   hostiles-think
   drones-think
@@ -335,7 +334,7 @@ SWITCH
 456
 astar-visu
 astar-visu
-0
+1
 1
 -1000
 

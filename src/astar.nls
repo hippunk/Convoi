@@ -255,27 +255,9 @@ to-report plan-astar3D [start goal longpath?] ; start et goal sont des patchs
     set pos goal
     set path lput pos path
 
-    ; Pour la visualisation du chemin, init du premier waypoint
-    if astar-visu [
-      if any? waypoints [
-        ask waypoints [ die ]
-      ]
-      create-waypoints 1 [ hide-turtle move-to [patch-at 0 0 1] of goal ]
-    ]
-
     ; Tant qu'on a pas reconstruit tout le chemin vers le debut, start
     ; On va a chaque fois recuperer le noeud parent avec as-prev-pos
     while [pos != start] [
-
-      ; Visualisation du chemin, on ajoute un lien entre le parent et le noeud en cours
-      if astar-visu [
-        create-waypoints 1 [ hide-turtle move-to [patch-at 0 0 1] of ([as-prev-pos] of pos)
-          create-path-link-to one-of waypoints-on [patch-at 0 0 1] of pos [
-            set color red
-            show-link
-          ]
-        ]
-      ]
 
       ; Construction inverse du chemin, on ajoute le noeud parent dans le chemin et on va l'explorer
       ;set pos [min-one-of neighbors6-nowrap [as-closed]] of pos
