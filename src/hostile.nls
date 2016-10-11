@@ -80,6 +80,7 @@ to hostiles-think
    let dest patch x y z
    move-path-position dest
  ]
+ hostile-fire
    ifelse hostile-range-visu? [
      draw-range
    ] [clear-drawing] ;posera problème lors de l'utilisation du bout de code avec d'autres unitées

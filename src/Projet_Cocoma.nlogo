@@ -129,12 +129,21 @@ report neighbors6 with
 ]
 end
 
+
+to-report neighbors-nowrap
+; reports neighbors-nowrap-n or the indicated size
+report neighbors with
+[ abs (pxcor - [pxcor] of myself) <= 1
+  and abs (pycor - [pycor] of myself) <= 1
+]
+end
+
+
 to go
 
   convois-think
   hostiles-think
   drones-think
-  hostile-fire
   ;;print convoi-position
   update-bullets
 
@@ -454,7 +463,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-2
+5
 1
 0
 Number
@@ -478,7 +487,7 @@ bullet-speed
 bullet-speed
 0.01
 .1
-0.08
+0.09
 0.01
 1
 NIL
@@ -643,8 +652,8 @@ SLIDER
 hostile-range
 hostile-range
 3
-20
-10
+50
+12
 1
 1
 NIL
@@ -681,7 +690,7 @@ zone-size
 zone-size
 1
 20
-10
+6
 1
 1
 NIL
@@ -718,15 +727,30 @@ NIL
 HORIZONTAL
 
 SLIDER
-440
-212
-620
-245
+447
+241
+619
+274
+pas-cercle
+pas-cercle
+1
+12
+12
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+445
+31
+625
+64
 drones-max-ammo
 drones-max-ammo
 0
-20
-20
+50
+5
 1
 1
 NIL
@@ -839,8 +863,9 @@ Circle -7500403 true true 0 0 300
 
 circle 2
 false
-3
-Circle -11221820 false false 12 12 277
+0
+Circle -7500403 true true 0 0 300
+Circle -16777216 true false 30 30 240
 
 cow
 false
