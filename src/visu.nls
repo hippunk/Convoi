@@ -1,0 +1,73 @@
+to draw-range-agent [agent-set]
+  clear-drawing
+  create-drawers 1[
+     set color yellow
+  ]
+
+  ask drawers[
+    let angle 0
+
+    foreach sort-on [who] agent-set with [not dead?] [
+      
+      let id ([who] of ?)
+      let agent turtle id
+      ifelse is-hostile? agent [set color red]
+      [      
+        ifelse is-drone? agent [set color blue]
+        [set color yellow]
+      ]
+
+      set xcor [xcor] of agent ;+ [range] of agent
+      set ycor [ycor] of agent
+      set zcor [zcor] of agent
+      set angle 0
+      pen-down
+
+      while [angle <= 360] [
+        if(cos(angle) * [range] of agent + [xcor] of agent >= 0 and cos(angle) * [range] of agent + [xcor] of agent <= max-pxcor)[
+          set xcor cos(angle) * [range] of agent + [xcor] of agent]
+        if(sin(angle) * [range] of agent + [ycor] of agent >= 0 and sin(angle) * [range] of agent + [ycor] of agent <= max-pycor)[
+          set ycor sin(angle) * [range] of agent + [ycor] of agent]
+        set angle angle + pas-cercle
+      ]
+
+      pen-up
+      set xcor [xcor] of agent ;+ [range] of agent
+      set ycor [ycor] of agent
+      set zcor [zcor] of agent
+      set angle 0
+      pen-down
+
+      while [angle <= 360] [
+        if (cos(angle) * [range] of agent + [xcor] of agent >= 0.0 and cos(angle) * [range] of agent + [xcor] of agent <= max-pxcor)[
+          set xcor cos(angle) * [range] of agent + [xcor] of agent]
+        if(sin(angle) * [range] of agent + [zcor] of agent >= 0.0 and sin(angle) * [range] of agent + [zcor] of agent <= max-pzcor)[
+          set zcor sin(angle) * [range] of agent + [zcor] of agent]
+        set angle angle + pas-cercle
+      ]
+
+
+      pen-up
+      set xcor [xcor] of agent
+      set ycor [ycor] of agent ;+ [range] of agent
+      set zcor [zcor] of agent
+      set angle 0
+      pen-down
+
+      while [angle <= 360] [
+        if(sin(angle) * [range] of agent + [zcor] of agent >= 0.0 and sin(angle) * [range] of agent + [zcor] of agent <= max-pzcor )[
+         set zcor sin(angle) * [range] of agent + [zcor] of agent]
+        if(cos(angle) * [range] of agent + [ycor] of agent >= 0.0 and cos(angle) * [range] of agent + [ycor] of agent <= max-pycor)[
+         set ycor cos(angle) * [range] of agent + [ycor] of agent]
+         set angle angle + pas-cercle
+      ]
+      pen-up
+
+    ]
+
+    die
+  ]
+
+
+
+end

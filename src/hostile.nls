@@ -36,14 +36,15 @@ to setup-hostiles
       set dead? false
       set cooldown-status 0 ;; Rechargement de l'arme
       set is-random-path? true ;; indique si le chemin est un chemin random ou pas (pas sûr que ce commentaire soit utile)
-      
+
+      set range hostile-range
 
       ; Visu
       set label who ; display the car names
     ]
 
     ; deploying the other car
-    
+
     if nb-cars > 1 [
       ; ask non leader cars
       ask turtle-set hostiles
@@ -60,30 +61,29 @@ to setup-hostiles
 end
 
 
-to hostiles-think 
+to hostiles-think
   ;ask hostiles [
   ;  let start-patch min-one-of (patches with [pzcor = mapAlt and not obstacle?]) [distance ?] ; on s'assure de choisir comme patch de depart un patch libre sans obstacle, sinon quand on split un convoi il se peut qu'il soit sur un obstacle et qu'il ne puisse jamais generer de chemin
   ;  let new-path plan-astar ([patch-at 0 0 (pzcor * -1)] of start-patch) (one-of patches with [base?]) false
   ;]
+ ask hostiles [update-hostile-from-ihm]
  ask patches with [pcolor = pink] [set pcolor black]
- 
+
  ifelse empty? convoi-position
  [
-   random-move-path 
+   random-move-path
  ]
  [
    let pos last convoi-position
    let x item 0 pos
    let y item 1 pos
    let z item 2 pos
-   
+
    let dest patch x y z
    move-path-position dest
  ]
  hostile-fire
-   ifelse hostile-range-visu? [
-     draw-range
-   ] [clear-drawing] ;posera problème lors de l'utilisation du bout de code avec d'autres unitées
+
 end
 
 ;Hostiles Behaviors
@@ -96,7 +96,7 @@ end
 
 to random-move-path ;Ici, l'idée c'est de générer un chemin vers un patch aléatoire et de s'y rendre
   ;let tmp-plan plan-astar patch-here one-of patches with [pzcor = 0 and not obstacle?] false
-  
+
   let tmp-visu astar-visu
   set astar-visu false
   if nb-cars-hostile > 0 [
@@ -108,7 +108,7 @@ to random-move-path ;Ici, l'idée c'est de générer un chemin vers un patch al�
         let tmp-patch patch ([pxcor] of (turtle id)) ([pycor] of (turtle id))  0
         let tmpplan plan-astar ( tmp-patch ) (one-of patches with [not obstacle? and pzcor = mapAlt]) (false)
         ask turtle id [
-          set rand-path tmpplan 
+          set rand-path tmpplan
           if not empty? rand-path [
             set finished? false
             set is-random-path? true
@@ -191,14 +191,14 @@ end
 
 to hostile-fire
  ask hostiles [
-   set cooldown-status max list (cooldown-status  - 1) 0 ;; On diminue le cooldown pour pouvoir tirer 
+   set cooldown-status max list (cooldown-status  - 1) 0 ;; On diminue le cooldown pour pouvoir tirer
    let convoi-in-range convois in-cone-nowrap hostile-range 360
    ifelse count convoi-in-range  > 0 [
      let cible one-of convoi-in-range
      ask cible [
        add-to-convoi-position xcor ycor zcor ;; on enregistre la position du convoi
      ]
-       
+
      if cooldown-status < 1[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
        set cooldown-status cooldown ;; On met le cooldown au max
        facexy [xcor] of cible [ycor] of cible
@@ -214,8 +214,8 @@ end
 to remove-from-convoi-position [xcord ycord zcord]
   let x int (xcord / zone-size) * zone-size + int (zone-size / 2)
   let y int (ycord / zone-size) * zone-size + int (zone-size / 2)
-  let dest patch x y zcord 
-   if [obstacle?] of dest [ 
+  let dest patch x y zcord
+   if [obstacle?] of dest [
      ;; Si la destination est un obstacle on trouve le patch le plus près qui n'en est pas un
      set dest min-one-of patches with [obstacle? = false and pzcor = zcord] [distance dest]
    ]
@@ -224,13 +224,13 @@ to remove-from-convoi-position [xcord ycord zcord]
        set convoi-position remove tmp-list convoi-position
      ]
 end
- 
- 
+
+
 to add-to-convoi-position [xcord ycord zcord]
   let x int (xcord / zone-size) * zone-size + int (zone-size / 2)
   let y int (ycord / zone-size) * zone-size + int (zone-size / 2)
-  let dest patch x y zcord 
-   if [obstacle?] of dest [ 
+  let dest patch x y zcord
+   if [obstacle?] of dest [
      ;; Si la destination est un obstacle on trouve le patch le plus près qui n'en est pas un
      set dest min-one-of patches with [obstacle? = false and pzcor = zcord] [distance dest]
    ]
@@ -243,12 +243,12 @@ end
 
 to move-path-position [dest-patch];Ici, l'idée c'est de générer un chemin vers un patch aléatoire et de s'y rendre
   ;let tmp-plan plan-astar patch-here one-of patches with [pzcor = 0 and not obstacle?] false
- 
-  if debug-path [ 
+
+  if debug-path [
     ask dest-patch [set pcolor pink]
   ]
-  
-  
+
+
   let tmp-visu astar-visu
   set astar-visu false
   if nb-cars-hostile > 0 [
@@ -261,23 +261,23 @@ to move-path-position [dest-patch];Ici, l'idée c'est de générer un chemin ver
         if not empty? rand-path
         [
           let tmp-pos last rand-path
-          let tmp-list (list int ([pxcor] of tmp-pos / zone-size) int ([pycor] of tmp-pos / zone-size) [pzcor] of tmp-pos) 
+          let tmp-list (list int ([pxcor] of tmp-pos / zone-size) int ([pycor] of tmp-pos / zone-size) [pzcor] of tmp-pos)
           if not member? tmp-list convoi-position [
             set finished? true
           ]
         ]
       ]
-      
+
       if ([finished?] of (turtle id) or [is-random-path?] of (turtle id))[;si pas de chemin on génère
         let tmp-patch patch ([pxcor] of (turtle id)) ([pycor] of (turtle id))  0
         let tmpplan plan-astar ( tmp-patch ) dest-patch (false)
         ask turtle id [
-          set rand-path tmpplan 
+          set rand-path tmpplan
           if not empty? rand-path [
             set finished? false
-            set is-random-path? false 
+            set is-random-path? false
           ]
-          
+
         ]
       ]
     ]
@@ -311,70 +311,69 @@ to move-path-position [dest-patch];Ici, l'idée c'est de générer un chemin ver
   set astar-visu tmp-visu
 end
 
-to draw-range
-  clear-drawing
-  create-drawers 1[
-     set color yellow
-  ]
-  
-  ask drawers[
-    let angle 0
-    
-    foreach sort-on [who] turtle-set hostiles with [not dead?] [
-      let id ([who] of ?)
-      
-      set xcor [xcor] of (turtle id) ;+ hostile-range
-      set ycor [ycor] of (turtle id)
-      set zcor [zcor] of (turtle id) 
-      set angle 0
-      pen-down
-        
-      while [angle <= 360] [
-        if(cos(angle) * hostile-range + [xcor] of (turtle id) >= 0 and cos(angle) * hostile-range + [xcor] of (turtle id) <= max-pxcor)[
-          set xcor cos(angle) * hostile-range + [xcor] of (turtle id)]
-        if(sin(angle) * hostile-range + [ycor] of (turtle id) >= 0 and sin(angle) * hostile-range + [ycor] of (turtle id) <= max-pycor)[
-          set ycor sin(angle) * hostile-range + [ycor] of (turtle id)]
-        set angle angle + pas-cercle
-      ]
-      
-      pen-up  
-      set xcor [xcor] of (turtle id) ;+ hostile-range
-      set ycor [ycor] of (turtle id) 
-      set zcor [zcor] of (turtle id) 
-      set angle 0
-      pen-down  
-      
-      while [angle <= 360] [
-        if (cos(angle) * hostile-range + [xcor] of (turtle id) >= 0.0 and cos(angle) * hostile-range + [xcor] of (turtle id) <= max-pxcor)[
-          set xcor cos(angle) * hostile-range + [xcor] of (turtle id)]
-        if(sin(angle) * hostile-range + [zcor] of (turtle id) >= 0.0 and sin(angle) * hostile-range + [zcor] of (turtle id) <= max-pzcor)[
-          set zcor sin(angle) * hostile-range + [zcor] of (turtle id)]
-        set angle angle + pas-cercle
-      ]
-          
-          
-      pen-up
-      set xcor [xcor] of (turtle id)
-      set ycor [ycor] of (turtle id) ;+ hostile-range
-      set zcor [zcor] of (turtle id) 
-      set angle 0
-      pen-down      
-                    
-      while [angle <= 360] [
-        if(sin(angle) * hostile-range + [zcor] of (turtle id) >= 0.0 and sin(angle) * hostile-range + [zcor] of (turtle id) <= max-pzcor )[
-         set zcor sin(angle) * hostile-range + [zcor] of (turtle id)]
-        if(cos(angle) * hostile-range + [ycor] of (turtle id) >= 0.0 and cos(angle) * hostile-range + [ycor] of (turtle id) <= max-pycor)[
-         set ycor cos(angle) * hostile-range + [ycor] of (turtle id)]
-         set angle angle + pas-cercle
-      ]
-      pen-up
-    
-    ]
-    
-    die
-  ]
-  
-  
-  
-end
+;to draw-range
+  ;clear-drawing
+  ;create-drawers 1[
+     ;set color yellow
+  ;]
+;  
+  ;ask drawers[
+    ;let angle 0
+;    
+    ;foreach sort-on [who] turtle-set hostiles with [not dead?] [
+      ;let id ([who] of ?)
+;      
+      ;set xcor [xcor] of (turtle id) ;+ hostile-range
+      ;set ycor [ycor] of (turtle id)
+      ;set zcor [zcor] of (turtle id) 
+      ;set angle 0
+      ;pen-down
+;        
+      ;while [angle <= 360] [
+;        if(cos(angle) * hostile-range + [xcor] of (turtle id) >= 0 and cos(angle) * hostile-range + [xcor] of (turtle ;id) <= max-pxcor)[
+          ;set xcor cos(angle) * hostile-range + [xcor] of (turtle id)]
+;        if(sin(angle) * hostile-range + [ycor] of (turtle id) >= 0 and sin(angle) * hostile-range + [ycor] of (turtle ;id) <= max-pycor)[
+          ;set ycor sin(angle) * hostile-range + [ycor] of (turtle id)]
+        ;set angle angle + pas-cercle
+      ;]
+;      
+      ;pen-up  
+      ;set xcor [xcor] of (turtle id) ;+ hostile-range
+      ;set ycor [ycor] of (turtle id) 
+      ;set zcor [zcor] of (turtle id) 
+      ;set angle 0
+      ;pen-down  
+;      
+      ;while [angle <= 360] [
+;        if (cos(angle) * hostile-range + [xcor] of (turtle id) >= 0.0 and cos(angle) * hostile-range + [xcor] of ;(turtle id) <= max-pxcor)[
+          ;set xcor cos(angle) * hostile-range + [xcor] of (turtle id)]
+;        if(sin(angle) * hostile-range + [zcor] of (turtle id) >= 0.0 and sin(angle) * hostile-range + [zcor] of (turtle ;id) <= max-pzcor)[
+          ;set zcor sin(angle) * hostile-range + [zcor] of (turtle id)]
+        ;set angle angle + pas-cercle
+      ;]
+;          
+;          
+      ;pen-up
+      ;set xcor [xcor] of (turtle id)
+      ;set ycor [ycor] of (turtle id) ;+ hostile-range
+      ;set zcor [zcor] of (turtle id) 
+      ;set angle 0
+      ;pen-down      
+;                    
+      ;while [angle <= 360] [
+;        if(sin(angle) * hostile-range + [zcor] of (turtle id) >= 0.0 and sin(angle) * hostile-range + [zcor] of (turtle ;id) <= max-pzcor )[
+         ;set zcor sin(angle) * hostile-range + [zcor] of (turtle id)]
+;        if(cos(angle) * hostile-range + [ycor] of (turtle id) >= 0.0 and cos(angle) * hostile-range + [ycor] of (turtle ;id) <= max-pycor)[
+         ;set ycor cos(angle) * hostile-range + [ycor] of (turtle id)]
+         ;set angle angle + pas-cercle
+      ;]
+;      pen-up
+;    ]
+;    die
+;  ]
+;end
 
+
+to update-hostile-from-ihm
+  set range hostile-range
+end

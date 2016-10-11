@@ -52,6 +52,8 @@ to setup-drones
       set regenpath? false
       set hp drones-hp
       
+      set range drone-range
+      
       set cooldown-status 0 ;; Rechargement de l'arme
       set armed? true
       set ammo drones-max-ammo
@@ -81,6 +83,7 @@ to setup-drones
 end
 
 to drones-think 
+  ask drones [update-drone-from-ihm]
   random-move-path-drones
   drones-fire
    
@@ -206,4 +209,8 @@ to move-drone [goal slowdown? cortege?]
   ; Deplacement!
   ;set pitch 0 ; make sure there's no pitch ever, else the car will disappear in the ground
   fd tmp-speed ; Avance
+end
+
+to update-drone-from-ihm
+  set range drone-range
 end

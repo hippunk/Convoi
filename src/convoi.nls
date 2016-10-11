@@ -40,6 +40,7 @@ to setup-convois
       set dead? false
       set regenpath? false
       set hp convois-hp
+      set range convoi-range
 
       ; Visu
       set label who ; display the car names
@@ -87,7 +88,7 @@ end
 to convois-think
 
   if nb-cars > 0 [
-
+    update-convoi-from-ihm
     let first-car min [who] of convois
 
     ; Calcul du plan AStar pour chaque leader si necessaire
@@ -272,4 +273,8 @@ to toucher
     die
   ]
   
+end
+
+to update-convoi-from-ihm
+
 end

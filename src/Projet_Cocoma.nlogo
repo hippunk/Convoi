@@ -1,4 +1,4 @@
-__includes["BDI/communication.nls" "BDI/bdi.nls" "astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls" "drone.nls"]
+__includes["BDI/communication.nls" "BDI/bdi.nls" "astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls" "drone.nls" "visu.nls"]
 breed [waypoints waypoint]
 breed [envconstructors envconstructor]
 breed [convois convoi]
@@ -33,6 +33,7 @@ turtles-own [
   dead?
   speed maxdir ; maximal speed of a car, and max angle
   beliefs intentions
+  range
 ]
 
 
@@ -145,7 +146,11 @@ to go
   drones-think
   ;;print convoi-position
   update-bullets
+  let agent-set turtles with [who = -1]
+  if hostile-range-visu? [set agent-set (turtle-set agent-set hostiles)]
+  if drone-range-visu? [set agent-set (turtle-set agent-set drones)]
 
+  draw-range-agent (turtle-set drones hostiles)
   tick
 
 end
@@ -652,7 +657,7 @@ hostile-range
 hostile-range
 3
 50
-12
+13
 1
 1
 NIL
@@ -704,7 +709,7 @@ convoi-range
 convoi-range
 1
 20
-10
+12
 1
 1
 NIL
@@ -719,7 +724,7 @@ drone-range
 drone-range
 1
 20
-10
+9
 1
 1
 NIL
@@ -734,7 +739,7 @@ pas-cercle
 pas-cercle
 1
 12
-12
+11
 1
 1
 NIL
@@ -754,6 +759,17 @@ drones-max-ammo
 1
 NIL
 HORIZONTAL
+
+SWITCH
+381
+428
+567
+461
+drone-range-visu?
+drone-range-visu?
+0
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?
