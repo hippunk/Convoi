@@ -192,7 +192,7 @@ end
 to hostile-fire
  ask hostiles [
    set cooldown-status max list (cooldown-status  - 1) 0 ;; On diminue le cooldown pour pouvoir tirer 
-   let convoi-in-range convois in-cone hostile-range 360
+   let convoi-in-range convois in-cone-nowrap hostile-range 360
    ifelse count convoi-in-range  > 0 [
      let cible one-of convoi-in-range
      ask cible [
@@ -323,43 +323,49 @@ to draw-range
     foreach sort-on [who] turtle-set hostiles with [not dead?] [
       let id ([who] of ?)
       
-      set xcor [xcor] of (turtle id) + hostile-range
+      set xcor [xcor] of (turtle id) ;+ hostile-range
       set ycor [ycor] of (turtle id)
       set zcor [zcor] of (turtle id) 
       set angle 0
       pen-down
         
       while [angle <= 360] [
-        set xcor cos(angle) * hostile-range + [xcor] of (turtle id)
-        set ycor sin(angle) * hostile-range + [ycor] of (turtle id)
-        set angle angle + 6
+        if(cos(angle) * hostile-range + [xcor] of (turtle id) >= 0 and cos(angle) * hostile-range + [xcor] of (turtle id) <= max-pxcor)[
+          set xcor cos(angle) * hostile-range + [xcor] of (turtle id)]
+        if(sin(angle) * hostile-range + [ycor] of (turtle id) >= 0 and sin(angle) * hostile-range + [ycor] of (turtle id) <= max-pycor)[
+          set ycor sin(angle) * hostile-range + [ycor] of (turtle id)]
+        set angle angle + pas-cercle
       ]
       
       pen-up  
-      set xcor [xcor] of (turtle id) + hostile-range
+      set xcor [xcor] of (turtle id) ;+ hostile-range
       set ycor [ycor] of (turtle id) 
       set zcor [zcor] of (turtle id) 
       set angle 0
       pen-down  
       
       while [angle <= 360] [
-          set xcor cos(angle) * hostile-range + [xcor] of (turtle id)
-          set zcor sin(angle) * hostile-range + [zcor] of (turtle id)
-        set angle angle + 6
+        if (cos(angle) * hostile-range + [xcor] of (turtle id) >= 0.0 and cos(angle) * hostile-range + [xcor] of (turtle id) <= max-pxcor)[
+          set xcor cos(angle) * hostile-range + [xcor] of (turtle id)]
+        if(sin(angle) * hostile-range + [zcor] of (turtle id) >= 0.0 and sin(angle) * hostile-range + [zcor] of (turtle id) <= max-pzcor)[
+          set zcor sin(angle) * hostile-range + [zcor] of (turtle id)]
+        set angle angle + pas-cercle
       ]
           
           
       pen-up
       set xcor [xcor] of (turtle id)
-      set ycor [ycor] of (turtle id) + hostile-range
+      set ycor [ycor] of (turtle id) ;+ hostile-range
       set zcor [zcor] of (turtle id) 
       set angle 0
       pen-down      
                     
       while [angle <= 360] [
-         set zcor sin(angle) * hostile-range + [zcor] of (turtle id)
-         set ycor cos(angle) * hostile-range + [ycor] of (turtle id)
-         set angle angle + 6
+        if(sin(angle) * hostile-range + [zcor] of (turtle id) >= 0.0 and sin(angle) * hostile-range + [zcor] of (turtle id) <= max-pzcor )[
+         set zcor sin(angle) * hostile-range + [zcor] of (turtle id)]
+        if(cos(angle) * hostile-range + [ycor] of (turtle id) >= 0.0 and cos(angle) * hostile-range + [ycor] of (turtle id) <= max-pycor)[
+         set ycor cos(angle) * hostile-range + [ycor] of (turtle id)]
+         set angle angle + pas-cercle
       ]
       pen-up
     
