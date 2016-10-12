@@ -216,7 +216,7 @@ to-report plan-astar3D [start goal longpath?] ; start et goal sont des patchs
       ; Sinon on va explorer les voisins du patch en cours
       [
         ; Expansion du meilleur candidat (expansion = on ajoute les voisins dans la liste open, des noeuds a visiter)
-        ask [neighbors-nowrap with [as-closed = 0 and not obstacle? and not base?]] of pos [ ; On ne visite que les voisins au meme niveau (astar en 2D, mais on peut etendre ici au 3D facilement!) ET on ne l'a pas deja visite (as-closed = 0) ET il n'y a pas d'obstacle sur ce patch
+        ask [neighbors-nowrap with [as-closed = 0 and not obstacle? and not base? and not sol?]] of pos [ ; On ne visite que les voisins au meme niveau (astar en 2D, mais on peut etendre ici au 3D facilement!) ET on ne l'a pas deja visite (as-closed = 0) ET il n'y a pas d'obstacle sur ce patch
           ; Calcul du score f de ce voisin
           let g2 g + as-cost
           let h2 as-heuristic

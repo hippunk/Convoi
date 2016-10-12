@@ -61,6 +61,8 @@ to setup-drones
       set rand-path []
       ; Visu
       set label who ; display the car names
+      
+      set size 3
     ]
     let first-drone min [who] of drones
     ask drone first-drone [
@@ -103,7 +105,7 @@ to drones-fire
      let cible one-of hostiles-in-range  
      if cooldown-status = 0 and ammo > 0[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
        set cooldown-status cooldown ;; On met le cooldown au max
-       facexy [xcor] of cible [ycor] of cible
+       facexyz [xcor] of cible [ycor] of cible [zcor] of cible
        shoot ;; On tire :-)
      ]
    ]
@@ -122,7 +124,6 @@ to random-move-path-drones ;Ici, l'idée c'est de générer un chemin vers un pa
       if [finished?] of (turtle id) [;si pas de chemin on génère
         let tmp-patch patch ([pxcor] of (turtle id)) ([pycor] of (turtle id)) ([pzcor] of (turtle id))
         let goal (one-of patches with [not obstacle?])
-        print goal
         let tmpplan plan-astar3D ( tmp-patch ) goal (false)
         ask turtle id [
           set rand-path tmpplan 
@@ -215,4 +216,18 @@ end
 to update-drone-from-ihm
   set range drone-range
   set range-color drone-range-color
+end
+
+
+;; Maj de l'etat d'une voiture du convoi quand ellle est touchée
+to toucher-drone
+  set hp hp - 1
+  if hp = 5 [set color color - 2]
+  if hp = 0 [ 
+    set dead? true
+    print word (word breed " ") (word (word who) " : Je suis Mort " )
+    set nb-cars nb-cars - 1
+    die
+  ]
+  
 end

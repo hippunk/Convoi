@@ -24,7 +24,7 @@ globals [mapAlt solAlt basseAlt hauteAlt ; variables topologiques Z discretise: 
   nb-cars
 ]
 
-patches-own [obstacle? base? hangar? objectif? bridge? ; variables topologiques au niveau mapAlt, permet de definir les patchs praticables et ceux qui sont des obstacles
+patches-own [obstacle? base? hangar? objectif? bridge? sol?; variables topologiques au niveau mapAlt, permet de definir les patchs praticables et ceux qui sont des obstacles
   as-closed as-heuristic as-prev-pos ; variables temporaires pour calculer les chemins AStar (effaces a chaque calcul de plan)
 ]
 
@@ -137,6 +137,7 @@ to-report neighbors-nowrap
 report neighbors with
 [ abs (pxcor - [pxcor] of myself) <= 1
   and abs (pycor - [pycor] of myself) <= 1
+  and abs (pzcor - [pzcor] of myself) <= 1
 ]
 end
 
@@ -629,7 +630,7 @@ INPUTBOX
 296
 270
 total-nb-drones
-1
+5
 1
 0
 Number
@@ -671,7 +672,7 @@ SWITCH
 498
 hostile-range-visu?
 hostile-range-visu?
-0
+1
 1
 -1000
 
@@ -768,7 +769,7 @@ SWITCH
 461
 drone-range-visu?
 drone-range-visu?
-0
+1
 1
 -1000
 
@@ -779,8 +780,8 @@ CHOOSER
 127
 drone-range-color
 drone-range-color
-"red" "yellow" "blue"
-0
+"red" "yellow" "blue" "gray" "orange" "brown" "lime" "turquoise" "cyan" "sky" "violet" "magenta" "pink"
+1
 
 CHOOSER
 638
@@ -789,8 +790,8 @@ CHOOSER
 177
 hostile-range-color
 hostile-range-color
-"red" "yellow" "blue"
-1
+"red" "yellow" "blue" "gray" "orange" "brown" "lime" "turquoise" "cyan" "sky" "violet" "magenta" "pink"
+12
 
 @#$#@#$#@
 ## WHAT IS IT?

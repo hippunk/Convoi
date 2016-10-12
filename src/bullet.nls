@@ -16,15 +16,22 @@ end
 to update-bullets
   ask bullet [
     if life = 0 [die] 
-    
-    ;if pcolor <= grey + 2 and  pcolor >= grey - 2 [die] ;; si je touche un obstacle je die
-     if [obstacle?] of patch-here [die] ;; A CHANGER Les drones tirs a travers le sol
+     if [obstacle?] of patch-here or zcor = 0 [die] ;; A CHANGER Les drones tirs a travers le sol
     fd bullet-speed * simu-speed ;; deplacement de la balle
     if any? convois-here [ ;; si la balle est sur le meme patch qu'un convoi OU DRONE!!!!!!
-      ask convois-on patch-here [toucher] ;; Le convoi est touché
+      ask convois-on patch-here [toucher-convoi] ;; Le convoi est touché
       die ;; la balle est détruite 
-    ]  
+    ] 
+    if any? drones-here [
+      ask drones-on patch-here [toucher-drone]
+      die ;; la balle est détruite 
+    ] 
+    if any? hostiles-here [
+      ask hostiles-on patch-here [toucher-hostile]
+      die ;; la balle est détruite 
+    ] 
     set life life - 1
     set label life
   ]
 end
+

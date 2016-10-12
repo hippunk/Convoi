@@ -201,7 +201,7 @@ to hostile-fire
 
      if cooldown-status < 1[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
        set cooldown-status cooldown ;; On met le cooldown au max
-       facexy [xcor] of cible [ycor] of cible
+       facexyz [xcor] of cible [ycor] of cible [zcor] of cible
        shoot ;; On tire :-)
      ]
    ]
@@ -377,4 +377,18 @@ end
 to update-hostile-from-ihm
   set range hostile-range
   set range-color hostile-range-color
+end
+
+
+;; Maj de l'etat d'une voiture du convoi quand ellle est touchée
+to toucher-hostile
+  set hp hp - 1
+  if hp = 5 [set color color - 2]
+  if hp = 0 [ 
+    set dead? true
+    print word (word breed " ") (word (word who) " : Je suis Mort " )
+    set nb-cars nb-cars - 1
+    die
+  ]
+  
 end

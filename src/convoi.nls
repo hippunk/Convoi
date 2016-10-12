@@ -1,4 +1,5 @@
-convois-own[incoming-queue
+convois-own[
+  incoming-queue
   finished? ; Is the goal reached ?
   leader?   ; car leading the convoi convoi
   to-protect? ; Should this car be protected at all cost ?
@@ -262,13 +263,12 @@ end
 
 
 ;; Maj de l'etat d'une voiture du convoi quand ellle est touchée
-to toucher
+to toucher-convoi
   set hp hp - 1
-  ;if hp < int (convois-hp / 2) [set color color - 2]
-  if hp = 1 [set color color - 2]
+  if hp = 5 [set color color - 2]
   if hp = 0 [ 
     set dead? true
-    print word (word who) " : Je suis Mort " 
+    print word (word breed " ") (word (word who) " : Je suis Mort " )
     set nb-cars nb-cars - 1
     die
   ]
