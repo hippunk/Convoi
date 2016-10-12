@@ -38,7 +38,7 @@ to setup-hostiles
       set is-random-path? true ;; indique si le chemin est un chemin random ou pas (pas sûr que ce commentaire soit utile)
 
       set range hostile-range
-
+      set range-color hostile-range-color
       ; Visu
       set label who ; display the car names
     ]
@@ -376,4 +376,5 @@ end
 
 to update-hostile-from-ihm
   set range hostile-range
+  set range-color hostile-range-color
 end

@@ -11,11 +11,8 @@ to draw-range-agent [agent-set]
       
       let id ([who] of ?)
       let agent turtle id
-      ifelse is-hostile? agent [set color red]
-      [      
-        ifelse is-drone? agent [set color blue]
-        [set color yellow]
-      ]
+      
+      set color (read-from-string ([range-color] of agent))
 
       set xcor [xcor] of agent ;+ [range] of agent
       set ycor [ycor] of agent

@@ -53,6 +53,7 @@ to setup-drones
       set hp drones-hp
       
       set range drone-range
+      set range-color drone-range-color
       
       set cooldown-status 0 ;; Rechargement de l'arme
       set armed? true
@@ -213,4 +214,5 @@ end
 
 to update-drone-from-ihm
   set range drone-range
+  set range-color drone-range-color
 end

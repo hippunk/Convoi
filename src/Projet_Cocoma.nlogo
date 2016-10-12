@@ -34,6 +34,7 @@ turtles-own [
   speed maxdir ; maximal speed of a car, and max angle
   beliefs intentions
   range
+  range-color
 ]
 
 
@@ -771,6 +772,26 @@ drone-range-visu?
 1
 -1000
 
+CHOOSER
+632
+82
+785
+127
+drone-range-color
+drone-range-color
+"red" "yellow" "blue"
+0
+
+CHOOSER
+638
+132
+797
+177
+hostile-range-color
+hostile-range-color
+"red" "yellow" "blue"
+1
+
 @#$#@#$#@
 ## WHAT IS IT?
 
@@ -1159,5 +1180,5 @@ Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 
 @#$#@#$#@
-0
+1
 @#$#@#$#@
