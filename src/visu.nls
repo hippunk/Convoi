@@ -68,3 +68,12 @@ to draw-range-agent [agent-set]
 
 
 end
+
+
+to print_log_com [agent str]
+  if debug-com 
+  [
+    print word (word breed " ") (word (word [who] of agent) str )
+  ]
+  
+end

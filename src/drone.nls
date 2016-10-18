@@ -52,6 +52,7 @@ to setup-drones
       set regenpath? false
       set hp drones-hp
       
+      set range-visu drone-range
       set range drone-range
       set range-color drone-range-color
       

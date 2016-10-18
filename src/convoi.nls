@@ -41,6 +41,7 @@ to setup-convois
       set dead? false
       set regenpath? false
       set hp convois-hp
+      set range-visu convoi-range
       set range convoi-range
 
       ; Visu
@@ -89,6 +90,20 @@ end
 to convois-think
 
   if nb-cars > 0 [
+    if ticks = 100 [
+    ask convois with [leader?] [
+      demande-split who + 1
+    ]   
+    
+  ]
+     ask convois [
+       
+       if not empty? incoming-queue [
+         ;  print "You've got a mail"
+         let msg get-message
+         receive-demande-split msg
+       ]
+     ]
     update-convoi-from-ihm
     let first-car min [who] of convois
 
@@ -276,5 +291,40 @@ to toucher-convoi
 end
 
 to update-convoi-from-ihm
+  
+end
+
+
+to demande-split [nLeader_id]
+  let id who
+  
+  
+  let recvs (convois in-cone range 360 with [who != id])
+  let msg create-message "request"
+  set msg add-multiple-receivers (sort-on [who] recvs) msg
+  set msg add-content nLeader_id msg
+  set msg add-field msg "subject : " "newLeader"
+  
+  send msg
+  
+end
+
+to receive-demande-split [msg]
+  let id who 
+  
+  let content get-content msg
+  ifelse id = content
+  [
+    print_log_com turtle id " : je suis le nouveau leader"
+    set leader? true
+    set genlongpath? true
+    set regenpath? true
+    remove-convoi-links-between id id - 1
+  ]
+  [
+   ;; FORWARD 
+  ]
+  
+  
   
 end

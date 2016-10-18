@@ -34,6 +34,7 @@ turtles-own [
   speed maxdir ; maximal speed of a car, and max angle
   beliefs intentions
   range
+  range-visu
   range-color
 ]
 
@@ -143,6 +144,7 @@ end
 
 
 to go
+
   convois-think
   hostiles-think
   drones-think
@@ -341,7 +343,7 @@ SWITCH
 456
 astar-visu
 astar-visu
-1
+0
 1
 -1000
 
@@ -469,7 +471,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-5
+0
 1
 0
 Number
@@ -630,7 +632,7 @@ INPUTBOX
 296
 270
 total-nb-drones
-5
+0
 1
 0
 Number
@@ -791,7 +793,18 @@ CHOOSER
 hostile-range-color
 hostile-range-color
 "red" "yellow" "blue" "gray" "orange" "brown" "lime" "turquoise" "cyan" "sky" "violet" "magenta" "pink"
-12
+6
+
+SWITCH
+180
+370
+317
+403
+debug-com
+debug-com
+0
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?

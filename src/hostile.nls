@@ -36,7 +36,8 @@ to setup-hostiles
       set dead? false
       set cooldown-status 0 ;; Rechargement de l'arme
       set is-random-path? true ;; indique si le chemin est un chemin random ou pas (pas sûr que ce commentaire soit utile)
-
+      
+      set range-visu hostile-range
       set range hostile-range
       set range-color hostile-range-color
       ; Visu
@@ -375,6 +376,7 @@ end
 
 
 to update-hostile-from-ihm
+  
   set range hostile-range
   set range-color hostile-range-color
 end
