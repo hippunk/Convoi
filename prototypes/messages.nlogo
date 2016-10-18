@@ -25,6 +25,7 @@ to setup
     set ycor random-ycor
     set heading random 360
   ]
+  draw-range
 
 
 end
@@ -178,7 +179,7 @@ range
 range
 1
 20
-7
+1
 1
 1
 NIL
