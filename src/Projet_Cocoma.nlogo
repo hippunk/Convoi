@@ -487,10 +487,10 @@ Bullets\n
 1
 
 SLIDER
-415
-309
-551
-342
+435
+310
+571
+343
 bullet-speed
 bullet-speed
 0.01
@@ -502,15 +502,15 @@ NIL
 HORIZONTAL
 
 SLIDER
-302
-349
-417
-382
+322
+350
+437
+383
 total-life
 total-life
 30
 200
-50
+49
 1
 1
 NIL
@@ -605,17 +605,17 @@ hostiles-hp
 hostiles-hp
 2
 100
-23
+39
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-302
-309
-407
-342
+322
+310
+427
+343
 cooldown
 cooldown
 2
@@ -632,7 +632,7 @@ INPUTBOX
 296
 270
 total-nb-drones
-0
+2
 1
 0
 Number
@@ -743,7 +743,7 @@ pas-cercle
 pas-cercle
 1
 12
-11
+8
 1
 1
 NIL
@@ -796,15 +796,55 @@ hostile-range-color
 6
 
 SWITCH
-180
-370
-317
-403
+175
+345
+312
+378
 debug-com
 debug-com
-0
+1
 1
 -1000
+
+TEXTBOX
+635
+565
+785
+583
+Debug :\n
+12
+0.0
+1
+
+SLIDER
+625
+600
+797
+633
+elipseA
+elipseA
+0
+5
+2
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+625
+635
+797
+668
+elipseB
+elipseB
+0
+5
+2
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -1176,7 +1216,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 3D 5.3.1
+NetLogo 3D 5.3
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@

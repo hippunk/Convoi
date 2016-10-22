@@ -10,6 +10,8 @@ drones-own[
   ;intentions
   
   rand-path
+  eli-path
+  angle-eli
   
   ammo
   cooldown-status
@@ -33,6 +35,7 @@ to setup-drones
     [
       ; Init apparence NetLogo
       set shape "airplane 2"
+      set size 5
       ;set color magenta
 
       ; Init des structures BDI
@@ -51,6 +54,9 @@ to setup-drones
       set dead? false
       set regenpath? false
       set hp drones-hp
+      
+      set angle-eli random 360
+      set eli-path  []
       
       set range-visu drone-range
       set range drone-range
@@ -88,7 +94,8 @@ end
 
 to drones-think 
   ask drones [update-drone-from-ihm]
-  random-move-path-drones
+  ;random-move-path-drones
+  drone-eliptic-move
   drones-fire
    
 end
@@ -161,6 +168,62 @@ to random-move-path-drones ;Ici, l'idée c'est de générer un chemin vers un pa
 
   ]
 end
+
+
+to drone-eliptic-move
+
+;Marche mal, autre possibilité : créer une route à la volée suivant l'angle et les coords du convoi
+;et la suivre avec l'algo de suivi de chemins, possibilté de reset la route tous les 360° pour afiner et plus simple pour wrap 
+    foreach sort-on [who] turtle-set drones with [finished? and not dead?] [
+      let id ([who] of ?) ;id pour gérer avec astar observer hors turtle context
+      if [finished?] of (turtle id) [;si pas de chemin on génère
+        let tmp-patch patch ([pxcor] of (turtle id)) ([pycor] of (turtle id)) ([pzcor] of (turtle id))
+        let goal compute-goal-eli id
+        let tmpplan plan-astar3D ( tmp-patch ) goal (false)
+        ask turtle id [
+          set eli-path tmpplan 
+          if not empty? eli-path [
+            set finished? false
+            set angle-eli angle-eli + 1
+          ]
+        ]
+      ]
+    ]
+    
+      ;Déplacements selon les random-paths
+      ask drones with [not finished? and not dead?] [ ; Tant qu'on n'a pas atteint le but
+
+      ; Recupere le plan AStar
+      if not empty? eli-path [
+        ; Deplacement par waypoints: on se deplace jusqu'au prochain patch du chemin jusqu'à l'atteindre
+        let next-patch first eli-path
+        let zz pzcor
+        set next-patch [patch-at 0 0 0] of next-patch ; mise a niveau de pzcor au cas ou le chemin a ete calculé sur un autre plan
+        ; Deplacement vers le prochain waypoint
+        if next-patch != patch-here [move-drone next-patch false false]
+        ; Si on a atteint ce patch, on le supprime de la liste, et on va donc continuer vers le prochain patch du chemin
+        if patch-here = next-patch [
+          set eli-path remove-item 0 eli-path
+        ]
+      ]
+
+      ; Critere d'arret: on est a cote de l'objectif
+      if empty? eli-path[
+        set finished? true
+      ]
+    ]
+        
+end
+
+to-report compute-goal-eli [id]
+        let px cos([angle-eli] of (turtle id)) * elipseA + ([xcor] of convoi 0)
+        let py sin([angle-eli] of (turtle id)) * elipseB + ([ycor] of convoi 0)
+
+        let goal patch px py 10 
+        let goal-patch min-one-of (patches with [pzcor = 10 and not obstacle?]) [distance goal]
+        report goal-patch
+end
+
 
 to move-drone [goal slowdown? cortege?]
   ;show (word "ici:" patch-here " goal:" goal)

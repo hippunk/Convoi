@@ -73,8 +73,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-0
-0
+1
+1
 1
 -50
 50
@@ -146,7 +146,7 @@ elipseA
 elipseA
 0
 100
-17
+25
 1
 1
 NIL
@@ -161,7 +161,7 @@ elipseB
 elipseB
 0
 100
-2
+35
 1
 1
 NIL
@@ -176,8 +176,8 @@ unit-speed
 unit-speed
 0
 100
-6
-1
+0.33
+0.01
 1
 NIL
 HORIZONTAL
