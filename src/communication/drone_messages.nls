@@ -1,0 +1,145 @@
+;;;;;;;;;;;;;;
+;;;; SEND ;;;;
+;;;;;;;;;;;;;;
+
+
+to send-status
+  ;; envoi du status courant au leader
+  let content (word ticks " " ammo " " carburant)
+  let msg create-msg-drone-to-drone "inform" who known-leader-drone content []
+   ifelse not empty? (get-receivers msg)
+   [
+     if who != known-leader-drone
+     [
+       send msg
+       printcom (word "(" breed " " who ")  send : "  msg)
+     ]
+   ]
+   [ 
+     printcom (word "(" breed " " who ")  messages non envoyé " ticks)
+   ]
+end
+
+to need-ammo 
+  let content (list 3 ticks)
+  let msg create-msg-drone-to-drone "need" who known-leader-drone content []
+   ifelse not empty? (get-receivers msg)
+   [
+     send msg
+     printcom (word "(" breed " " who ")  send : "  msg)
+   ]
+   [ 
+     printcom (word "(" breed " " who ")  messages non envoyé " ticks)
+   ]
+end
+
+to need-fuel 
+  let content (list 4 ticks)
+  let msg create-msg-drone-to-drone "need" who known-leader-drone content []
+   ifelse not empty? (get-receivers msg)
+   [
+     send msg
+     printcom (word "(" breed " " who ")  send : "  msg)
+   ]
+   [ 
+     printcom (word "(" breed " " who ")  messages non envoyé " ticks)
+   ]
+end
+
+
+
+
+
+
+
+to go-check-position [zone dest] ; order 1
+  let content (list 1 ticks zone)
+  let msg create-msg-drone-to-drone "request" who dest content []
+   ifelse not empty? (get-receivers msg)
+   [
+     send msg
+     printcom (word "(" breed " " who ")  send : "  msg)
+   ]
+   [ 
+     printcom (word "(" breed " " who ")  messages non envoyé " ticks)
+   ]
+end
+
+to go-kill-position [zone dest] ; order 2
+  let content (list 2 ticks zone)
+  let msg create-msg-drone-to-drone "request" who dest content []
+   ifelse not empty? (get-receivers msg)
+   [
+     send msg
+     printcom (word "(" breed " " who ")  send : "  msg)
+   ]
+   [ 
+     printcom (word "(" breed " " who ")  messages non envoyé " ticks)
+   ]
+end
+
+to go-reload [dest]; order 3
+  let content (list 3 ticks)
+  let msg create-msg-drone-to-drone "request" who dest content []
+   ifelse not empty? (get-receivers msg)
+   [
+     send msg
+     printcom (word "(" breed " " who ")  send : "  msg)
+   ]
+   [ 
+     printcom (word "(" breed " " who ")  messages non envoyé " ticks)
+   ]
+end
+
+to go-refuel [dest] ; order 4
+  let content (list 4 ticks)
+  let msg create-msg-drone-to-drone "request" who dest content []
+   ifelse not empty? (get-receivers msg)
+   [
+     send msg
+     printcom (word "(" breed " " who ")  send : "  msg)
+   ]
+   [ 
+     printcom (word "(" breed " " who ")  messages non envoyé " ticks)
+   ]
+end 
+
+
+
+
+;;;;;;;;;;;;;;;;;
+;;;; RECEIVE ;;;;
+;;;;;;;;;;;;;;;;;
+
+to traitement-msg-drone [msg]
+  let content get-content msg
+  let from (read-from-string item 0 get-field "from" msg)
+  let performative get-performative msg
+  
+  print content
+  print from
+  print performative
+  
+  if from = 0 and performative = "request" ;; from leader and request
+  [
+    let code item 0 content
+    if code = 1
+    [
+      print "do action 1"
+    ]
+    if code = 2
+    [
+      print "do action 2"      
+    ]
+    if code = 3 
+    [
+      print "do action 3"
+    ]
+    if code = 4 
+    [
+      print "do action 4"
+    ]
+  ]
+  
+  
+end

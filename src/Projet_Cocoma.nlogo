@@ -1,4 +1,4 @@
-__includes["BDI/communication.nls" "BDI/bdi.nls" "astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls" "drone.nls" "visu.nls"]
+__includes["BDI/communication.nls" "BDI/bdi.nls" "astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls" "drone.nls" "visu.nls" "communication/basic_message.nls" "communication/drone_messages.nls"]
 breed [waypoints waypoint]
 breed [envconstructors envconstructor]
 breed [convois convoi]
@@ -36,6 +36,7 @@ turtles-own [
   range
   range-visu
   range-color
+  message-to-forward
 ]
 
 
@@ -802,7 +803,7 @@ SWITCH
 378
 debug-com
 debug-com
-1
+0
 1
 -1000
 
@@ -841,6 +842,21 @@ elipseB
 0
 5
 2
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+245
+45
+425
+78
+drones-max-carburant
+drones-max-carburant
+100
+500
+500
 1
 1
 NIL
@@ -1216,7 +1232,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 3D 5.3
+NetLogo 3D 5.3.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@

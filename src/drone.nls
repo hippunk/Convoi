@@ -12,10 +12,11 @@ drones-own[
   rand-path
   eli-path
   angle-eli
-  
+   carburant
   ammo
   cooldown-status
   armed?
+  known-leader-drone
   
   ]
 
@@ -66,10 +67,12 @@ to setup-drones
       set armed? true
       set ammo drones-max-ammo
       set rand-path []
+     set message-to-forward []
       ; Visu
       set label who ; display the car names
-      
+      set known-leader-drone 5
       set size 3
+      set carburant drones-max-carburant
     ]
     let first-drone min [who] of drones
     ask drone first-drone [
@@ -93,9 +96,15 @@ to setup-drones
 end
 
 to drones-think 
-  ask drones [update-drone-from-ihm]
-  ;random-move-path-drones
-  drone-eliptic-move
+  ask drones [
+    update-drone-from-ihm
+   receive-message
+   forward-messages
+   if ticks = 0 [send-status]
+   check-dead
+  ]
+  random-move-path-drones
+  ;drone-eliptic-move
   drones-fire
    
 end
@@ -294,4 +303,40 @@ to toucher-drone
     die
   ]
   
+end
+
+
+to forward-messages
+  let tmp message-to-forward
+  foreach tmp [
+   let msg ?
+   set message-to-forward remove msg message-to-forward
+   set msg forward-message breed msg
+   add-to-forwarded-msg msg
+   if not empty? (get-receivers msg) [
+
+     foreach (get-receivers msg) [
+       let id read-from-string ?
+       if (read-from-string item 0 get-field "to" msg) = id
+       [
+         set message-to-forward remove msg message-to-forward
+         printcom (word "(" breed " " who ")  Remove from forward")
+       ]
+     ]
+     send msg
+     printcom (word "(" breed " " who ")  Pour " read-from-string item 0 get-field "to" msg " forward : " msg )
+     printcom ""
+   ]
+  ]
+end
+
+
+
+to check-dead
+  if hp = 0 or carburant = 0[
+    set dead? true
+    print word (word breed " ") (word (word who) " : Je suis Mort " )
+    die
+  ]
+
 end
