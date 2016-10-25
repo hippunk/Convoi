@@ -255,7 +255,7 @@ INPUTBOX
 95
 204
 nb-mountains
-5
+10
 1
 0
 Number
@@ -686,7 +686,7 @@ SWITCH
 343
 debug-path
 debug-path
-1
+0
 1
 -1000
 
@@ -699,7 +699,7 @@ zone-size
 zone-size
 1
 20
-6
+11
 1
 1
 NIL
@@ -825,7 +825,7 @@ SLIDER
 elipseA
 elipseA
 0
-5
+100
 2
 1
 1
@@ -840,7 +840,7 @@ SLIDER
 elipseB
 elipseB
 0
-5
+100
 2
 1
 1
@@ -1232,7 +1232,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 3D 5.3.1
+NetLogo 3D 5.3
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
