@@ -56,7 +56,7 @@ to draw-range
 
           ;show pas
           fd drone-speed
-          set angle angle + 360 / pas
+          set angle round angle + 360 / round pas
           show "pas"
           show pas
           show "angle"
@@ -136,7 +136,7 @@ elipseA
 elipseA
 0
 100
-55
+100
 1
 1
 NIL
@@ -151,7 +151,7 @@ elipseB
 elipseB
 0
 100
-50
+100
 1
 1
 NIL
@@ -166,7 +166,7 @@ unit-speed
 unit-speed
 0
 100
-0
+5.73
 0.01
 1
 NIL
@@ -181,7 +181,7 @@ drone-speed
 drone-speed
 0
 10
-1.5
+10
 0.01
 1
 NIL
@@ -588,7 +588,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 5.3
+NetLogo 5.3.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@

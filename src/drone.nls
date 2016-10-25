@@ -105,8 +105,8 @@ to drones-think
    if ticks = 0 [send-status]
    check-dead
   ]
-  random-move-path-drones
-  ;drone-eliptic-move
+  ;random-move-path-drones
+  drone-eliptic-move
   drones-fire
    
 end
@@ -182,19 +182,33 @@ end
 
 
 to drone-eliptic-move
+  let u ([xcor] of convoi 0)
+  let v ([ycor] of convoi 0)
   ask drones[
     ;set debug-x ([xcor] of convoi 0) ; Pas de poroblèmes avec la récupération des coordonnées.
     ;set debug-y ([ycor] of convoi 0)
     
-    let xp cos(angle-eli) * elipseA * patch-size + ([xcor] of convoi 0)
-    let yp sin(angle-eli) * elipseB * patch-size + ([ycor] of convoi 0)
-    set debug-x xp
-    set debug-y yp
-    facexy xp yp
+    let xp cos(angle-eli) * elipseA * patch-size + u
+    let yp sin(angle-eli) * elipseB * patch-size + v
     let pas sqrt ( (xp - xcor) ^ 2 + (yp - ycor) ^ 2 )
+    set xp cos(angle-eli) * elipseA + u
+    set yp sin(angle-eli) * elipseB + v
+    ;set debug-x xp
+    ;set debug-y yp
+    ;if xp < 0
+    ; [set xp 0]
+    ;if xp > max-pxcor
+    ; [set xp max-pxcor]
+    ; if yp < 0
+    ; [set yp 0]
+    ; if yp > max-pxcor
+    ; [set yp max-pxcor]
+    facexy xp yp
+
     ;show pas
     fd speed
     set angle-eli angle-eli + 360 / pas
+    set angle-eli angle-eli mod 360
   ]
 end
 ;Marche mal, autre possibilité : créer une route à la volée suivant l'angle et les coords du convoi

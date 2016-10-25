@@ -163,8 +163,8 @@ end
 GRAPHICS-WINDOW
 0
 0
-1430
-1451
+2030
+2051
 -1
 -1
 20.0
@@ -178,9 +178,9 @@ GRAPHICS-WINDOW
 1
 1
 0
-70
+100
 0
-70
+100
 0
 20
 1
@@ -472,7 +472,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-0
+10
 1
 0
 Number
@@ -621,7 +621,7 @@ cooldown
 cooldown
 2
 100
-10
+4
 1
 1
 NIL
@@ -662,7 +662,7 @@ hostile-range
 hostile-range
 3
 50
-13
+10
 1
 1
 NIL
@@ -729,7 +729,7 @@ drone-range
 drone-range
 1
 20
-9
+10
 1
 1
 NIL
@@ -744,7 +744,7 @@ pas-cercle
 pas-cercle
 1
 12
-8
+1
 1
 1
 NIL
@@ -826,7 +826,7 @@ elipseA
 elipseA
 0
 100
-2
+0
 1
 1
 NIL
@@ -841,7 +841,7 @@ elipseB
 elipseB
 0
 100
-2
+7
 1
 1
 NIL
@@ -1232,7 +1232,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 3D 5.3
+NetLogo 3D 5.3.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
