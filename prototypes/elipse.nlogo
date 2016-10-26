@@ -46,14 +46,21 @@ to draw-range
   let u [xcor] of unit 0
   let v [ycor] of unit 0
   ask drawers[
-
-          let xp cos(angle) * a + u
-          let yp sin(angle) * b + v
-          facexy xp yp
+    if draw [pen-down]
+          let xp cos(angle) * a * test + u
+          let yp sin(angle) * b * test + v
           let pas sqrt ( (xp - xcor) ^ 2 + (yp - ycor) ^ 2 )
+          set xp cos(angle) * a + u
+          set yp sin(angle) * b + v
+          facexy xp yp
+
+          ;show pas
+          fd drone-speed
+          set angle round angle + 360 / round pas
+          show "pas"
           show pas
-          fd pas
-          set angle angle + 1
+          show "angle"
+          show angle
 
     ]
 
@@ -64,8 +71,8 @@ GRAPHICS-WINDOW
 10
 824
 645
-50
-50
+-1
+-1
 5.9802
 1
 10
@@ -76,10 +83,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--50
-50
--50
-50
+0
+100
+0
+100
 1
 1
 1
@@ -120,23 +127,6 @@ NIL
 NIL
 1
 
-BUTTON
-23
-264
-136
-297
-NIL
-draw-range
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
 SLIDER
 854
 264
@@ -146,7 +136,7 @@ elipseA
 elipseA
 0
 100
-25
+100
 1
 1
 NIL
@@ -161,22 +151,95 @@ elipseB
 elipseB
 0
 100
-35
+100
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-1029
-450
-1201
-483
+855
+374
+1027
+407
 unit-speed
 unit-speed
 0
 100
-0.33
+5.73
+0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+934
+499
+1106
+532
+drone-speed
+drone-speed
+0
+10
+10
+0.01
+1
+NIL
+HORIZONTAL
+
+SWITCH
+62
+332
+165
+365
+draw
+draw
+0
+1
+-1000
+
+BUTTON
+70
+494
+198
+527
+NIL
+clear-drawing
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SLIDER
+937
+141
+1109
+174
+angle-top
+angle-top
+0
+60
+3
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+880
+71
+1052
+104
+test
+test
+0
+10
+5.9
 0.01
 1
 NIL
@@ -525,7 +588,7 @@ Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 
 @#$#@#$#@
-NetLogo 5.3
+NetLogo 5.3.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@

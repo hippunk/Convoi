@@ -163,8 +163,8 @@ end
 GRAPHICS-WINDOW
 0
 0
-1430
-1451
+2030
+2051
 -1
 -1
 20.0
@@ -178,9 +178,9 @@ GRAPHICS-WINDOW
 1
 1
 0
-70
+100
 0
-70
+100
 0
 20
 1
@@ -255,7 +255,7 @@ INPUTBOX
 95
 204
 nb-mountains
-5
+10
 1
 0
 Number
@@ -472,7 +472,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-0
+10
 1
 0
 Number
@@ -621,7 +621,7 @@ cooldown
 cooldown
 2
 100
-10
+4
 1
 1
 NIL
@@ -662,7 +662,7 @@ hostile-range
 hostile-range
 3
 50
-13
+10
 1
 1
 NIL
@@ -686,7 +686,7 @@ SWITCH
 343
 debug-path
 debug-path
-1
+0
 1
 -1000
 
@@ -699,7 +699,7 @@ zone-size
 zone-size
 1
 20
-6
+11
 1
 1
 NIL
@@ -729,7 +729,7 @@ drone-range
 drone-range
 1
 20
-9
+10
 1
 1
 NIL
@@ -744,7 +744,7 @@ pas-cercle
 pas-cercle
 1
 12
-8
+1
 1
 1
 NIL
@@ -825,8 +825,8 @@ SLIDER
 elipseA
 elipseA
 0
-5
-2
+100
+0
 1
 1
 NIL
@@ -840,8 +840,8 @@ SLIDER
 elipseB
 elipseB
 0
-5
-2
+100
+7
 1
 1
 NIL
