@@ -1,0 +1,4 @@
+to demande-split [nLeader_id]
+ 
+  let msg create-msg-convoi-to-convoi "request" who nLeader_id "" [] "split"
+end

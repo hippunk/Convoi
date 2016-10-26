@@ -156,6 +156,7 @@ to random-move-path-drones ;Ici, l'idée c'est de générer un chemin vers un pa
 
       ; Recupere le plan AStar
       if not empty? rand-path [
+        ask last rand-path [set pcolor pink]
         ; Deplacement par waypoints: on se deplace jusqu'au prochain patch du chemin jusqu'à l'atteindre
         let next-patch first rand-path
         let zz pzcor
@@ -165,12 +166,14 @@ to random-move-path-drones ;Ici, l'idée c'est de générer un chemin vers un pa
         ; Si on a atteint ce patch, on le supprime de la liste, et on va donc continuer vers le prochain patch du chemin
         if patch-here = next-patch [
           set rand-path remove-item 0 rand-path
+          
         ]
       ]
 
       ; Critere d'arret: on est a cote de l'objectif
       if empty? rand-path[
         set finished? true
+        ask patch-here [set pcolor red]
       ]
     ]
 

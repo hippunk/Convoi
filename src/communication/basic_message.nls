@@ -5,13 +5,13 @@ to printcom [com]
   ]
 end
 
-to-report create-msg-drone-to-drone [performative from dest content fd-list]
-  report aux-create-msg performative from dest content fd-list drones
+to-report create-msg-drone-to-drone [performative from dest content fd-list sujet]
+  report aux-create-msg performative from dest content fd-list drones sujet
 end
 
 
-to-report create-msg-convoi-to-leader-convoi [performative from content fd-list]
-  report aux-create-msg performative from 0 content fd-list convois
+to-report create-msg-convoi-to-convoi [performative from dest content fd-list sujet]
+  report aux-create-msg performative from dest content fd-list convois sujet
 end
 
 to-report create-msg-leader-to-leader-leader [performative from dest content]
@@ -25,8 +25,17 @@ to-report create-msg-leader-to-leader-leader [performative from dest content]
   report msg
 end
 
+to-report create-reply-drone-to-drone [msg content from breeds]
+  let msg2 create-message "reply-to"
+  set msg2 add-receivers breeds (read-from-string item 0 get-field "to" msg) [] msg2
+  set msg2 add-content content msg2
+  set msg2 add-field msg2 "from:" from
+  set msg2 add-field msg2 "to:" item 0 get-field "to" msg
+  set msg2 add-field msg2 "sujet:" item 0 get-field "sujet" msg
+  report msg2
+end
 
-to-report aux-create-msg [performative from dest content fd-list breeds]
+to-report aux-create-msg [performative from dest content fd-list breeds sujet]
   let msg create-message performative
   set msg add-receivers breeds dest  [] msg
   set msg add-content content msg
@@ -35,6 +44,7 @@ to-report aux-create-msg [performative from dest content fd-list breeds]
   set msg add-field msg "to:" dest
   set msg add-field msg "fw-list:" (add-to-fw-list who fd-list)
   set msg add-field msg "fw:" 0
+  set msg add-field msg "sujet:" sujet
   report msg
 
 end
@@ -107,4 +117,10 @@ to receive-message
   ]
 end
 
+to accept-request [msg]
+  
+end
 
+to refuse-request [msg]
+  
+end

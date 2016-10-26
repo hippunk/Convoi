@@ -295,19 +295,7 @@ to update-convoi-from-ihm
 end
 
 
-to demande-split [nLeader_id]
-  let id who
-  
-  
-  let recvs (convois in-cone range 360 with [who != id])
-  let msg create-message "request"
-  set msg add-multiple-receivers (sort-on [who] recvs) msg
-  set msg add-content nLeader_id msg
-  set msg add-field msg "subject : " "newLeader"
-  
-  send msg
-  
-end
+
 
 to receive-demande-split [msg]
   let id who 

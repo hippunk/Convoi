@@ -6,7 +6,7 @@
 to send-status
   ;; envoi du status courant au leader
   let content (word ticks " " ammo " " carburant)
-  let msg create-msg-drone-to-drone "inform" who known-leader-drone content []
+  let msg create-msg-drone-to-drone "inform" who known-leader-drone content [] "status"
    ifelse not empty? (get-receivers msg)
    [
      if who != known-leader-drone
@@ -22,7 +22,7 @@ end
 
 to need-ammo 
   let content (list 3 ticks)
-  let msg create-msg-drone-to-drone "need" who known-leader-drone content []
+  let msg create-msg-drone-to-drone "need" who known-leader-drone content [] "need-ammo"
    ifelse not empty? (get-receivers msg)
    [
      send msg
@@ -35,7 +35,7 @@ end
 
 to need-fuel 
   let content (list 4 ticks)
-  let msg create-msg-drone-to-drone "need" who known-leader-drone content []
+  let msg create-msg-drone-to-drone "need" who known-leader-drone content [] "need-fuel"
    ifelse not empty? (get-receivers msg)
    [
      send msg
@@ -54,7 +54,7 @@ end
 
 to go-check-position [zone dest] ; order 1
   let content (list 1 ticks zone)
-  let msg create-msg-drone-to-drone "request" who dest content []
+  let msg create-msg-drone-to-drone "request" who dest content [] "check-pos"
    ifelse not empty? (get-receivers msg)
    [
      send msg
@@ -67,7 +67,7 @@ end
 
 to go-kill-position [zone dest] ; order 2
   let content (list 2 ticks zone)
-  let msg create-msg-drone-to-drone "request" who dest content []
+  let msg create-msg-drone-to-drone "request" who dest content [] "kill-pos"
    ifelse not empty? (get-receivers msg)
    [
      send msg
@@ -80,7 +80,7 @@ end
 
 to go-reload [dest]; order 3
   let content (list 3 ticks)
-  let msg create-msg-drone-to-drone "request" who dest content []
+  let msg create-msg-drone-to-drone "request" who dest content [] "reload"
    ifelse not empty? (get-receivers msg)
    [
      send msg
@@ -93,7 +93,7 @@ end
 
 to go-refuel [dest] ; order 4
   let content (list 4 ticks)
-  let msg create-msg-drone-to-drone "request" who dest content []
+  let msg create-msg-drone-to-drone "request" who dest content [] "refuel"
    ifelse not empty? (get-receivers msg)
    [
      send msg
@@ -143,3 +143,4 @@ to traitement-msg-drone [msg]
   
   
 end
+
