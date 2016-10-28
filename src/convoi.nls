@@ -6,6 +6,10 @@ convois-own[
   genlongpath? ; Should the leader compute a new path (but not shortest) ?
   regenpath? ; doit - on regenerer le path (nouvelle info? ... )
   last-send-time ; communication historical time-stamp
+  convoi-leader-id
+  drone-leader-id
+  
+  critic ; determine si le convoi est crittic
   ]
 
 
@@ -43,7 +47,9 @@ to setup-convois
       set hp convois-hp
       set range-visu convoi-range
       set range convoi-range
-
+      set convoi-leader-id min [who] of convois
+      set critic true ; determine si le convoi est critti
+      set message-to-forward []
       ; Visu
       set label who ; display the car names
     ]
@@ -56,6 +62,7 @@ to setup-convois
     ask convoi first-car [
       set leader? true
       set color orange
+      set convoi-leader-id who
       move-to patch base-max-pxcor base-max-pycor 1
     ]
 
@@ -70,6 +77,7 @@ to setup-convois
       ; ask non leader cars
       ask turtle-set sort-on [who] convois with [who > first-car]
       [
+        set convoi-leader-id first-car
         ; we create a link between them
         create-convoi-link-to turtle (who - 1)
         ;if who >= 4 and who mod 2 = 0 [ create-convoi-link-with turtle (who - 3) ]
@@ -90,9 +98,10 @@ end
 to convois-think
 
   if nb-cars > 0 [
-    if ticks = 100 [
+    if ticks = 10 [
     ask convois with [leader?] [
-      demande-split who + 1
+      let msg-split msg-split-split (who + 1)
+      send-message msg-split
     ]   
     
   ]
@@ -100,8 +109,10 @@ to convois-think
        
        if not empty? incoming-queue [
          ;  print "You've got a mail"
+         forward-messages
          let msg get-message
-         receive-demande-split msg
+         printcom (word "(" breed " " who ") reçoi : " msg)
+         receive-split-request msg
        ]
      ]
     update-convoi-from-ihm
@@ -113,11 +124,12 @@ to convois-think
       ; Recalcule le chemin si nécessaire (par exemple au début de la simulation ou quand le convoi se sépare)
       ; Note: on est oblige de le faire en dehors du ask sinon on ne peut pas acceder a tous les patchs
       if empty? as-path or length as-path < (id + 1) or empty? (item id as-path)  or [regenpath?] of ? [ ; s'il n'y a pas encore de chemin du tout, ou pas de chemin pour cette voiture, on cree un plan AStar
+        
         ; Cree le plan AStar (attention a ca que le patch start soit au niveau ou il y a les obstacles, ici pzcor = mapAlt pour les obstacles)
         let start-patch min-one-of (patches with [pzcor = mapAlt and not obstacle?]) [distance ?] ; on s'assure de choisir comme patch de depart un patch libre sans obstacle, sinon quand on split un convoi il se peut qu'il soit sur un obstacle et qu'il ne puisse jamais generer de chemin
         let new-path plan-astar ([patch-at 0 0 (pzcor * -1)] of start-patch) (one-of patches with [objectif?]) ([genlongpath?] of ?)
         ; S'il n'y a pas de plan et qu'on a essayé de trouver un long chemin, on attend la prochaine iteration et on reessaie mais avec un plan court
-        if empty? new-path and [genlongpath?] of ? [ ask ? [ set genlongpath? false ] ]
+        if empty? new-path and [genlongpath?] of ? [ ask ? [ set genlongpath? false ]]
         ; S'il n'y a pas deja une entree pour cette voiture on la cree
         
         
@@ -176,6 +188,8 @@ to convois-think
     ]
   ]
 end
+
+
 
 to-report detect-obstacle [radius angle]
  if any? other patches in-cone radius angle with [obstacle?] [report true]
@@ -268,10 +282,13 @@ end
 ;; Ajoute un nouveau leader qui peut prendre un long chemin ou non
 ;; num-new-leader : Identifiant unique du nouveau leader
 ;; takelongpath? : Boolean prendre le long chemin ou non
-to make-leader [num-new-leader takelongpath?]
+to make-leader [num-new-leader]
   ask convoi num-new-leader [
     set leader? true
-    set genlongpath? takelongpath?
+    set color orange
+    set convoi-leader-id who
+    set genlongpath? true
+    set regenpath? true
   ]
   remove-convoi-links-between num-new-leader num-new-leader - 1
 end
@@ -294,25 +311,3 @@ to update-convoi-from-ihm
   
 end
 
-
-
-
-to receive-demande-split [msg]
-  let id who 
-  
-  let content get-content msg
-  ifelse id = content
-  [
-    print_log_com turtle id " : je suis le nouveau leader"
-    set leader? true
-    set genlongpath? true
-    set regenpath? true
-    remove-convoi-links-between id id - 1
-  ]
-  [
-   ;; FORWARD 
-  ]
-  
-  
-  
-end

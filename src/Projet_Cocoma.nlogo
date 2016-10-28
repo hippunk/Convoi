@@ -288,7 +288,7 @@ INPUTBOX
 94
 566
 astar-faster
-20
+1000
 1
 0
 Number
@@ -299,7 +299,7 @@ INPUTBOX
 197
 566
 astar-max-depth
-1000
+10000
 1
 0
 Number
@@ -472,7 +472,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-10
+0
 1
 0
 Number
@@ -557,7 +557,7 @@ SWITCH
 707
 show_messages
 show_messages
-1
+0
 1
 -1000
 
@@ -633,7 +633,7 @@ INPUTBOX
 296
 270
 total-nb-drones
-1
+5
 1
 0
 Number
@@ -686,7 +686,7 @@ SWITCH
 343
 debug-path
 debug-path
-0
+1
 1
 -1000
 
@@ -744,7 +744,7 @@ pas-cercle
 pas-cercle
 1
 12
-1
+9
 1
 1
 NIL
@@ -826,7 +826,7 @@ elipseA
 elipseA
 0
 100
-0
+7
 1
 1
 NIL
