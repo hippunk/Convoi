@@ -8,7 +8,6 @@ convois-own[
   last-send-time ; communication historical time-stamp
   convoi-leader-id
   drone-leader-id
-  
   critic ; determine si le convoi est crittic
   ]
 
@@ -50,6 +49,8 @@ to setup-convois
       set convoi-leader-id min [who] of convois
       set critic true ; determine si le convoi est critti
       set message-to-forward []
+      set beliefs []
+      set intentions []
       ; Visu
       set label who ; display the car names
     ]
@@ -106,16 +107,11 @@ to convois-think
     
   ]
      ask convois [
-       
-       if not empty? incoming-queue [
-         ;  print "You've got a mail"
-         forward-messages
-         let msg get-message
-         printcom (word "(" breed " " who ") reçoi : " msg)
-         receive-split-request msg
-       ]
+       update-convoi-from-ihm
+       see
+       receive-message-convoi
      ]
-    update-convoi-from-ihm
+    
     let first-car min [who] of convois
 
     ; Calcul du plan AStar pour chaque leader si necessaire
@@ -290,6 +286,7 @@ to make-leader [num-new-leader]
     set genlongpath? true
     set regenpath? true
   ]
+  send-message msg-inform-is-new-leader
   remove-convoi-links-between num-new-leader num-new-leader - 1
 end
 
@@ -308,6 +305,22 @@ to toucher-convoi
 end
 
 to update-convoi-from-ihm
+    set range convoi-range
+  set range-color convoi-range-color
+end
+
+to see
+  let hostile-in-range hostiles in-cone-nowrap convoi-range 360
+  if count hostile-in-range  > 0 [
+    let cible one-of hostile-in-range
+    let x int ([xcor] of cible / zone-size) * zone-size + int (zone-size / 2)
+    let y int ([ycor] of cible / zone-size) * zone-size + int (zone-size / 2)
+    let dest patch x y 1
+    if [obstacle?] of dest [
+     set dest min-one-of patches with [obstacle? = false and pzcor = 1] [distance dest]
+    ]
+    send-message msg-convoi-detect-hostile dest
+  ]
   
 end
 

@@ -153,9 +153,10 @@ to go
   update-bullets
   let agent-set turtles with [who = -1]
   if hostile-range-visu? [set agent-set (turtle-set agent-set hostiles)]
+  if convoi-range-visu? [set agent-set (turtle-set agent-set convois)]
   if drone-range-visu? [set agent-set (turtle-set agent-set drones)]
 
-  draw-range-agent (turtle-set drones hostiles)
+  draw-range-agent agent-set
   tick
 
 end
@@ -163,8 +164,8 @@ end
 GRAPHICS-WINDOW
 0
 0
-2030
-2051
+1030
+1051
 -1
 -1
 20.0
@@ -178,9 +179,9 @@ GRAPHICS-WINDOW
 1
 1
 0
-100
+50
 0
-100
+50
 0
 20
 1
@@ -400,62 +401,13 @@ NIL
 NIL
 1
 
-INPUTBOX
-26
-653
-111
-713
-new-leader-id
-20
-1
-0
-Number
-
 BUTTON
 25
 612
-145
+170
 645
-make new leader
-make-leader new-leader-id astar-longpath
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-TEXTBOX
-24
-587
-107
-605
-New leader
-12
-0.0
-1
-
-INPUTBOX
-154
-649
-231
-709
-regen-path
-20
-1
-0
-Number
-
-BUTTON
-159
-612
-271
-645
-set regen path
-ask convoi regen-path [set regenpath? true]
+show to forward
+ask convois [\nlet tmp message-to-forward\n  foreach tmp [\n   let msg ?\n     printcom (word \"(\" breed \" \" who \")\" msg )\n  ]\n]\n\nask drones [\nlet tmp message-to-forward\n  foreach tmp [\n   let msg ?\n     printcom (word \"(\" breed \" \" who \")\" msg )\n  ]\n]
 NIL
 1
 T
@@ -472,7 +424,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-0
+5
 1
 0
 Number
@@ -557,7 +509,7 @@ SWITCH
 707
 show_messages
 show_messages
-0
+1
 1
 -1000
 
@@ -633,7 +585,7 @@ INPUTBOX
 296
 270
 total-nb-drones
-5
+0
 1
 0
 Number
@@ -861,6 +813,27 @@ drones-max-carburant
 1
 NIL
 HORIZONTAL
+
+SWITCH
+370
+515
+557
+548
+convoi-range-visu?
+convoi-range-visu?
+0
+1
+-1000
+
+CHOOSER
+665
+210
+822
+255
+convoi-range-color
+convoi-range-color
+"red" "yellow" "blue" "gray" "orange" "brown" "lime" "turquoise" "cyan" "sky" "violet" "magenta" "pink"
+0
 
 @#$#@#$#@
 ## WHAT IS IT?

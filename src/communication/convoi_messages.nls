@@ -4,19 +4,23 @@ to-report msg-split-split [nLeader_id]
   report msg
 end
 
+to-report msg-inform-is-new-leader 
+  let my-id who
+  let msg create-msg-convoi-to-convoi-broadcast "inform" who (convois in-cone range 360 with [who > my-id]) my-id [] "nLeader"
+  report msg
+end 
+
+
 to-report msg-convoi-detect-hostile [zone]
-  
   let x int ([pxcor] of zone / zone-size) * zone-size + int (zone-size / 2)
   let y int ([pycor] of zone / zone-size) * zone-size + int (zone-size / 2)
   let z mapAlt
   let dest patch x y z
-   if [obstacle?] of dest [
-     ;; Si la destination est un obstacle on trouve le patch le plus près qui n'en est pas un
-     set dest min-one-of patches with [obstacle? = false and pzcor = mapAlt] [distance dest]
-   ]
-  let content (list [pxcor] of dest [pycor] of dest [pzcor] of dest)
-  
-  
+  if [obstacle?] of dest [
+    ;; Si la destination est un obstacle on trouve le patch le plus près qui n'en est pas un
+    set dest min-one-of patches with [obstacle? = false and pzcor = mapAlt] [distance dest]
+ ]
+ let content (list [pxcor] of dest [pycor] of dest [pzcor] of dest)
  let msg create-msg-convoi-to-convoi "inform" who convoi-leader-id content [] "hostile"
  report msg
 end
@@ -32,13 +36,17 @@ to receive-message-convoi
   if not empty? incoming-queue
   [
     let msg get-message
-    let dest read-from-string item 0 get-field "to" msg
-    ifelse dest = who
+    printcom (word "(" breed " " who ") reçoi : " msg)
+    let dest read-from-string get-to msg
+    let bool (is-number? dest and dest = who) or (is-list? dest and member? who dest)
+    ifelse bool
     [
+     
       let perf get-performative msg
-      let sub item 0 get-field "sujet" msg
+      let sub get-sujet msg
       if perf = "request" and sub = "split" [receive-split-request msg stop]
-      if perf = "inform" and sub = "hostile" [receive-split-request msg stop]
+      if perf = "inform" and sub = "hostile" [receive-hostile-inform msg stop]
+      if perf = "inform" and sub = "nLeader" [receive-is-new-leader msg stop]
     ]
     [
       add-to-forwarded-msg msg
@@ -48,8 +56,8 @@ end
 
 to receive-split-request [msg]
   let id who 
-  let id2 read-from-string item 0 get-field "to" msg 
-  ifelse id = id2 
+  let id2 read-from-string get-to msg
+  ifelse member? id id2 
   [ make-leader id ]
   [ printcom (word "(" breed " " who ") ERREUR  receive-split-request " msg) ]
 end
@@ -58,4 +66,12 @@ to receive-hostile-inform [msg]
   let id who
   let zone get-content msg
   printcom (word "(" breed " " who ") reçu hostile " zone)
+end
+
+
+to receive-is-new-leader [msg]
+  let id who
+  let id-l read-from-string get-from msg
+  set convoi-leader-id id-l
+  ;printcom (word "(" breed " " who ") nouveau leader " id-l)
 end

@@ -15,54 +15,105 @@ to-report create-msg-convoi-to-convoi [performative from dest content fd-list su
   
 end
 
+to-report create-msg-convoi-to-convoi-broadcast [performative from dest content fd-list sujet]
+  report aux-create-msg-broadcast performative from dest content fd-list convois sujet
+end
+
 to-report create-msg-leader-to-leader-leader [performative from dest content sujet]
   let breed-to [breed] of turtle dest  
   let receivers (breed-to in-cone range 360 with [who = dest])
   let msg create-message performative
   set msg add-multiple-receivers receivers msg
   set msg add-content content msg
-  set msg add-field msg "from:" from
-  set msg add-field msg "to:" dest
+  set msg add-from from msg
+  set msg add-to dest msg
   report msg
 end
 
+;to-report broadcast-convoi [performative from all content sujet]
+  ;;TODO
+  ;let breed-to [breed] of turtle who
+  ;let id who
+    
+  ;ifelse all 
+  ;[let receivers (breed-to in-cone range 360)]
+  ;[let receivers (breed-to in-cone range 360 with [who > id])
+  ;let msg create-message performative
+  ;set msg add-multiple-receivers receivers msg
+  ;set msg add-content content msg
+  ;set msg add-field msg "from:" from
+  ;set msg add-field msg "to:" dest
+  ;report msg
+  
+;end
+
 to-report create-reply-drone-to-drone [msg content from breeds]
   let msg2 create-message "reply-to"
-  set msg2 add-receivers breeds (read-from-string item 0 get-field "to" msg) [] msg2
+  set msg2 add-receivers breeds (get-to msg) [] msg2
   set msg2 add-content content msg2
-  set msg2 add-field msg2 "from:" from
-  set msg2 add-field msg2 "to:" item 0 get-field "to" msg
-  set msg2 add-field msg2 "sujet:" item 0 get-field "sujet" msg
+  set msg2 add-from from msg
+  set msg2 add-to get-to msg msg
+  set msg2 add-sujet get-sujet msg msg
   report msg2
 end
 
 to-report aux-create-msg [performative from dest content fd-list breeds sujet]
   let msg create-message performative
-  set msg add-receivers breeds dest  [] msg
+  set msg add-receivers breeds dest [] msg
   set msg add-content content msg
   set fd-list add-list-to-fw-list (get-receivers msg) fd-list
-  set msg add-field msg "from:" from
-  set msg add-field msg "to:" dest
-  set msg add-field msg "fw-list:" (add-to-fw-list who fd-list)
-  set msg add-field msg "fw:" 0
-  set msg add-field msg "sujet:" sujet
+  set msg add-from from msg
+  set msg add-to (list dest) msg
+  set msg add-forward (add-to-fw-list who fd-list) msg
+  set msg add-sujet sujet msg
+  report msg
+
+end
+
+to-report aux-create-msg-broadcast [performative from dest content fd-list breeds sujet]
+  let msg create-message performative
+  set msg add-receivers breeds dest [] msg
+  set msg add-content content msg
+
+  foreach (get-receivers msg) [
+    let id read-from-string ?
+    set fd-list add-to-fw-list id fd-list
+  ]
+  
+  set msg add-from from msg
+  let to-list []
+  foreach sort-on [who] turtle-set dest [
+    let id [who] of ?
+    set to-list add-to-fw-list id to-list
+  ]
+  set msg add-to to-list msg
+  set msg add-forward (add-to-fw-list who fd-list) msg
+  set msg add-sujet sujet msg
   report msg
 
 end
 
 
+
 to-report add-receivers [breeds dest fwlist msg]
   let id who
   let receivers (breeds in-cone range 360 with [who != id and not member? who fwlist])
-  if turtle dest = nobody [report msg]
-  ifelse member? turtle dest receivers
-  [
-    set msg add-receiver dest msg
+  ifelse  is-agentset? dest [
+    foreach sort-on [who] turtle-set dest[
+      let mem ?
+       ifelse member? mem receivers
+       [set msg add-receiver mem msg]
+       [set receivers (sort-on [who] receivers) set msg add-multiple-receivers receivers msg]
+    ]  
   ]
   [
-    set receivers (sort-on [who] receivers)
-    set msg add-multiple-receivers receivers msg
+    if turtle dest = nobody [report msg]
+    ifelse member? turtle dest receivers
+    [set msg add-receiver dest msg]
+    [set receivers (sort-on [who] receivers) set msg add-multiple-receivers receivers msg]
   ]
+  ;if turtle dest = nobody [report msg]
+  
   report msg
 end
 
@@ -76,23 +127,21 @@ end
 to-report add-list-to-fw-list [liste fw-list]
   foreach liste [
      let id read-from-string ?
-    if not member?  id fw-list [set fw-list lput id fw-list]
-    ]
-
+     set fw-list add-to-fw-list id fw-list
+  ]
  report fw-list
 end
 
 
 to-report forward-message [breeds msg]
   let msg2 create-message get-performative msg
-  let fd-list add-list-to-fw-list (get-receivers msg) read-from-string item 0 get-field "fw-list" msg
-  set msg2 add-receivers breeds (read-from-string item 0 get-field "to" msg) fd-list msg2
-
+  let fd-list add-list-to-fw-list (get-receivers msg) get-forward msg
+  set msg2 add-receivers breeds get-to msg fd-list msg2
   set msg2 add-content get-content msg msg2
-  set msg2 add-field msg2 "from:" item 0 get-field "from" msg
-  set msg2 add-field msg2 "to:" item 0 get-field "to" msg
-  set msg2 add-field msg2 "fw-list:" fd-list
-  set msg2 add-field msg2 "fw:" ((read-from-string item 0 get-field "fw" msg) + 1)
+  set msg add-from get-from msg msg
+  set msg add-to get-to msg msg
+  set msg add-forward fd-list msg
+  set msg add-sujet get-sujet msg msg
   report msg2
 end
 
@@ -113,10 +162,7 @@ to forward-messages
      foreach (get-receivers msg) [
        let id read-from-string ?
        if (read-from-string item 0 get-field "to" msg) = id
-       [
-         set message-to-forward remove msg message-to-forward
-         printcom (word "(" breed " " who ")  Remove from forward")
-       ]
+       [set message-to-forward remove msg message-to-forward printcom (word "(" breed " " who ")  Remove from forward") ]
      ]
      send msg
      printcom (word "(" breed " " who ")  Pour " read-from-string item 0 get-field "to" msg " forward : " msg )
@@ -126,6 +172,40 @@ to forward-messages
 end
 
 to send-message [msg]
+  let recvs read-from-string get-to msg
+  if length recvs = 1 and item 0 recvs = who [stop]
   send msg
   printcom (word "(" breed " " who ") envoi  " msg)
+end
+
+to-report add-forward [fwd-list msg]
+  report add-field msg "fw-list:" fwd-list
+end
+
+to-report get-forward [msg]
+  report read-from-string item 0 get-field "fw-list" msg
+end
+
+to-report add-from [from msg]
+  report add-field msg "from:" from
+end
+
+to-report get-from [msg]
+  report item 0 get-field "from" msg
+end
+
+to-report add-to [field msg]
+  report add-field msg "to:" field
+end
+
+to-report get-to [msg]
+  report item 0 get-field "to" msg
+end
+
+to-report add-sujet [sujet msg]
+  report add-field msg "sujet:" sujet
+end
+
+to-report get-sujet [msg]
+  report item 0 get-field "sujet" msg
 end
