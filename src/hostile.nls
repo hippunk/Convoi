@@ -45,7 +45,7 @@ to setup-hostiles
     ]
 
     ; deploying the other car
-
+    
     if nb-cars > 1 [
       ; ask non leader cars
       ask turtle-set hostiles
@@ -56,7 +56,14 @@ to setup-hostiles
         set ycor base-max-pycor + ((random 10) - 5)
         set zcor solAlt
       ]
+      ask hostile 5
+      [
 
+        ; deploying
+        set xcor 5
+        set ycor 5
+        set zcor solAlt
+      ]
     ]
   ]
 end

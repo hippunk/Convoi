@@ -6,9 +6,7 @@ convois-own[
   genlongpath? ; Should the leader compute a new path (but not shortest) ?
   regenpath? ; doit - on regenerer le path (nouvelle info? ... )
   last-send-time ; communication historical time-stamp
-  convoi-leader-id
   drone-leader-id
-  critic ; determine si le convoi est crittic
   ]
 
 
@@ -46,11 +44,12 @@ to setup-convois
       set hp convois-hp
       set range-visu convoi-range
       set range convoi-range
-      set convoi-leader-id min [who] of convois
-      set critic true ; determine si le convoi est critti
+      
       set message-to-forward []
       set beliefs []
       set intentions []
+      let bel create-belief "critic" true
+      add-belief bel
       ; Visu
       set label who ; display the car names
     ]
@@ -63,7 +62,8 @@ to setup-convois
     ask convoi first-car [
       set leader? true
       set color orange
-      set convoi-leader-id who
+      let bel create-belief "leader" who
+      add-belief bel
       move-to patch base-max-pxcor base-max-pycor 1
     ]
 
@@ -78,7 +78,8 @@ to setup-convois
       ; ask non leader cars
       ask turtle-set sort-on [who] convois with [who > first-car]
       [
-        set convoi-leader-id first-car
+        let bel create-belief "leader" first-car
+        add-belief bel
         ; we create a link between them
         create-convoi-link-to turtle (who - 1)
         ;if who >= 4 and who mod 2 = 0 [ create-convoi-link-with turtle (who - 3) ]
@@ -177,6 +178,7 @@ to convois-think
       ]
       ; S'il n'y a pas de lien devant, c'est probablement que la voiture est morte, donc on devient leader
       [
+        make-leader
         set leader? true
         set genlongpath? true
         if not to-protect? [ set color orange ]
@@ -278,16 +280,16 @@ end
 ;; Ajoute un nouveau leader qui peut prendre un long chemin ou non
 ;; num-new-leader : Identifiant unique du nouveau leader
 ;; takelongpath? : Boolean prendre le long chemin ou non
-to make-leader [num-new-leader]
-  ask convoi num-new-leader [
-    set leader? true
-    set color orange
-    set convoi-leader-id who
-    set genlongpath? true
-    set regenpath? true
-  ]
+to make-leader 
+  set leader? true
+  set color orange
+  let bel create-belief "leader" who
+  update-belief bel
+  set genlongpath? true
+  set regenpath? true  
+  print (word "(" breed " " who ") Je suis nouveau leader ")
   send-message msg-inform-is-new-leader
-  remove-convoi-links-between num-new-leader num-new-leader - 1
+  remove-convoi-links-between who who - 1
 end
 
 
@@ -311,15 +313,23 @@ end
 
 to see
   let hostile-in-range hostiles in-cone-nowrap convoi-range 360
-  if count hostile-in-range  > 0 [
+  ifelse count hostile-in-range  > 0 
+  [
     let cible one-of hostile-in-range
-    let x int ([xcor] of cible / zone-size) * zone-size + int (zone-size / 2)
-    let y int ([ycor] of cible / zone-size) * zone-size + int (zone-size / 2)
-    let dest patch x y 1
-    if [obstacle?] of dest [
-     set dest min-one-of patches with [obstacle? = false and pzcor = 1] [distance dest]
-    ]
+    let x int ([xcor] of cible / zone-size)
+    let y int ([ycor] of cible / zone-size) 
+    let dest (list x y 1)
+    let bel create-belief "hostile" dest
+    add-belief bel
     send-message msg-convoi-detect-hostile dest
+  ]
+  [
+    let x int (xcor / zone-size)
+    let y int (ycor / zone-size)
+    let dest  (list x y 1)
+    let bel create-belief "hostile" dest
+    if exists-belief bel 
+    [remove-belief bel]
   ]
   
 end

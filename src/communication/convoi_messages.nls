@@ -12,16 +12,17 @@ end
 
 
 to-report msg-convoi-detect-hostile [zone]
-  let x int ([pxcor] of zone / zone-size) * zone-size + int (zone-size / 2)
-  let y int ([pycor] of zone / zone-size) * zone-size + int (zone-size / 2)
-  let z mapAlt
-  let dest patch x y z
-  if [obstacle?] of dest [
+  ;let x int ([pxcor] of zone / zone-size) * zone-size + int (zone-size / 2)
+  ;let y int ([pycor] of zone / zone-size) * zone-size + int (zone-size / 2)
+  ;let z mapAlt
+  ;let dest patch x y z
+  ;if [obstacle?] of dest [
     ;; Si la destination est un obstacle on trouve le patch le plus près qui n'en est pas un
-    set dest min-one-of patches with [obstacle? = false and pzcor = mapAlt] [distance dest]
- ]
- let content (list [pxcor] of dest [pycor] of dest [pzcor] of dest)
- let msg create-msg-convoi-to-convoi "inform" who convoi-leader-id content [] "hostile"
+  ;  set dest min-one-of patches with [obstacle? = false and pzcor = mapAlt] [distance dest]
+ ;]
+ ;let content (list [pxcor] of dest [pycor] of dest [pzcor] of dest)
+ let content zone
+ let msg create-msg-convoi-to-convoi "inform" who get-leader-id content [] "hostile"
  report msg
 end
 
@@ -58,20 +59,20 @@ to receive-split-request [msg]
   let id who 
   let id2 read-from-string get-to msg
   ifelse member? id id2 
-  [ make-leader id ]
+  [ make-leader]
   [ printcom (word "(" breed " " who ") ERREUR  receive-split-request " msg) ]
 end
 
 to receive-hostile-inform [msg]
   let id who
   let zone get-content msg
-  printcom (word "(" breed " " who ") reçu hostile " zone)
 end
 
 
 to receive-is-new-leader [msg]
   let id who
   let id-l read-from-string get-from msg
-  set convoi-leader-id id-l
-  ;printcom (word "(" breed " " who ") nouveau leader " id-l)
+  print (word "(" breed " " who ") mon nouveau leader est  " id-l)
+  let bel create-belief "leader" id-l
+  update-belief bel
 end

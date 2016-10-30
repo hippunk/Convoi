@@ -1,4 +1,4 @@
-__includes["BDI/communication.nls" "BDI/bdi.nls" "astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls" "drone.nls" "visu.nls" "communication/basic_message.nls" "communication/drone_messages.nls" "communication/convoi_messages.nls"]
+__includes["BDI/communication.nls" "BDI/bdi.nls" "astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls" "drone.nls" "visu.nls" "communication/basic_message.nls" "communication/drone_messages.nls" "communication/convoi_messages.nls" "BDI/basic_bdi.nls"]
 breed [waypoints waypoint]
 breed [envconstructors envconstructor]
 breed [convois convoi]
@@ -145,7 +145,6 @@ end
 
 
 to go
-
   convois-think
   hostiles-think
   drones-think
@@ -407,7 +406,7 @@ BUTTON
 170
 645
 show to forward
-ask convois [\nlet tmp message-to-forward\n  foreach tmp [\n   let msg ?\n     printcom (word \"(\" breed \" \" who \")\" msg )\n  ]\n]\n\nask drones [\nlet tmp message-to-forward\n  foreach tmp [\n   let msg ?\n     printcom (word \"(\" breed \" \" who \")\" msg )\n  ]\n]
+ask convois [\nprintcom (word \"(\" breed \" \" who \") MESSSAGE TO FORWARD\" )\nlet tmp message-to-forward\n  foreach tmp [\n   let msg ?\n     printcom (word \"(\" breed \" \" who \")\" msg )\n  ]\n]\n\nask drones [\nlet tmp message-to-forward\n  foreach tmp [\n   let msg ?\n     printcom (word \"(\" breed \" \" who \")\" msg )\n  ]\n]
 NIL
 1
 T
@@ -755,7 +754,7 @@ SWITCH
 378
 debug-com
 debug-com
-0
+1
 1
 -1000
 
@@ -834,6 +833,34 @@ convoi-range-color
 convoi-range-color
 "red" "yellow" "blue" "gray" "orange" "brown" "lime" "turquoise" "cyan" "sky" "violet" "magenta" "pink"
 0
+
+BUTTON
+465
+360
+582
+393
+show beliefs
+printbdi (word \"(BELIEFS)\" )\nprintbdi (word \"(convoi)\" )\nask convois [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b beliefs-of-type \"hostile\"\n  printbdi (word \"(\" breed \" \" who \")\" b )\n  set b beliefs-of-type \"leader\"\n  printbdi (word \"(\" breed \" \" who \")\" b )\n  set b beliefs-of-type \"critic\"\n  printbdi (word \"(\" breed \" \" who \")\" b )\n]\nprintbdi (word \"(drones)\" )\nask drones [printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b beliefs-of-type \"hostile\"\n  printbdi (word \"(\" breed \" \" who \")\" b )\n]
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SWITCH
+195
+395
+322
+428
+debug-bdi
+debug-bdi
+0
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?

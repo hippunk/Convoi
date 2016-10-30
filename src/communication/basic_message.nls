@@ -1,4 +1,4 @@
-
+;; REFAIRE LES MESSAGES POUR AVOIR QUE TROIS fon,ction de creation
 to printcom [com]
   if debug-com [
     print com
@@ -29,23 +29,6 @@ to-report create-msg-leader-to-leader-leader [performative from dest content suj
   set msg add-to dest msg
   report msg
 end
-
-;to-report broadcast-convoi [performative from all content sujet]
-  ;;TODO
-  ;let breed-to [breed] of turtle who
-  ;let id who
-    
-  ;ifelse all 
-  ;[let receivers (breed-to in-cone range 360)]
-  ;[let receivers (breed-to in-cone range 360 with [who > id])
-  ;let msg create-message performative
-  ;set msg add-multiple-receivers receivers msg
-  ;set msg add-content content msg
-  ;set msg add-field msg "from:" from
-  ;set msg add-field msg "to:" dest
-  ;report msg
-  
-;end
 
 to-report create-reply-drone-to-drone [msg content from breeds]
   let msg2 create-message "reply-to"

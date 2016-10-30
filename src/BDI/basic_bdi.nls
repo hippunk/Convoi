@@ -1,0 +1,10 @@
+to printbdi [bdi]
+  if debug-bdi [
+    print bdi
+  ]
+end
+
+to-report get-leader-id
+  let bel read-first-belief-of-type "leader"
+  report item 1 bel
+end
