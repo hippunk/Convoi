@@ -6,7 +6,7 @@ convois-own[
   genlongpath? ; Should the leader compute a new path (but not shortest) ?
   regenpath? ; doit - on regenerer le path (nouvelle info? ... )
   last-send-time ; communication historical time-stamp
-  drone-leader-id
+  ;drone-leader-id
   ]
 
 
@@ -25,10 +25,8 @@ to setup-convois
       ; Init apparence NetLogo
       set shape "car"
       set color magenta
-
       ; Init des structures BDI
       set incoming-queue [] ; Do not change
-
       ; Init vars convois
       set speed 0.05 * simu-speed
       set maxdir 10 * simu-speed
@@ -48,8 +46,7 @@ to setup-convois
       set message-to-forward []
       set beliefs []
       set intentions []
-      let bel create-belief "critic" true
-      add-belief bel
+      set-convoi-critic true
       ; Visu
       set label who ; display the car names
     ]
@@ -57,16 +54,13 @@ to setup-convois
     ; get the id of the first one
     let first-car min [who] of convois
     let last-car max [who] of convois
-
     ; configure the leader
     ask convoi first-car [
       set leader? true
       set color orange
-      let bel create-belief "leader" who
-      add-belief bel
+      set-leader-id-convoi who
       move-to patch base-max-pxcor base-max-pycor 1
     ]
-
     ; configure the last car as the critical one
     ask convoi last-car [
       set to-protect? true
@@ -78,8 +72,7 @@ to setup-convois
       ; ask non leader cars
       ask turtle-set sort-on [who] convois with [who > first-car]
       [
-        let bel create-belief "leader" first-car
-        add-belief bel
+        set-leader-id-convoi first-car
         ; we create a link between them
         create-convoi-link-to turtle (who - 1)
         ;if who >= 4 and who mod 2 = 0 [ create-convoi-link-with turtle (who - 3) ]
@@ -283,8 +276,7 @@ end
 to make-leader 
   set leader? true
   set color orange
-  let bel create-belief "leader" who
-  update-belief bel
+  set-leader-id-convoi who
   set genlongpath? true
   set regenpath? true  
   print (word "(" breed " " who ") Je suis nouveau leader ")
@@ -319,17 +311,14 @@ to see
     let x int ([xcor] of cible / zone-size)
     let y int ([ycor] of cible / zone-size) 
     let dest (list x y 1)
-    let bel create-belief "hostile" dest
-    add-belief bel
+    add-hostile-belief dest
     send-message msg-convoi-detect-hostile dest
   ]
   [
     let x int (xcor / zone-size)
     let y int (ycor / zone-size)
     let dest  (list x y 1)
-    let bel create-belief "hostile" dest
-    if exists-belief bel 
-    [remove-belief bel]
+    remove-hostile-belief dest
   ]
   
 end

@@ -4,7 +4,48 @@ to printbdi [bdi]
   ]
 end
 
-to-report get-leader-id
-  let bel read-first-belief-of-type "leader"
+
+to set-convoi-critic [critic?]
+  let bel create-belief "critic" true
+  add-belief bel
+end
+
+to-report get-convoi-critic
+  let bel read-first-belief-of-type "critic"
   report item 1 bel
 end
+
+to set-leader-id-convoi [id]
+  let bel create-belief "leaderC" id
+  update-belief bel
+end
+
+to-report get-leader-id-convoi
+  let bel read-first-belief-of-type "leaderC"
+  report item 1 bel
+end
+
+to set-leader-id-drone [id]
+  let bel create-belief "leaderD" id
+  update-belief bel
+end
+
+to-report get-leader-id-drone
+  let bel read-first-belief-of-type "leaderD"
+  report item 1 bel
+end
+
+to add-hostile-belief [zone]
+  let bel create-belief "hostile" zone
+  add-belief bel
+end 
+
+to remove-hostile-belief [zone]
+  let bel create-belief "hostile" zone
+  if exists-belief bel 
+  [remove-belief bel]
+end 
+
+to-report get-hostile-belief 
+  report beliefs-of-type "hostile"
+end 

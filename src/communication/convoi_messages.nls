@@ -22,12 +22,12 @@ to-report msg-convoi-detect-hostile [zone]
  ;]
  ;let content (list [pxcor] of dest [pycor] of dest [pzcor] of dest)
  let content zone
- let msg create-msg-convoi-to-convoi "inform" who get-leader-id content [] "hostile"
+ let msg create-msg-convoi-to-convoi "inform" who get-leader-id-convoi content [] "hostile"
  report msg
 end
 
 to-report msg-send-path 
-  let msg create-msg-leader-to-leader-leader "inform" who drone-leader-id as-path "path"
+  let msg create-msg-leader-to-leader-leader "inform" who get-leader-id-drone as-path "path"
   report msg
 end
 
