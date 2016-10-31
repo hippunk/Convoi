@@ -1,0 +1,41 @@
+
+to-report path-to-zone [path]
+  
+end
+
+
+to-report in-zone? [p zone]
+  ifelse patch-to-zone p = zone
+  [report true]
+  [report false]
+  
+end
+
+
+to-report patch-to-zone [p]
+  let x int ([pxcor] of p / zone-size)
+  let y int ([pxcor] of p / zone-size)
+  let dest (list x y 1)
+  report dest
+end
+
+
+
+; Return the 6 neighbours without the world wrap
+to-report neighbors6-nowrap
+; reports neighbors-nowrap-n or the indicated size
+report neighbors6 with
+[ abs (pxcor - [pxcor] of myself) <= 1
+  and abs (pycor - [pycor] of myself) <= 1
+]
+end
+
+
+to-report neighbors-nowrap
+; reports neighbors-nowrap-n or the indicated size
+report neighbors with
+[ abs (pxcor - [pxcor] of myself) <= 1
+  and abs (pycor - [pycor] of myself) <= 1
+  and abs (pzcor - [pzcor] of myself) <= 1
+]
+end

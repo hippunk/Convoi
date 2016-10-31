@@ -1,4 +1,4 @@
-__includes["BDI/communication.nls" "BDI/bdi.nls" "astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls" "drone.nls" "visu.nls" "communication/basic_message.nls" "communication/drone_messages.nls" "communication/convoi_messages.nls" "BDI/basic_bdi.nls"]
+__includes["BDI/communication.nls" "BDI/bdi.nls" "astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls" "drone.nls" "visu.nls" "communication/basic_message.nls" "communication/drone_messages.nls" "communication/convoi_messages.nls" "BDI/basic_bdi.nls" "utils/utils.nls"]
 breed [waypoints waypoint]
 breed [envconstructors envconstructor]
 breed [convois convoi]
@@ -124,24 +124,6 @@ end
 
 
 
-; Return the 6 neighbours without the world wrap
-to-report neighbors6-nowrap
-; reports neighbors-nowrap-n or the indicated size
-report neighbors6 with
-[ abs (pxcor - [pxcor] of myself) <= 1
-  and abs (pycor - [pycor] of myself) <= 1
-]
-end
-
-
-to-report neighbors-nowrap
-; reports neighbors-nowrap-n or the indicated size
-report neighbors with
-[ abs (pxcor - [pxcor] of myself) <= 1
-  and abs (pycor - [pycor] of myself) <= 1
-  and abs (pzcor - [pzcor] of myself) <= 1
-]
-end
 
 
 to go

@@ -308,9 +308,7 @@ to see
   ifelse count hostile-in-range  > 0 
   [
     let cible one-of hostile-in-range
-    let x int ([xcor] of cible / zone-size)
-    let y int ([ycor] of cible / zone-size) 
-    let dest (list x y 1)
+    let dest patch-to-zone [patch-here] of cible
     add-hostile-belief dest
     send-message msg-convoi-detect-hostile dest
   ]
