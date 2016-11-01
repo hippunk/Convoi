@@ -1,13 +1,49 @@
 to printbdi [bdi]
-  if debug-bdi [
-    print bdi
-  ]
+  if debug-bdi 
+  [print bdi]
 end
 
+to set-convoi-path-zone [zones]
+  let bel create-belief "path-Zone" zones
+  ifelse exist-beliefs-of-type "path-Zone"
+  [update-belief bel]
+  [add-belief bel]
+end
+
+to-report get-convoi-path-zone
+  let bel read-first-belief-of-type "path-Zone"
+  report item 1 bel
+end
+
+to set-drone-munition [munition]
+  let bel create-belief "munition" munition
+  ifelse exist-beliefs-of-type "munition"
+  [update-belief bel]
+  [add-belief bel]
+end
+
+to-report get-drone-munition
+  let bel read-first-belief-of-type "munition"
+  report item 1 bel
+end
+
+to set-drone-essence [essence]
+  let bel create-belief "essence" essence
+  ifelse exist-beliefs-of-type "essence"
+  [update-belief bel]
+  [add-belief bel]
+end
+
+to-report get-drone-essence
+  let bel read-first-belief-of-type "essence"
+  report item 1 bel
+end
 
 to set-convoi-critic [critic?]
-  let bel create-belief "critic" true
-  add-belief bel
+  let bel create-belief "critic" critic?
+  ifelse exist-beliefs-of-type "critic"
+  [update-belief bel]
+  [add-belief bel]
 end
 
 to-report get-convoi-critic
@@ -17,7 +53,9 @@ end
 
 to set-leader-id-convoi [id]
   let bel create-belief "leaderC" id
-  update-belief bel
+  ifelse exist-beliefs-of-type "leaderC"
+  [update-belief bel]
+  [add-belief bel]
 end
 
 to-report get-leader-id-convoi
@@ -27,7 +65,9 @@ end
 
 to set-leader-id-drone [id]
   let bel create-belief "leaderD" id
-  update-belief bel
+  ifelse exist-beliefs-of-type "leaderD"
+  [update-belief bel]
+  [add-belief bel]
 end
 
 to-report get-leader-id-drone

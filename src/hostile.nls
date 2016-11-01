@@ -56,14 +56,13 @@ to setup-hostiles
         set ycor base-max-pycor + ((random 10) - 5)
         set zcor solAlt
       ]
-      ask hostile 5
-      [
-
+      ;ask hostile 5
+      ;[
         ; deploying
-        set xcor 5
-        set ycor 5
-        set zcor solAlt
-      ]
+        ;set xcor 5
+        ;set ycor 5
+        ;set zcor solAlt
+      ;]
     ]
   ]
 end

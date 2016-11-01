@@ -5,7 +5,7 @@
 
 to send-status
   ;; envoi du status courant au leader
-  let content (word ticks " " ammo " " carburant)
+  let content (word ticks " " get-drone-munition " " get-drone-essence)
   let msg create-msg-drone-to-drone "inform" who known-leader-drone content [] "status"
    ifelse not empty? (get-receivers msg)
    [

@@ -122,10 +122,6 @@ end
 ;------------- functions ------------------------------------
 ;------------------------------------------------------------
 
-
-
-
-
 to go
   convois-think
   hostiles-think
@@ -619,7 +615,7 @@ SWITCH
 343
 debug-path
 debug-path
-1
+0
 1
 -1000
 
@@ -822,7 +818,7 @@ BUTTON
 582
 393
 show beliefs
-printbdi (word \"(BELIEFS)\" )\nprintbdi (word \"(convoi)\" )\nask convois [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-convoi-critic\n  printbdi (word \"(\" breed \" \" who \") Critic? : \" b )\n]\nprintbdi (word \"(drones)\" )\nask drones [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n    let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n  set b get-convoi-critic\n  printbdi (word \"(\" breed \" \" who \") Critic? : \" b )\n]
+printbdi (word \"(BELIEFS)\" )\nprintbdi (word \"(convoi)\" )\nask convois [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-convoi-critic\n  printbdi (word \"(\" breed \" \" who \") Critic? : \" b )\n]\nprintbdi (word \"(drones)\" )\nask drones [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n    let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n]
 NIL
 1
 T
@@ -834,10 +830,10 @@ NIL
 1
 
 SWITCH
-195
-395
-322
-428
+175
+380
+302
+413
 debug-bdi
 debug-bdi
 0

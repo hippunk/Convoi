@@ -66,6 +66,7 @@ end
 to receive-hostile-inform [msg]
   let id who
   let zone get-content msg
+  add-hostile-belief zone
 end
 
 
@@ -73,6 +74,5 @@ to receive-is-new-leader [msg]
   let id who
   let id-l read-from-string get-from msg
   print (word "(" breed " " who ") mon nouveau leader est  " id-l)
-  let bel create-belief "leader" id-l
-  update-belief bel
+  set-leader-id-convoi id-l
 end
