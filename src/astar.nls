@@ -2,7 +2,7 @@
 ; Note: si l'heuristique est consistante/monotone (comme distance euclidienne/vol d'oiseau), h = 0 revient a faire Djikstra
 ; Note2: on l'utilise avec le convoi mais on peut l'utiliser avec n'importe quel agent, c'est generique.
 ; Note3: limite en 2D pour cette application mais on peut facilement la modifier pour accepter la 3D (enlever les limites with [pzcor ...])
-to-report plan-astar [start goal longpath?] ; start et goal sont des patchs
+to-report plan-astar [start goal longpath? zones] ; start et goal sont des patchs
 
   ; Desactivation du refresh GUI (car calculs internes): Pour etre plus rapide, on dit a NetLogo qu'il peut calculer toute cette fonction sans avoir a updater le GUI (que des calculs internes), comme ca le slider de vitesse n'influencera pas la vitesse de ce code (sinon en slower ca met vraiment beaucoup de temps)
   if not debug-verbose [no-display]
@@ -53,6 +53,16 @@ to-report plan-astar [start goal longpath?] ; start et goal sont des patchs
       ; Pop un element de la liste, le meilleur candidat
       let next first open
       set open but-first open
+      ;print (patch-to-zone (item 3 next))
+      ;print zones
+      while [member? (patch-to-zone (item 3 next)) zones or resign = true]
+      [
+        ;print (patch-to-zone (item 3 next))
+        ifelse empty? open
+        [set resign true]
+        [set next first open set open but-first open]
+      ]
+      
       set pos item 3 next
       set g item 1 next
 
@@ -275,4 +285,58 @@ to-report plan-astar3D [start goal longpath?] ; start et goal sont des patchs
 
   ; Et on retourne le chemin complet (ou une liste vide si on n'a rien trouve)
   report path
+end
+
+
+to calcul-path-convoi-evite-zone-hotile
+  let zones true
+  calcul-path-convoi zones
+end
+
+to calcul-path-convoi [zones?]
+  let first-car min [who] of convois
+  ; Calcul du plan AStar pour chaque leader si necessaire
+  foreach sort-on [who] turtle-set convois with [leader? and not finished? and not dead?] 
+  [
+    let z [] 
+    if zones?
+    [
+      ask ? 
+      [
+        set z get-hostile-belief
+      ]
+    ] 
+    
+    let id ([who] of ?) - first-car
+    ; Recalcule le chemin si nécessaire (par exemple au début de la simulation ou quand le convoi se sépare)
+    ; Note: on est oblige de le faire en dehors du ask sinon on ne peut pas acceder a tous les patchs
+    if empty? as-path or length as-path < (id + 1) or empty? (item id as-path)  or [regenpath?] of ? 
+    [ ; s'il n'y a pas encore de chemin du tout, ou pas de chemin pour cette voiture, on cree un plan AStar
+      ; Cree le plan AStar (attention a ca que le patch start soit au niveau ou il y a les obstacles, ici pzcor = mapAlt pour les obstacles)
+      let start-patch min-one-of (patches with [pzcor = mapAlt and not obstacle?]) [distance ?] ; on s'assure de choisir comme patch de depart un patch libre sans obstacle, sinon quand on split un convoi il se peut qu'il soit sur un obstacle et qu'il ne puisse jamais generer de chemin
+      let new-path plan-astar ([patch-at 0 0 (pzcor * -1)] of start-patch) (one-of patches with [objectif?]) ([genlongpath?] of ?)  z
+      ; S'il n'y a pas de plan et qu'on a essayé de trouver un long chemin, on attend la prochaine iteration et on reessaie mais avec un plan court
+      if empty? new-path and [genlongpath?] of ? [ ask ? [ set genlongpath? false ]]
+      ; S'il n'y a pas deja une entree pour cette voiture on la cree
+        
+        
+      if [regenpath?] of ? 
+      [ 
+        ask ? [
+          set regenpath? false
+          set genlongpath? false
+        ]
+      ]
+        
+      ifelse length as-path < (id + 1) 
+      [
+        set as-path lput new-path as-path
+      ]
+      ; Sinon on remplace l'entree pour cette voiture par le nouveau plan
+      [
+        set as-path replace-item id as-path new-path
+      ]
+    ]
+  ]
+  
 end

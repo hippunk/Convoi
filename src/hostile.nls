@@ -113,7 +113,7 @@ to random-move-path ;Ici, l'idée c'est de générer un chemin vers un patch al�
       let id ([who] of ?) ;id pour gérer avec astar observer hors turtle context
       if [finished?] of (turtle id) [;si pas de chemin on génère
         let tmp-patch patch ([pxcor] of (turtle id)) ([pycor] of (turtle id))  0
-        let tmpplan plan-astar ( tmp-patch ) (one-of patches with [not obstacle? and pzcor = mapAlt]) (false)
+        let tmpplan plan-astar ( tmp-patch ) (one-of patches with [not obstacle? and pzcor = mapAlt]) (false) []
         ask turtle id [
           set rand-path tmpplan
           if not empty? rand-path [
@@ -277,7 +277,7 @@ to move-path-position [dest-patch];Ici, l'idée c'est de générer un chemin ver
 
       if ([finished?] of (turtle id) or [is-random-path?] of (turtle id))[;si pas de chemin on génère
         let tmp-patch patch ([pxcor] of (turtle id)) ([pycor] of (turtle id))  0
-        let tmpplan plan-astar ( tmp-patch ) dest-patch (false)
+        let tmpplan plan-astar ( tmp-patch ) dest-patch (false) []
         ask turtle id [
           set rand-path tmpplan
           if not empty? rand-path [

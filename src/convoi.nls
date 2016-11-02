@@ -11,6 +11,8 @@ convois-own[
 
 
 to setup-convois
+  let l (list 2 1 1)
+  let l2 (list 3 2 1)
   if nb-cars > 0 [
     ; get the size of the base to deploy the car accordingly
     let base-min-pxcor min [pxcor] of (patches with [hangar? and pzcor = mapAlt])
@@ -42,6 +44,8 @@ to setup-convois
       set hp convois-hp
       set range-visu convoi-range
       set range convoi-range
+      set last-send 0
+      set send-interval 30
       
       set message-to-forward []
       set beliefs []
@@ -60,13 +64,22 @@ to setup-convois
       set color orange
       set-leader-id-convoi who
       move-to patch base-max-pxcor base-max-pycor 1
+      add-hostile-belief l
+    ]
+    ask convoi 1 [
+      add-hostile-belief l2
     ]
     ; configure the last car as the critical one
     ask convoi last-car [
       set to-protect? true
       set color yellow
     ]
-
+    
+    ;ask patches with [pzcor = mapAlt]
+    ;[
+    ;  if pin-zone? l or pin-zone? l2
+    ;  [set pcolor red ]
+    ;]
     ; deploying the other car
     if nb-cars > 1 [
       ; ask non leader cars
@@ -82,7 +95,6 @@ to setup-convois
         set ycor base-max-pycor - (floor (who / 2) / (nb-cars / 2) * (base-max-pycor - base-min-pycor)) ; d'une rangee de plus en plus basse toutes les deux voitures
         set zcor solAlt
       ]
-
     ]
   ]
 end
@@ -93,51 +105,33 @@ end
 to convois-think
 
   if nb-cars > 0 [
-    if ticks = 10 [
-    ask convois with [leader?] [
-      let msg-split msg-split-split (who + 1)
-      send-message msg-split
-    ]   
+    if ticks = 10 
+    [
+      ask convois with [leader?] 
+      [
+        let msg-split msg-split-split (who + 1)
+        send-message msg-split
+      ]   
     
-  ]
-     ask convois [
-       update-convoi-from-ihm
-       see
-       receive-message-convoi
-     ]
-    
-    let first-car min [who] of convois
-
-    ; Calcul du plan AStar pour chaque leader si necessaire
-    foreach sort-on [who] turtle-set convois with [leader? and not finished? and not dead?] [
-      let id ([who] of ?) - first-car
-      ; Recalcule le chemin si nécessaire (par exemple au début de la simulation ou quand le convoi se sépare)
-      ; Note: on est oblige de le faire en dehors du ask sinon on ne peut pas acceder a tous les patchs
-      if empty? as-path or length as-path < (id + 1) or empty? (item id as-path)  or [regenpath?] of ? [ ; s'il n'y a pas encore de chemin du tout, ou pas de chemin pour cette voiture, on cree un plan AStar
-        
-        ; Cree le plan AStar (attention a ca que le patch start soit au niveau ou il y a les obstacles, ici pzcor = mapAlt pour les obstacles)
-        let start-patch min-one-of (patches with [pzcor = mapAlt and not obstacle?]) [distance ?] ; on s'assure de choisir comme patch de depart un patch libre sans obstacle, sinon quand on split un convoi il se peut qu'il soit sur un obstacle et qu'il ne puisse jamais generer de chemin
-        let new-path plan-astar ([patch-at 0 0 (pzcor * -1)] of start-patch) (one-of patches with [objectif?]) ([genlongpath?] of ?)
-        ; S'il n'y a pas de plan et qu'on a essayé de trouver un long chemin, on attend la prochaine iteration et on reessaie mais avec un plan court
-        if empty? new-path and [genlongpath?] of ? [ ask ? [ set genlongpath? false ]]
-        ; S'il n'y a pas deja une entree pour cette voiture on la cree
-        
-        
-        if [regenpath?] of ? [ ask ? [ 
-            set regenpath? false
-            set genlongpath? false
-            ] ]
-        
-        ifelse length as-path < (id + 1) [
-          set as-path lput new-path as-path
-        ]
-        ; Sinon on remplace l'entree pour cette voiture par le nouveau plan
-        [
-          set as-path replace-item id as-path new-path
-        ]
-      ]
     ]
-
+    if timeout_has_expired last-send send-interval
+    [
+      set last-send ticks
+      ask convois [
+        let msg msg-status
+        send-message msg
+      ]   
+    
+    ]
+    ask convois 
+    [
+      update-convoi-from-ihm
+      see
+      receive-message-convoi
+    ]
+    calcul-path-convoi-evite-zone-hotile
+    let first-car min [who] of convois
+    
     ; Deplacement des leaders sur le chemin AStar
     ask convois with [leader? and not finished? and not dead?] [ ; Tant qu'on n'a pas atteint le but
       ;move-convoi-naive ; deplacement naif sans AStar
@@ -313,9 +307,7 @@ to see
     send-message msg-convoi-detect-hostile dest
   ]
   [
-    let x int (xcor / zone-size)
-    let y int (ycor / zone-size)
-    let dest  (list x y 1)
+    let dest patch-to-zone patch-here
     remove-hostile-belief dest
   ]
   

@@ -87,5 +87,7 @@ to remove-hostile-belief [zone]
 end 
 
 to-report get-hostile-belief 
-  report beliefs-of-type "hostile"
+  ifelse exist-beliefs-of-type "hostile"
+  [report item 0 beliefs-of-type "hostile"]
+  [report []]
 end 

@@ -5,7 +5,18 @@ end
 
 
 to-report in-zone? [p zone]
-  ifelse patch-to-zone p = zone
+  ;print patch-to-zone p
+  ;print zone
+  ifelse compare-list (patch-to-zone p) zone
+  [report true]
+  [report false]
+  
+end
+
+to-report pin-zone? [zone]
+  ;print patch-to-zone p
+  ;print zone
+  ifelse compare-list (patch-to-zone patch pxcor pycor pzcor) zone
   [report true]
   [report false]
   
@@ -14,7 +25,7 @@ end
 
 to-report patch-to-zone [p]
   let x int ([pxcor] of p / zone-size)
-  let y int ([pxcor] of p / zone-size)
+  let y int ([pycor] of p / zone-size)
   let dest (list x y 1)
   report dest
 end
@@ -38,4 +49,15 @@ report neighbors with
   and abs (pycor - [pycor] of myself) <= 1
   and abs (pzcor - [pzcor] of myself) <= 1
 ]
+end
+
+
+to-report compare-list [l1 l2]
+  let i 0
+  foreach l1 [ 
+    ;print (word ? " " (item i l2))
+    if (item i l2) != ? [report false] 
+    set i i + 1
+  ]
+  report true 
 end

@@ -108,7 +108,7 @@ to drones-think
   ]
   random-move-path-drones
   ;drone-eliptic-move
-  drones-fire
+  ;drones-fire
    
 end
 

@@ -22,6 +22,7 @@ globals [mapAlt solAlt basseAlt hauteAlt ; variables topologiques Z discretise: 
   is-movie-recording?
   convoi-position ;; position connu du convoi par les agents hostiles
   nb-cars
+  last-send
 ]
 
 patches-own [obstacle? base? hangar? objectif? bridge? sol?; variables topologiques au niveau mapAlt, permet de definir les patchs praticables et ceux qui sont des obstacles
@@ -63,7 +64,10 @@ to setup
     ]
     ; generate a path and check is the convoi can reach its destination. If not, generate a new env
     [
-      let start-path (plan-astar ([[patch-at 0 0 (pzcor * -1)] of patch-here] of one-of convois with [leader?]) (one-of patches with [objectif?]) false)
+      let t one-of convois with [leader?]
+      let z []
+      ask t [set z get-hostile-belief]
+      let start-path (plan-astar ([[patch-at 0 0 (pzcor * -1)] of patch-here] of t) (one-of patches with [objectif?]) false z)
       set as-path replace-item 0 as-path start-path
       if not empty? start-path [ set path-is-possible? true]
     ]
@@ -81,9 +85,8 @@ to setup
   set convoi-position []
 
   if debug-path [
-    ask patches with [pxcor mod zone-size = 0 or pycor mod zone-size = 0 and pzcor = mapAlt] [
-      set pcolor yellow
-    ]
+    ask patches with [pxcor mod zone-size = 0 or pycor mod zone-size = 0 and pzcor = mapAlt]
+    [set pcolor yellow]
 
   ]
 end
@@ -128,6 +131,11 @@ to go
   drones-think
   ;;print convoi-position
   update-bullets
+  ;ask patches with [pzcor = mapAlt]
+    ;[
+    ;  if pin-zone? l or pin-zone? l2
+    ;  [set pcolor red ]
+    ;]
   let agent-set turtles with [who = -1]
   if hostile-range-visu? [set agent-set (turtle-set agent-set hostiles)]
   if convoi-range-visu? [set agent-set (turtle-set agent-set convois)]
@@ -141,8 +149,8 @@ end
 GRAPHICS-WINDOW
 0
 0
-1030
-1051
+1430
+1451
 -1
 -1
 20.0
@@ -156,9 +164,9 @@ GRAPHICS-WINDOW
 1
 1
 0
-50
+70
 0
-50
+70
 0
 20
 1
@@ -233,7 +241,7 @@ INPUTBOX
 95
 204
 nb-mountains
-10
+0
 1
 0
 Number
@@ -244,7 +252,7 @@ INPUTBOX
 150
 204
 nb-lakes
-4
+0
 1
 0
 Number
@@ -562,7 +570,7 @@ INPUTBOX
 296
 270
 total-nb-drones
-0
+1
 1
 0
 Number
@@ -628,7 +636,7 @@ zone-size
 zone-size
 1
 20
-11
+10
 1
 1
 NIL
@@ -673,7 +681,7 @@ pas-cercle
 pas-cercle
 1
 12
-9
+12
 1
 1
 NIL
@@ -798,7 +806,7 @@ SWITCH
 548
 convoi-range-visu?
 convoi-range-visu?
-0
+1
 1
 -1000
 
