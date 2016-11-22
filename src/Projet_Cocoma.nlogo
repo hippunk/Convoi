@@ -55,8 +55,8 @@ to setup
     setup-env
     clear-turtles ; reinit the id of the agents
     setup-convois ;
-    setup-hostiles
     setup-drones
+    setup-hostiles
 
     ask patches
     [
@@ -124,7 +124,7 @@ to setup-globals
   set mission-failed? false
 
   set as-cost 1 ; cost to move
-  set as-path n-values nb-cars [[]] ; max one path for each car
+  set as-path n-values (total-nb-cars + total-nb-drones)[[]] ; max one path for each car
 
   set send-interval 10 ; in number of steps
 
@@ -229,7 +229,7 @@ INPUTBOX
 197
 269
 total-nb-cars
-1
+2
 1
 0
 Number

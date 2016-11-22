@@ -7,7 +7,6 @@ drones-own[
   regenpath? ; doit - on regenerer le path (nouvelle info? ... )
   last-send-time ; communication historical time-stamp
   
-  rand-path
   eli-path
   angle-eli
   cooldown-status
@@ -76,7 +75,7 @@ to setup-drones
       
       set cooldown-status 0 ;; Rechargement de l'arme
       
-      set rand-path []
+      ;set rand-path []
       set message-to-forward []
      
       
@@ -122,15 +121,12 @@ to setup-drones
 end
 
 to  random-basic-strategy
-  
-  
-  
   ask drones [
     if leader? 
     [
       if ticks = 10
       [
-        let msg go-check-position [3 3 1] 12
+        let msg go-check-position [3 3 1] 3
         send-message msg
         set last-send-time ticks
       ]  
@@ -147,9 +143,11 @@ to  random-basic-strategy
       set last-send-time ticks
     ]
     ;update-drone-tick
-    check-dead
+    ;check-dead
+    drone-astar-to-zone [] false
+    move-to-path-drones
   ]
-  random-move-path-drones
+  ;random-move-path-drones
   ;drone-eliptic-move
   ;drones-fire
 end
@@ -420,4 +418,51 @@ end
 to check-vital
   if get-drone-munition < drones-max-ammo * vital-critic [let msg need-ammo send-message msg set label-color red]
   if get-drone-essence < drones-max-carburant * vital-critic [let msg need-fuel send-message msg set label-color red]
+end
+
+
+
+to drone-astar-to-zone [zone regen?]
+  if not regen? and not finished? [stop]
+  ;printcom (word "(" breed " " who ") regen" regen? " " zone)
+  if empty? zone [set zone [z_zone] of (one-of patches with [not obstacle?])]
+  ;printcom (word "(" breed " " who ") je vais " zone) 
+  let tmp-patch patch pxcor pycor pzcor
+  let goal (one-of patches with [not obstacle? and compare-list z_zone zone])
+  let tmpplan plan-astar3D ( tmp-patch ) goal (false)
+  set as-path replace-item who as-path tmpplan
+    if not empty? (item who as-path) [
+      set finished? false
+    ]
+end
+
+
+
+to move-to-path-drones ;Ici, l'idée c'est de générer un chemin vers un patch aléatoire et de s'y rendre
+  ;let tmp-plan plan-astar patch-here one-of patches with [pzcor = 0 and not obstacle?] false
+  ask drones with [not finished? and not dead?] 
+  [ ; Tant qu'on n'a pas atteint le but
+    ; Recupere le plan AStar
+    if not empty? (item who as-path) [
+      let my-as-path item who  as-path
+      ; Deplacement par waypoints: on se deplace jusqu'au prochain patch du chemin jusqu'à l'atteindre
+      let next-patch first (item who as-path)
+      let zz pzcor
+      ;set next-patch [patch-at 0 0 0] of next-patch ; mise a niveau de pzcor au cas ou le chemin a ete calculé sur un autre plan
+      ; Deplacement vers le prochain waypoint
+      if next-patch != patch-here [move-drone next-patch false false]
+      ; Si on a atteint ce patch, on le supprime de la liste, et on va donc continuer vers le prochain patch du chemin
+      if patch-here = next-patch [
+        set my-as-path remove-item 0 my-as-path
+        set as-path replace-item who as-path my-as-path      
+      ]
+    ]
+
+    ; Critere d'arret: on est a cote de l'objectif
+    if  empty? (item who as-path) [
+      printcom (word "(" breed " " who ") ARRIVÉ " [z_zone] of patch-here) 
+      set finished? true
+      ;ask patch-here [set pcolor red]
+    ]
+  ]
 end

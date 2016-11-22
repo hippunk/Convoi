@@ -111,8 +111,10 @@ end
 to receive-check-pos-drone [msg]
   let id who
   let pos item 1 get-content msg
-  strat-check-pos pos
+  ;strat-check-pos pos
   ;printcom (word "(" breed " " who ") receive-check-pos-drone " get-from msg " pos" pos) 
+  drone-astar-to-zone pos true
+  
 end 
 to receive-need-ammo-drone [msg]
   let id who
