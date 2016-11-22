@@ -1,13 +1,22 @@
 
 to-report path-to-zone [path]
-  
+  let zone-path []
+  foreach path
+  [
+    let p patch [pxcor] of ? [pycor] of ? mapAlt
+    let z [z_zone] of p
+    if empty? zone-path or not (compare-list last zone-path z)  
+    [set zone-path lput z zone-path]
+  ]
+  ;print zone-path
+  report zone-path
 end
 
 
 to-report in-zone? [p zone]
   ;print patch-to-zone p
   ;print zone
-  ifelse compare-list (patch-to-zone p) zone
+  ifelse compare-list ([z_zone] of p) zone
   [report true]
   [report false]
   
@@ -16,18 +25,30 @@ end
 to-report pin-zone? [zone]
   ;print patch-to-zone p
   ;print zone
-  ifelse compare-list (patch-to-zone patch pxcor pycor pzcor) zone
+  ifelse compare-list z_zone zone
   [report true]
   [report false]
   
 end
 
 
-to-report patch-to-zone [p]
-  let x int ([pxcor] of p / zone-size)
-  let y int ([pycor] of p / zone-size)
-  let dest (list x y 1)
-  report dest
+;to-report patch-to-zone [p]
+;  let x int ([pxcor] of p / zone-size)
+;  let y int ([pycor] of p / zone-size)
+;  let dest (list x y 1)
+;  report dest
+;end
+;
+;to-report to-zone
+;  let x int (pxcor / zone-size)
+;  let y int (pycor / zone-size)
+;  let dest (list x y 1)
+;  report dest
+;end
+
+to-report get-zone
+  
+  report [z_zone] of myself
 end
 
 

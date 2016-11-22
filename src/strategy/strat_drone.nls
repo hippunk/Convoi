@@ -1,0 +1,39 @@
+to strat-check-pos [zone]
+  
+  
+end
+
+
+
+
+
+
+to strat-kill-pos [pos]
+  
+end
+
+
+
+
+
+to strat-go-refuel
+  
+end
+
+
+
+
+
+
+to strat-go-reload
+  
+  
+  
+end
+
+
+
+
+to strat-cover-convoi [id]
+  
+end

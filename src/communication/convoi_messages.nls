@@ -10,6 +10,14 @@ to-report msg-status
   report msg
 end
 
+
+to-report msg-status-leader 
+  let my-id who
+  let l (list ticks get-convoi-critic get-leader-id-convoi get-hostile-belief) 
+  let msg create-msg-convoi-to-convoi-broadcast "inform" who (convois in-cone range 360 with [who > my-id]) l [] "statusLeader"
+  report msg
+end
+
 to-report msg-inform-is-new-leader 
   let my-id who
   let msg create-msg-convoi-to-convoi-broadcast "inform" who (convois in-cone range 360 with [who > my-id]) my-id [] "nLeader"
@@ -18,15 +26,6 @@ end
 
 
 to-report msg-convoi-detect-hostile [zone]
-  ;let x int ([pxcor] of zone / zone-size) * zone-size + int (zone-size / 2)
-  ;let y int ([pycor] of zone / zone-size) * zone-size + int (zone-size / 2)
-  ;let z mapAlt
-  ;let dest patch x y z
-  ;if [obstacle?] of dest [
-    ;; Si la destination est un obstacle on trouve le patch le plus près qui n'en est pas un
-  ;  set dest min-one-of patches with [obstacle? = false and pzcor = mapAlt] [distance dest]
- ;]
- ;let content (list [pxcor] of dest [pycor] of dest [pzcor] of dest)
  let content zone
  let msg create-msg-convoi-to-convoi "inform" who get-leader-id-convoi content [] "hostile"
  report msg
@@ -52,6 +51,7 @@ to receive-message-convoi
       let perf get-performative msg
       let sub get-sujet msg
       if perf = "request" and sub = "split" [receive-split-request msg stop]
+      if perf = "inform" and sub = "statusLeader" [receive-status-leader msg stop]
       if perf = "inform" and sub = "status" [receive-status msg stop]
       if perf = "inform" and sub = "hostile" [receive-hostile-inform msg stop]
       if perf = "inform" and sub = "nLeader" [receive-is-new-leader msg stop]
@@ -71,8 +71,10 @@ to receive-split-request [msg]
 end
 
 to receive-hostile-inform [msg]
+  
   let id who
   let zone get-content msg
+  ;print (word "(" breed " " who ")  receive-hostile-inform " zone)
   add-hostile-belief zone
 end
 
@@ -81,11 +83,29 @@ to receive-status [msg]
   let zones item 3 get-content msg
   foreach zones
   [
-    add-hostile-belief ?
+    
+    if ? != "hostile"
+    [add-hostile-belief ?]
   ]
   
 end
 
+to receive-status-leader [msg]
+  ;print (word "(" breed " " who ")  receive-status-leader " msg)
+  let id who
+  
+  let zones item 3 get-content msg
+  if empty? zones [stop]
+  ;set zones item 1 zones
+  ;print zones
+  
+  foreach zones
+  [
+    if ? != "hostile"
+    [add-hostile-belief ?]
+  ]
+  
+end
 
 to receive-is-new-leader [msg]
   let id who

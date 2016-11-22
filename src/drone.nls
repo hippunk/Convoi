@@ -6,8 +6,6 @@ drones-own[
   genlongpath? ; Should the leader compute a new path (but not shortest) ?
   regenpath? ; doit - on regenerer le path (nouvelle info? ... )
   last-send-time ; communication historical time-stamp
-  ;beliefs tous les agents ont le BDI ?
-  ;intentions
   
   rand-path
   eli-path
@@ -17,6 +15,8 @@ drones-own[
   known-leader-drone
   debug-x
   debug-y
+  
+  vital-critic
   
   ]
 
@@ -35,9 +35,11 @@ to setup-drones
     ask drones
     [
       ; Init apparence NetLogo
+      ; Visu
+      set label (word who " : " hp) ; display the car names
+      set size 3
       set shape "airplane 2"
-      set size 5
-      ;set color magenta
+      set color grey
 
       ; Init des structures BDI
       set incoming-queue [] ; Do not change
@@ -48,15 +50,23 @@ to setup-drones
       set heading 0
       set roll 0
       set pitch 0
+      
       set finished? false
       set leader? false
       set to-protect? false
       set genlongpath? false
+      
       set dead? false
       set regenpath? false
-      set hp drones-hp
+      
+      
+      
+      ; Init des structures BDI
+      set incoming-queue [] ; Do not change
       set beliefs []
       set intentions []
+      
+      
       set angle-eli random 360
       set eli-path  []
       
@@ -65,19 +75,31 @@ to setup-drones
       set range-color drone-range-color
       
       set cooldown-status 0 ;; Rechargement de l'arme
-      set armed? true
-      set-drone-munition drones-max-ammo
+      
       set rand-path []
       set message-to-forward []
-      ; Visu
-      set label who ; display the car names
-      set known-leader-drone 5
-      set size 3
+     
+      
+      
+      set armed? true
+      set hp drones-hp
+      set vital-critic 0.2
+      set-drone-munition drones-max-ammo
       set-drone-essence drones-max-carburant
+      
+      
+      
+      ;messages
+      set send-interval 30
+      set last-send-time 0
+      set message-to-forward []
     ]
     let first-drone min [who] of drones
     ask drone first-drone [
+      set color orange
+      set leader? true
       set-leader-id-drone who
+      set known-leader-drone first-drone
       move-to patch base-min-pxcor base-max-pycor 1
     ]
     
@@ -87,6 +109,7 @@ to setup-drones
       ask turtle-set sort-on [who] drones with [who > first-drone]
       [
         set-leader-id-drone first-drone
+        set known-leader-drone first-drone
         let wwho  who - first-drone
         ifelse (who - 1) mod 2 = 0 [ set xcor base-min-pxcor ] [ set xcor base-min-pxcor + 1 ] ; a gauche ou a droite selon le nombre (pair ou impair respectivement)
         set ycor base-max-pycor - (floor (wwho / 2) / (total-nb-drones / 2) * (base-max-pycor - base-min-pycor)) ; d'une rangee de plus en plus basse toutes les deux voitures
@@ -98,18 +121,41 @@ to setup-drones
   ]
 end
 
-to drones-think 
+to  random-basic-strategy
+  
+  
+  
   ask drones [
+    if leader? 
+    [
+      if ticks = 10
+      [
+        let msg go-check-position [3 3 1] 12
+        send-message msg
+        set last-send-time ticks
+      ]  
+    ]
     update-drone-from-ihm
-   ;receive-message
-   forward-messages
-   if ticks = 0 [send-status]
-   check-dead
+    check-vital
+    receive-message-drone
+    ;look-around-drone
+    ;forward-messages
+    if timeout_has_expired last-send-time send-interval ;; on informe le leader de nos connaissance tout les send-interval ticks
+    [
+      let msg send-status-drone
+      ;send-message msg
+      set last-send-time ticks
+    ]
+    ;update-drone-tick
+    check-dead
   ]
   random-move-path-drones
   ;drone-eliptic-move
   ;drones-fire
-   
+end
+
+to drones-think 
+  random-basic-strategy
 end
 
 
@@ -318,11 +364,13 @@ to move-drone [goal slowdown? cortege?]
   ; Deplacement!
   ;set pitch 0 ; make sure there's no pitch ever, else the car will disappear in the ground
   fd tmp-speed ; Avance
+  set-drone-essence get-drone-essence - tmp-speed ;; update du carburant
 end
 
 to update-drone-from-ihm
   set range drone-range
   set range-color drone-range-color
+  set label (word who " : " hp " : " get-drone-essence ) ; display the car names
 end
 
 
@@ -345,10 +393,31 @@ end
 
 
 to check-dead
-  if hp = 0 or get-drone-essence = 0[
+  if hp < 0 or get-drone-essence < 0[
     set dead? true
     print word (word breed " ") (word (word who) " : Je suis Mort " )
     die
   ]
 
+end
+
+to look-around-drone
+  let hostile-in-range hostiles in-cone-nowrap drone-range 360
+  ifelse count hostile-in-range  > 0
+  [
+    let cible one-of hostile-in-range
+    let dest [z_zone] of ([patch-here] of cible)
+    add-hostile-belief dest
+    send-message msg-drone-detect-hostile dest
+  ]
+  [
+    set newdetect? false
+    let dest [z_zone] of patch-here
+    remove-hostile-belief dest
+  ]
+end
+
+to check-vital
+  if get-drone-munition < drones-max-ammo * vital-critic [let msg need-ammo send-message msg set label-color red]
+  if get-drone-essence < drones-max-carburant * vital-critic [let msg need-fuel send-message msg set label-color red]
 end

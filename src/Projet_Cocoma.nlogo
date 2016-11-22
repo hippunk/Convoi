@@ -1,4 +1,4 @@
-__includes["BDI/communication.nls" "BDI/bdi.nls" "astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls" "drone.nls" "visu.nls" "communication/basic_message.nls" "communication/drone_messages.nls" "communication/convoi_messages.nls" "BDI/basic_bdi.nls" "utils/utils.nls"]
+__includes["BDI/communication.nls" "BDI/bdi.nls" "astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls" "drone.nls" "visu.nls" "communication/basic_message.nls" "communication/drone_messages.nls" "communication/convoi_messages.nls" "BDI/basic_bdi.nls" "utils/utils.nls" "strategy/strat_drone.nls"]
 breed [waypoints waypoint]
 breed [envconstructors envconstructor]
 breed [convois convoi]
@@ -22,11 +22,10 @@ globals [mapAlt solAlt basseAlt hauteAlt ; variables topologiques Z discretise: 
   is-movie-recording?
   convoi-position ;; position connu du convoi par les agents hostiles
   nb-cars
-  last-send
 ]
 
 patches-own [obstacle? base? hangar? objectif? bridge? sol?; variables topologiques au niveau mapAlt, permet de definir les patchs praticables et ceux qui sont des obstacles
-  as-closed as-heuristic as-prev-pos ; variables temporaires pour calculer les chemins AStar (effaces a chaque calcul de plan)
+  as-closed as-heuristic as-prev-pos z_zone ; variables temporaires pour calculer les chemins AStar (effaces a chaque calcul de plan)
 ]
 
 turtles-own [
@@ -38,6 +37,7 @@ turtles-own [
   range-visu
   range-color
   message-to-forward
+  newdetect?
 ]
 
 
@@ -58,7 +58,12 @@ to setup
     setup-hostiles
     setup-drones
 
-
+    ask patches
+    [
+      let x int (pxcor / zone-size)
+      let y int (pycor / zone-size)
+      set z_zone (list x y 1)
+    ]
     ifelse nb-cars <= 0 [
       set path-is-possible? true
     ]
@@ -69,9 +74,11 @@ to setup
       ask t [set z get-hostile-belief]
       let start-path (plan-astar ([[patch-at 0 0 (pzcor * -1)] of patch-here] of t) (one-of patches with [objectif?]) false z)
       set as-path replace-item 0 as-path start-path
+      let i path-to-zone item 0 as-path
       if not empty? start-path [ set path-is-possible? true]
     ]
   ]
+
   if not debug and not debug-verbose [no-display]
   ;setup-drones
   ;setup-enemies
@@ -88,7 +95,21 @@ to setup
     ask patches with [pxcor mod zone-size = 0 or pycor mod zone-size = 0 and pzcor = mapAlt]
     [set pcolor yellow]
 
+;    let i path-to-zone item 0 as-path
+;    print i
+;    print item 0 as-path
+;
+;    ask patches with [pzcor = mapAlt]
+;    [
+;      foreach i
+;      [
+;        if pin-zone? ?
+;        [set pcolor pink ]
+;      ]
+;    ]
+
   ]
+
 end
 
 ; Initial parameters
@@ -131,11 +152,6 @@ to go
   drones-think
   ;;print convoi-position
   update-bullets
-  ;ask patches with [pzcor = mapAlt]
-    ;[
-    ;  if pin-zone? l or pin-zone? l2
-    ;  [set pcolor red ]
-    ;]
   let agent-set turtles with [who = -1]
   if hostile-range-visu? [set agent-set (turtle-set agent-set hostiles)]
   if convoi-range-visu? [set agent-set (turtle-set agent-set convois)]
@@ -213,7 +229,7 @@ INPUTBOX
 197
 269
 total-nb-cars
-5
+1
 1
 0
 Number
@@ -263,7 +279,7 @@ INPUTBOX
 226
 203
 nb-rivers
-3
+0
 1
 0
 Number
@@ -330,7 +346,7 @@ SWITCH
 456
 astar-visu
 astar-visu
-0
+1
 1
 -1000
 
@@ -409,7 +425,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-5
+10
 1
 0
 Number
@@ -448,7 +464,7 @@ total-life
 total-life
 30
 200
-49
+57
 1
 1
 NIL
@@ -570,7 +586,7 @@ INPUTBOX
 296
 270
 total-nb-drones
-1
+2
 1
 0
 Number
@@ -612,7 +628,7 @@ SWITCH
 498
 hostile-range-visu?
 hostile-range-visu?
-1
+0
 1
 -1000
 
@@ -651,7 +667,7 @@ convoi-range
 convoi-range
 1
 20
-12
+8
 1
 1
 NIL
@@ -666,7 +682,7 @@ drone-range
 drone-range
 1
 20
-10
+18
 1
 1
 NIL
@@ -709,7 +725,7 @@ SWITCH
 461
 drone-range-visu?
 drone-range-visu?
-1
+0
 1
 -1000
 
@@ -731,7 +747,7 @@ CHOOSER
 hostile-range-color
 hostile-range-color
 "red" "yellow" "blue" "gray" "orange" "brown" "lime" "turquoise" "cyan" "sky" "violet" "magenta" "pink"
-6
+2
 
 SWITCH
 175
@@ -740,7 +756,7 @@ SWITCH
 378
 debug-com
 debug-com
-1
+0
 1
 -1000
 
@@ -793,7 +809,7 @@ drones-max-carburant
 drones-max-carburant
 100
 500
-500
+100
 1
 1
 NIL
@@ -826,7 +842,7 @@ BUTTON
 582
 393
 show beliefs
-printbdi (word \"(BELIEFS)\" )\nprintbdi (word \"(convoi)\" )\nask convois [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-convoi-critic\n  printbdi (word \"(\" breed \" \" who \") Critic? : \" b )\n]\nprintbdi (word \"(drones)\" )\nask drones [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n    let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n]
+printbdi (word \"(BELIEFS)\" )\nprintbdi (word \"(convoi)\" )\nask convois [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-convoi-critic\n  printbdi (word \"(\" breed \" \" who \") Critic? : \" b )\n]\nprintbdi (word \"(drones)\" )\nask drones [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n  \n  set b get-drone-essence\n  printbdi (word \"(\" breed \" \" who \") Fuel : \" b )\n  set b get-drone-munition\n  printbdi (word \"(\" breed \" \" who \") Ammo : \" b )\n]
 NIL
 1
 T
@@ -847,6 +863,23 @@ debug-bdi
 0
 1
 -1000
+
+BUTTON
+290
+10
+402
+43
+split convoi
+ask convois with [leader?]\n[\n  let msg-split msg-split-split (who + 1)\n  send-message msg-split\n]
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?

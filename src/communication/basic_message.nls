@@ -156,7 +156,7 @@ end
 
 to send-message [msg]
   let recvs read-from-string get-to msg
-  if length recvs = 1 and item 0 recvs = who [stop]
+  if (length recvs = 1 and item 0 recvs = who) or length get-receivers msg = 0[stop]
   send msg
   printcom (word "(" breed " " who ") envoi  " msg)
 end

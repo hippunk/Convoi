@@ -2,80 +2,48 @@
 ;;;; SEND ;;;;
 ;;;;;;;;;;;;;;
 
-
-to send-status
+to-report send-status-drone
   ;; envoi du status courant au leader
-  let content (word ticks " " get-drone-munition " " get-drone-essence)
+  let content (list ticks get-leader-id-drone get-drone-munition get-drone-essence get-hostile-belief)
   let msg create-msg-drone-to-drone "inform" who known-leader-drone content [] "status"
-   ifelse not empty? (get-receivers msg)
-   [
-     if who != known-leader-drone
-     [
-       send msg
-       printcom (word "(" breed " " who ")  send : "  msg)
-     ]
-   ]
-   [ 
-     printcom (word "(" breed " " who ")  messages non envoyé " ticks)
-   ]
+  report msg
 end
 
-to need-ammo 
-  let content (list 3 ticks)
+to-report need-ammo 
+  let content (list ticks get-drone-munition )
   let msg create-msg-drone-to-drone "need" who known-leader-drone content [] "need-ammo"
-   ifelse not empty? (get-receivers msg)
-   [
-     send msg
-     printcom (word "(" breed " " who ")  send : "  msg)
-   ]
-   [ 
-     printcom (word "(" breed " " who ")  messages non envoyé " ticks)
-   ]
+  report msg
 end
 
-to need-fuel 
-  let content (list 4 ticks)
+to-report need-fuel 
+  let content (list ticks get-drone-essence)
   let msg create-msg-drone-to-drone "need" who known-leader-drone content [] "need-fuel"
-   ifelse not empty? (get-receivers msg)
-   [
-     send msg
-     printcom (word "(" breed " " who ")  send : "  msg)
-   ]
-   [ 
-     printcom (word "(" breed " " who ")  messages non envoyé " ticks)
-   ]
+  report msg
+end
+
+to-report msg-drone-detect-hostile [zone]
+ let content zone
+ let msg create-msg-drone-to-drone "inform" who known-leader-drone content [] "hostile"
+ report msg
 end
 
 
+;;;;;;;;;;;;;;;
+;;;; ORDER ;;;;
+;;;;;;;;;;;;;;;
 
 
-
-
-
-to go-check-position [zone dest] ; order 1
-  let content (list 1 ticks zone)
+to-report go-check-position [zone dest] ; order 1
+  let content (list ticks zone)
   let msg create-msg-drone-to-drone "request" who dest content [] "check-pos"
-   ifelse not empty? (get-receivers msg)
-   [
-     send msg
-     printcom (word "(" breed " " who ")  send : "  msg)
-   ]
-   [ 
-     printcom (word "(" breed " " who ")  messages non envoyé " ticks)
-   ]
+  ;printcom (word "(" breed " " who ")  send : "  msg)
+  report msg
 end
 
-to go-kill-position [zone dest] ; order 2
-  let content (list 2 ticks zone)
+to-report go-kill-position [zone dest] ; order 2
+  let content (list ticks zone)
   let msg create-msg-drone-to-drone "request" who dest content [] "kill-pos"
-   ifelse not empty? (get-receivers msg)
-   [
-     send msg
-     printcom (word "(" breed " " who ")  send : "  msg)
-   ]
-   [ 
-     printcom (word "(" breed " " who ")  messages non envoyé " ticks)
-   ]
+  report msg
 end
 
 to go-reload [dest]; order 3
@@ -111,36 +79,70 @@ end
 ;;;; RECEIVE ;;;;
 ;;;;;;;;;;;;;;;;;
 
-to traitement-msg-drone [msg]
-  let content get-content msg
-  let from (read-from-string item 0 get-field "from" msg)
-  let performative get-performative msg
+to receive-message-drone
   
-  print content
-  print from
-  print performative
   
-  if from = 0 and performative = "request" ;; from leader and request
+  if not empty? incoming-queue
   [
-    let code item 0 content
-    if code = 1
+    let msg get-message
+    printcom (word "(" breed " " who ") reçoi : " msg)
+    let dest read-from-string get-to msg
+    let bool (is-number? dest and dest = who) or (is-list? dest and member? who dest)
+    ifelse bool
     [
-      print "do action 1"
+      let perf get-performative msg
+      let sub get-sujet msg
+      ;if perf = "inform" and sub = "statusLeader" [receive-status-leader msg stop]
+      if perf = "inform" and sub = "status" [receive-status-drone msg stop]
+      if perf = "inform" and sub = "hostile" [receive-hostile-inform-drone msg stop]
+      if perf = "need" and sub = "need-ammo" [receive-need-ammo-drone msg stop]
+      if perf = "need" and sub = "need-fuel" [receive-need-fuel-drone msg stop]
+      
+      if perf = "request" and sub = "check-pos" [receive-check-pos-drone msg stop]
+      if perf = "request" and sub = "kill-pos" [receive-check-pos-drone msg stop]
+      ;if perf = "inform" and sub = "nLeader" [receive-is-new-leader msg stop]
     ]
-    if code = 2
     [
-      print "do action 2"      
-    ]
-    if code = 3 
-    [
-      print "do action 3"
-    ]
-    if code = 4 
-    [
-      print "do action 4"
+      add-to-forwarded-msg msg
     ]
   ]
-  
+end
+
+to receive-check-pos-drone [msg]
+  let id who
+  let pos item 1 get-content msg
+  strat-check-pos pos
+  ;printcom (word "(" breed " " who ") receive-check-pos-drone " get-from msg " pos" pos) 
+end 
+to receive-need-ammo-drone [msg]
+  let id who
+  let ammo item 1 get-content msg
+  printcom (word "(" breed " " who ") ammo " get-from msg " last" ammo) 
   
 end
 
+to receive-need-fuel-drone [msg]
+  let id who
+  let fuel item 1 get-content msg
+  printcom (word "(" breed " " who ") ammo " get-from msg " last" fuel) 
+  
+end
+
+to receive-status-drone [msg]
+  let id who
+  let zones item 4 get-content msg
+  foreach zones
+  [
+    
+    if ? != "hostile"
+    [add-hostile-belief ?]
+  ]
+  
+end
+
+to receive-hostile-inform-drone [msg]
+  
+  let id who
+  let zone get-content msg
+  add-hostile-belief zone
+end

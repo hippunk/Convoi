@@ -77,7 +77,7 @@ end
 
 to add-hostile-belief [zone]
   let bel create-belief "hostile" zone
-  add-belief bel
+  ifelse exists-belief bel [set newdetect? false ] [add-belief bel set newdetect? true]
 end 
 
 to remove-hostile-belief [zone]
@@ -88,6 +88,14 @@ end
 
 to-report get-hostile-belief 
   ifelse exist-beliefs-of-type "hostile"
-  [report item 0 beliefs-of-type "hostile"]
+  [
+    let l []
+    let bels beliefs-of-type "hostile"
+    foreach bels
+    [
+      set l lput item 1 ? l
+    ]
+    report l
+  ]
   [report []]
 end 

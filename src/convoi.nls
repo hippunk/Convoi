@@ -7,94 +7,99 @@ convois-own[
   regenpath? ; doit - on regenerer le path (nouvelle info? ... )
   last-send-time ; communication historical time-stamp
   ;drone-leader-id
+  goal-zone
+  
   ]
 
 
 to setup-convois
-  let l (list 2 1 1)
-  let l2 (list 3 2 1)
-  if nb-cars > 0 [
-    ; get the size of the base to deploy the car accordingly
-    let base-min-pxcor min [pxcor] of (patches with [hangar? and pzcor = mapAlt])
-    let base-max-pxcor max [pxcor] of (patches with [hangar? and pzcor = mapAlt])
-    let base-min-pycor min [pycor] of (patches with [hangar? and pzcor = mapAlt])
-    let base-max-pycor max [pycor] of (patches with [hangar? and pzcor = mapAlt])
+  if nb-cars <= 0 [stop]
+  ; get the size of the base to deploy the car accordingly
+  let base-min-pxcor min [pxcor] of (patches with [hangar? and pzcor = mapAlt])
+  let base-max-pxcor max [pxcor] of (patches with [hangar? and pzcor = mapAlt])
+  let base-min-pycor min [pycor] of (patches with [hangar? and pzcor = mapAlt])
+  let base-max-pycor max [pycor] of (patches with [hangar? and pzcor = mapAlt])
 
-    ; creation des voitures du convoi et cortege
-    create-convois nb-cars
-    ask convois
-    [
-      ; Init apparence NetLogo
-      set shape "car"
-      set color magenta
-      ; Init des structures BDI
-      set incoming-queue [] ; Do not change
-      ; Init vars convois
-      set speed 0.05 * simu-speed
-      set maxdir 10 * simu-speed
-      set heading 0
-      set roll 0
-      set pitch 0
-      set finished? false
-      set leader? false
-      set to-protect? false
-      set genlongpath? false
-      set dead? false
-      set regenpath? false
-      set hp convois-hp
-      set range-visu convoi-range
-      set range convoi-range
-      set last-send 0
-      set send-interval 30
-      
-      set message-to-forward []
-      set beliefs []
-      set intentions []
-      set-convoi-critic true
-      ; Visu
-      set label who ; display the car names
-    ]
 
-    ; get the id of the first one
-    let first-car min [who] of convois
-    let last-car max [who] of convois
-    ; configure the leader
-    ask convoi first-car [
-      set leader? true
-      set color orange
-      set-leader-id-convoi who
-      move-to patch base-max-pxcor base-max-pycor 1
-      add-hostile-belief l
-    ]
-    ask convoi 1 [
-      add-hostile-belief l2
-    ]
-    ; configure the last car as the critical one
-    ask convoi last-car [
-      set to-protect? true
-      set color yellow
-    ]
+  ; creation des voitures du convoi et cortege
+  create-convois nb-cars
+  
+  ; get the id of the first one
+  let first-car min [who] of convois
+  let last-car max [who] of convois
+
+  ask convois
+  [
+    ; Init apparence NetLogo
+    set shape "car"
+    set color magenta
+    set label who ; display the car names
     
-    ;ask patches with [pzcor = mapAlt]
-    ;[
-    ;  if pin-zone? l or pin-zone? l2
-    ;  [set pcolor red ]
-    ;]
-    ; deploying the other car
-    if nb-cars > 1 [
-      ; ask non leader cars
-      ask turtle-set sort-on [who] convois with [who > first-car]
-      [
-        set-leader-id-convoi first-car
-        ; we create a link between them
-        create-convoi-link-to turtle (who - 1)
-        ;if who >= 4 and who mod 2 = 0 [ create-convoi-link-with turtle (who - 3) ]
+    ; Init des structures BDI
+    set incoming-queue [] ; Do not change
+    set beliefs []
+    set intentions []
+    
+    ; Init vars convois
+    set speed 0.05 * simu-speed
+    set maxdir 10 * simu-speed
+    
+    set heading 0
+    set roll 0
+    set pitch 0
+    
+    set finished? false
+    set leader? false
+    set to-protect? false
+    set genlongpath? false
+    set dead? false
+    set regenpath? false
+    set hp convois-hp
+    set-convoi-critic true
+    set goal-zone [z_zone] of one-of patches with [objectif? and pzcor = mapAlt]
+    set newdetect? false
 
-        ; deploying
-        ifelse (who - 1) mod 2 = 0 [ set xcor base-min-pxcor ] [ set xcor base-max-pxcor ] ; a gauche ou a droite selon le nombre (pair ou impair respectivement)
-        set ycor base-max-pycor - (floor (who / 2) / (nb-cars / 2) * (base-max-pycor - base-min-pycor)) ; d'une rangee de plus en plus basse toutes les deux voitures
-        set zcor solAlt
-      ]
+    
+    ; FOV
+    set range-visu convoi-range
+    set range convoi-range
+    
+    ;messages
+    set send-interval 30
+    set last-send-time 0
+    set message-to-forward []
+  ]
+  
+  
+  
+  ; configure the leader
+  ask convoi first-car [
+    set leader? true
+    set color orange
+    set-leader-id-convoi who
+    move-to patch base-max-pxcor base-max-pycor 1
+  ]
+  
+  ; configure the last car as the critical one
+  ask convoi last-car [
+    set to-protect? true
+    set color yellow
+  ]
+  
+  
+  ; deploying the other car
+  if nb-cars > 1 [
+    ; ask non leader cars
+    ask turtle-set sort-on [who] convois with [who > first-car]
+    [
+      set-leader-id-convoi first-car
+      ; we create a link between them
+      create-convoi-link-to turtle (who - 1)
+      ;if who >= 4 and who mod 2 = 0 [ create-convoi-link-with turtle (who - 3) ]
+      ; deploying
+        ifelse (who - 1) mod 2 = 0 [ set xcor base-min-pxcor ] [ set xcor base-max-pxcor ] ; a gauche ou adroite selon le nombre (pair ou impair respectivement)
+        set ycor base-max-pycor - (floor (who / 2) / (nb-cars / 2) * (base-max-pycor - base-min-pycor)) ; d'unerangee de plus en plus basse toutes les deux voitures
+      set zcor solAlt
     ]
   ]
 end
@@ -103,91 +108,39 @@ end
 
 ; Procedure principale de gestion des convois
 to convois-think
-
-  if nb-cars > 0 [
-    if ticks = 10 
-    [
-      ask convois with [leader?] 
-      [
-        let msg-split msg-split-split (who + 1)
-        send-message msg-split
-      ]   
+  if nb-cars <= 0 [stop]
+  
+  ask convois
+  [
+    update-convoi-from-ihm
+    look-around
+    receive-message-convoi  
     
-    ]
-    if timeout_has_expired last-send send-interval
+    ifelse leader? 
     [
-      set last-send ticks
-      ask convois [
+      if newdetect? [if recalcul-path [set as-path replace-item who as-path [] ]]
+      if timeout_has_expired last-send-time send-interval
+      [
+        let msg msg-status-leader
+        ;send-message msg
+        set last-send-time ticks
+      ]  
+    ]
+    [
+      if timeout_has_expired last-send-time send-interval ;; on informe le leader de nos connaissance tout les send-interval ticks
+      [
         let msg msg-status
         send-message msg
-      ]   
-    
-    ]
-    ask convois 
-    [
-      update-convoi-from-ihm
-      see
-      receive-message-convoi
-    ]
-    calcul-path-convoi-evite-zone-hotile
-    let first-car min [who] of convois
-    
-    ; Deplacement des leaders sur le chemin AStar
-    ask convois with [leader? and not finished? and not dead?] [ ; Tant qu'on n'a pas atteint le but
-      ;move-convoi-naive ; deplacement naif sans AStar
-
-      ; Recupere le plan AStar
-      let my-as-path item (who - first-car) as-path
-      if not empty? my-as-path [
-        ; Deplacement par waypoints: on se deplace jusqu'au prochain patch du chemin jusqu'à l'atteindre
-        let next-patch first my-as-path
-        let zz pzcor
-        set next-patch [patch-at 0 0 (zz - pzcor)] of next-patch ; mise a niveau de pzcor au cas ou le chemin a ete calculé sur un autre plan
-        ; Deplacement vers le prochain waypoint
-        if next-patch != patch-here [move-convoi next-patch false false]
-        ; Si on a atteint ce patch, on le supprime de la liste, et on va donc continuer vers le prochain patch du chemin
-        if patch-here = next-patch [
-          set my-as-path remove-item 0 my-as-path
-          set as-path replace-item (who - first-car) as-path my-as-path
-          if debug [ show (word "Waypoint atteint: " patch-here ", prochain: " next-patch ) ]
-        ]
-      ]
-
-      ; Critere d'arret: on est a cote de l'objectif
-      check-convoi-finished
-
-    ]
-
-    ; Deplacement des voitures-cortege: elles ne font que suivre la voiture devant eux (avec laquelle elles sont liées)
-    ask convois with [not leader? and not finished? and not dead?] [
-      ifelse any? my-out-convoi-links [
-        move-convoi ([patch-here] of one-of out-convoi-link-neighbors) true true
-      ]
-      ; S'il n'y a pas de lien devant, c'est probablement que la voiture est morte, donc on devient leader
-      [
-        make-leader
-        set leader? true
-        set genlongpath? true
-        if not to-protect? [ set color orange ]
+        set last-send-time ticks
       ]
     ]
+    set newdetect? false
   ]
+  calcul-path-convoi-evite-zone-hotile
+  deplacement-convoi
 end
 
 
-
-to-report detect-obstacle [radius angle]
- if any? other patches in-cone radius angle with [obstacle?] [report true]
-; if any? other patches in-cone 10 90 [report true]
-; if any? other patches in-cone 3 270 [report true]
- report false
-end
-
-to turn-away
-   ;let free-patches neighbors with [not any? patches ]
-   ;if any? free-patches [face one-of free-patches]
-   rt random 10 - 5
-end
 
 to check-convoi-finished
   ; Critere d'arret: on est a cote de l'objectif
@@ -208,6 +161,145 @@ to check-convoi-finished
         ]
       ]
       set linked-cars next-linked-cars
+    ]
+  ]
+end
+
+
+to remove-convoi-links-between [ a b ]
+   ;; remove all links between the two turtles
+   ;; convert turtles to their own who numbers
+   if is-link? convoi-link a b [ ask convoi-link a b [ die ] ]
+   if is-link? convoi-link b a [ ask convoi-link b a [ die ] ]
+end
+
+
+;; Ajoute un nouveau leader qui peut prendre un long chemin ou non
+;; num-new-leader : Identifiant unique du nouveau leader
+;; takelongpath? : Boolean prendre le long chemin ou non
+to make-leader
+  set leader? true
+  set color orange
+  set-leader-id-convoi who
+  set genlongpath? true
+  set regenpath? true
+  print (word "(" breed " " who ") Je suis nouveau leader ")
+  send-message msg-inform-is-new-leader
+  remove-convoi-links-between who who - 1
+end
+
+
+;; Maj de l'etat d'une voiture du convoi quand ellle est touchée
+to toucher-convoi
+  set hp hp - 1
+  if hp = 5 [set color color - 2]
+  if hp = 0 [
+    set dead? true
+    print word (word breed " ") (word (word who) " : Je suis Mort " )
+    set nb-cars nb-cars - 1
+    die
+  ]
+
+end
+
+to update-convoi-from-ihm
+  set range convoi-range
+  set range-color convoi-range-color
+end
+
+to look-around
+  let hostile-in-range hostiles in-cone-nowrap convoi-range 360
+  ifelse count hostile-in-range  > 0
+  [
+    let cible one-of hostile-in-range
+    let dest [z_zone] of ([patch-here] of cible)
+    add-hostile-belief dest
+    send-message msg-convoi-detect-hostile dest
+  ]
+  [
+    set newdetect? false
+    let dest [z_zone] of patch-here
+    remove-hostile-belief dest
+  ]
+end
+
+
+
+;;;;;;;;;;;;;;;;;;;;;
+;;;;    THINK    ;;;;
+;;;;;;;;;;;;;;;;;;;;;
+
+
+to-report recalcul-path 
+  let first-car min [who] of convois
+  let hos get-hostile-belief
+  let my-as-path path-to-zone (item (who - first-car) as-path)
+   if empty? my-as-path [report true]
+  set my-as-path butfirst my-as-path
+  if empty? my-as-path [report false]
+  set my-as-path butlast my-as-path
+  report not empty? filter [ member? ? my-as-path ] hos
+;  let i = 1
+;  while [i < length my-as-path]
+;  [
+;    
+;  ]
+;  if empty? hos [report false]
+;  
+;  foreach hos
+;  [
+;    if member? ? my-as-path [report true]
+;  ]
+;  report false
+end
+
+
+;;;;;;;;;;;;;;;;;;;;;
+;;;; DÉPLACEMENT ;;;;
+;;;;;;;;;;;;;;;;;;;;;
+
+
+to deplacement-convoi
+  let first-car min [who] of convois
+
+  ; Deplacement des leaders sur le chemin AStar
+  ask convois with [leader? and not finished? and not dead?] 
+  [ ; Tant qu'on n'a pas atteint le but
+    ; Recupere le plan AStar
+    let my-as-path item (who - first-car) as-path
+    if not empty? my-as-path 
+    [
+      ; Deplacement par waypoints: on se deplace jusqu'au prochain patch du chemin jusqu'à l'atteindre
+      let next-patch first my-as-path
+      let zz pzcor
+      set next-patch [patch-at 0 0 (zz - pzcor)] of next-patch ; mise a niveau de pzcor au cas ou le chemin a ete calculé sur un autre plan
+      ; Deplacement vers le prochain waypoint
+      if next-patch != patch-here [move-convoi next-patch false false]
+      ; Si on a atteint ce patch, on le supprime de la liste, et on va donc continuer vers le prochain patch du chemin
+      if patch-here = next-patch 
+      [
+        set my-as-path remove-item 0 my-as-path
+        set as-path replace-item (who - first-car) as-path my-as-path
+        if debug [ show (word "Waypoint atteint: " patch-here ", prochain: " next-patch ) ]
+      ]
+    ]
+    ; Critere d'arret: on est a cote de l'objectif
+    check-convoi-finished
+  ]
+  
+  ; Deplacement des voitures-cortege: elles ne font que suivre la voiture devant eux (avec laquelle elles sont liées)
+  ask convois with [not leader? and not finished? and not dead?] 
+  [
+    ifelse any? my-out-convoi-links 
+    [
+      move-convoi ([patch-here] of one-of out-convoi-link-neighbors) true true
+    ]
+    ; S'il n'y a pas de lien devant, c'est probablement que la voiture est morte, donc on devient leader
+    [
+      make-leader
+      set leader? true
+      set genlongpath? true
+      if not to-protect? [ set color orange ]
     ]
   ]
 end
@@ -255,61 +347,16 @@ to move-convoi [goal slowdown? cortege?]
   fd tmp-speed ; Avance
 end
 
-
-to remove-convoi-links-between [ a b ] 
-   ;; remove all links between the two turtles 
-   ;; convert turtles to their own who numbers 
-   if is-link? convoi-link a b [ ask convoi-link a b [ die ] ] 
-   if is-link? convoi-link b a [ ask convoi-link b a [ die ] ] 
-end 
-
-
-;; Ajoute un nouveau leader qui peut prendre un long chemin ou non
-;; num-new-leader : Identifiant unique du nouveau leader
-;; takelongpath? : Boolean prendre le long chemin ou non
-to make-leader 
-  set leader? true
-  set color orange
-  set-leader-id-convoi who
-  set genlongpath? true
-  set regenpath? true  
-  print (word "(" breed " " who ") Je suis nouveau leader ")
-  send-message msg-inform-is-new-leader
-  remove-convoi-links-between who who - 1
+to-report detect-obstacle [radius angle]
+ if any? other patches in-cone radius angle with [obstacle?] [report true]
+; if any? other patches in-cone 10 90 [report true]
+; if any? other patches in-cone 3 270 [report true]
+ report false
 end
 
-
-;; Maj de l'etat d'une voiture du convoi quand ellle est touchée
-to toucher-convoi
-  set hp hp - 1
-  if hp = 5 [set color color - 2]
-  if hp = 0 [ 
-    set dead? true
-    print word (word breed " ") (word (word who) " : Je suis Mort " )
-    set nb-cars nb-cars - 1
-    die
-  ]
-  
-end
-
-to update-convoi-from-ihm
-    set range convoi-range
-  set range-color convoi-range-color
-end
-
-to see
-  let hostile-in-range hostiles in-cone-nowrap convoi-range 360
-  ifelse count hostile-in-range  > 0 
-  [
-    let cible one-of hostile-in-range
-    let dest patch-to-zone [patch-here] of cible
-    add-hostile-belief dest
-    send-message msg-convoi-detect-hostile dest
-  ]
-  [
-    let dest patch-to-zone patch-here
-    remove-hostile-belief dest
-  ]
-  
+to turn-away
+   ;let free-patches neighbors with [not any? patches ]
+   ;if any? free-patches [face one-of free-patches]
+   rt random 10 - 5
 end
 

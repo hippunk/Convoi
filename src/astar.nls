@@ -3,7 +3,23 @@
 ; Note2: on l'utilise avec le convoi mais on peut l'utiliser avec n'importe quel agent, c'est generique.
 ; Note3: limite en 2D pour cette application mais on peut facilement la modifier pour accepter la 3D (enlever les limites with [pzcor ...])
 to-report plan-astar [start goal longpath? zones] ; start et goal sont des patchs
-
+  ;print start
+  let z_start [z_zone] of start
+  let z_goal [z_zone] of goal
+  if not empty? zones 
+  [
+    if member? z_start zones [set zones remove z_start zones print (word "remove start :" start)]
+    if member? z_goal zones [set zones remove z_goal zones print (word "remove goal :" goal)]
+  ]
+  
+;  ask patches with [pzcor = mapAlt]
+;  [
+;    foreach zones
+;    [
+;      if pin-zone? ?
+;      [set pcolor pink ]
+;    ]
+;  ]
   ; Desactivation du refresh GUI (car calculs internes): Pour etre plus rapide, on dit a NetLogo qu'il peut calculer toute cette fonction sans avoir a updater le GUI (que des calculs internes), comme ca le slider de vitesse n'influencera pas la vitesse de ce code (sinon en slower ca met vraiment beaucoup de temps)
   if not debug-verbose [no-display]
 
@@ -53,14 +69,13 @@ to-report plan-astar [start goal longpath? zones] ; start et goal sont des patch
       ; Pop un element de la liste, le meilleur candidat
       let next first open
       set open but-first open
-      ;print (patch-to-zone (item 3 next))
-      ;print zones
-      while [member? (patch-to-zone (item 3 next)) zones or resign = true]
+      let z [z_zone] of (item 3 next)
+      while [member? z zones and resign = false]
       [
         ;print (patch-to-zone (item 3 next))
         ifelse empty? open
-        [set resign true]
-        [set next first open set open but-first open]
+        [set resign true print "resign"] ;;; <--- PROBLEME ICI
+        [set next first open set open but-first open set z [z_zone] of (item 3 next)]
       ]
       
       set pos item 3 next
@@ -340,3 +355,7 @@ to calcul-path-convoi [zones?]
   ]
   
 end
+
+
+
+

@@ -46,7 +46,7 @@ to setup-hostiles
 
     ; deploying the other car
     
-    if nb-cars > 1 [
+    if nb-cars-hostile > 0 [
       ; ask non leader cars
       ask turtle-set hostiles
       [
@@ -89,7 +89,7 @@ to hostiles-think
    let dest patch x y z
    move-path-position dest
  ]
- hostile-fire
+ ;hostile-fire
 
 end
 
