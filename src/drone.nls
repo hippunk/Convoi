@@ -141,8 +141,9 @@ to  random-basic-strategy
     ;forward-messages
     if timeout_has_expired last-send-time send-interval ;; on informe le leader de nos connaissance tout les send-interval ticks
     [
+      drop-in-range 
       let msg send-status-drone
-      ;send-message msg
+      send-message msg
       set last-send-time ticks
     ]
     ;update-drone-tick
@@ -167,6 +168,7 @@ to  random-basic-strategy
 end
 
 to drones-think 
+  
   random-basic-strategy
 end
 

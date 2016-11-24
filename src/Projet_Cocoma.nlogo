@@ -586,7 +586,7 @@ INPUTBOX
 296
 270
 total-nb-drones
-2
+3
 1
 0
 Number
