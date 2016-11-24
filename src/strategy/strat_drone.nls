@@ -1,15 +1,11 @@
 to strat-check-pos [zone]
-  
-  
+  drone-astar-to-zone zone false
 end
 
 
-
-
-
-
 to strat-kill-pos [pos]
-  
+  drone-astar-to-zone pos false
+  ;+Autorisation de tir une fois dans la zone ?
 end
 
 
@@ -17,23 +13,13 @@ end
 
 
 to strat-go-refuel
-  
+  drone-astar-to-zone [z_zone] of patch 0 0 10 false
 end
-
-
-
-
-
-
-to strat-go-reload
-  
-  
-  
-end
-
-
 
 
 to strat-cover-convoi [id]
+  
+  ;position leader pour escort
+  ;Correction nécéssaire du eli-path pour traiter d'une position en croyance ?
   
 end
