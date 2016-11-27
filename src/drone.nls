@@ -89,7 +89,7 @@ to setup-drones
       
       
       ;messages
-      set send-interval 30
+      set send-interval 15
       set last-send-time 0
       set message-to-forward []
     ]
@@ -120,6 +120,11 @@ to setup-drones
   ]
 end
 
+to test [str]
+  show str
+  show "ca a marche"
+end
+
 to  random-basic-strategy
   ask drones [
     ;get percept ces deux là sont liés aux messages
@@ -136,9 +141,10 @@ to  random-basic-strategy
     ]
     update-drone-from-ihm
     check-vital
-    receive-message-drone
+    
+    
     ;look-around-drone
-    ;forward-messages
+    ;forward-messages pb string instead of turtle number during run
     if timeout_has_expired last-send-time send-interval ;; on informe le leader de nos connaissance tout les send-interval ticks
     [
       drop-in-range 
@@ -146,6 +152,8 @@ to  random-basic-strategy
       send-message msg
       set last-send-time ticks
     ]
+    
+    receive-message-drone
     ;update-drone-tick
     ;check-dead
     
