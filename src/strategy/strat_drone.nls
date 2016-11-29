@@ -1,5 +1,25 @@
 to strat-check-pos [zone]
-  drone-astar-to-zone zone false
+  set objectif zone
+end
+  
+to check-pos-intention
+  ;calcul du chemin si celui-ci ne correspond pas à l'intention
+  if intention-courante != "check-pos"
+  [
+    set intention-courante "check-pos"
+    drone-astar-to-zone objectif false
+  ]
+  
+end
+
+to-report check-pos-done
+  ;revoie true si on est dans la zone à checker
+  if finished?[
+    set objectif []
+    set intention-courante ""
+  ]
+  report finished?
+
 end
 
 

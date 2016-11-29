@@ -425,7 +425,11 @@ INPUTBOX
 107
 269
 nb-cars-hostile
+<<<<<<< HEAD
 1
+=======
+0
+>>>>>>> b4c484e26de109a893eea31f87193427e257d1e8
 1
 0
 Number
@@ -583,10 +587,17 @@ HORIZONTAL
 INPUTBOX
 200
 210
+<<<<<<< HEAD
 295
 270
 total-nb-drones
 3
+=======
+286
+270
+total-nb-drones
+1
+>>>>>>> b4c484e26de109a893eea31f87193427e257d1e8
 1
 0
 Number
