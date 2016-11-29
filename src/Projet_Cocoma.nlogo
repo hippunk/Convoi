@@ -586,7 +586,11 @@ INPUTBOX
 296
 270
 total-nb-drones
+<<<<<<< HEAD
 20
+=======
+3
+>>>>>>> beec307fa9f4f809e49bc80301594e82aed4b94f
 1
 0
 Number
@@ -667,7 +671,7 @@ convoi-range
 convoi-range
 1
 20
-8
+1
 1
 1
 NIL
@@ -682,7 +686,7 @@ drone-range
 drone-range
 1
 20
-18
+20
 1
 1
 NIL
@@ -697,7 +701,7 @@ pas-cercle
 pas-cercle
 1
 12
-12
+4
 1
 1
 NIL

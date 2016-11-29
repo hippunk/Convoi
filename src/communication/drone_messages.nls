@@ -139,7 +139,7 @@ to receive-status-drone [msg]
     if ? != "hostile"
     [add-hostile-belief ?]
   ]
-  
+  add-drone-in-range get-sender msg
 end
 
 to receive-hostile-inform-drone [msg]

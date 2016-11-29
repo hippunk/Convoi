@@ -15,6 +15,37 @@ to-report get-convoi-path-zone
   report item 1 bel
 end
 
+to set-drone-plan [plan]
+  let bel create-belief "plan" plan
+  ifelse exist-beliefs-of-type "plan"
+  [update-belief bel]
+  [add-belief bel]
+end
+
+to-report get-drone-plan
+  let bel read-first-belief-of-type "plan"
+  report item 1 bel
+end
+
+to add-drone-in-range [num]
+  let bel create-belief "in-range" num
+  add-belief bel
+end
+
+to-report get-drone-in-range
+  let bel beliefs-of-type "in-range"
+  report bel
+end
+
+to drop-in-range
+    let bels beliefs-of-type "in-range"
+    foreach bels
+    [
+      remove-belief ?
+    ]
+end
+
+
 to set-drone-munition [munition]
   let bel create-belief "munition" munition
   ifelse exist-beliefs-of-type "munition"
