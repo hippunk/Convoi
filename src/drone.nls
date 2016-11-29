@@ -84,7 +84,7 @@ to setup-drones
       set hp drones-hp
       set vital-critic 0.2
       set-drone-munition drones-max-ammo
-      set-drone-essence drones-max-carburant
+      set-drone-essence drones-max-carburant + random (50)
       
       
       
@@ -130,6 +130,8 @@ to  random-basic-strategy
     ;get percept ces deux là sont liés aux messages
     ;update beliefs
     
+    let p min-one-of patches with [base? =  true] [distance-nowrap myself]
+    if distance-nowrap p < 2 [set-drone-essence drones-max-carburant]   
     if leader? 
     [
       if ticks = 10
@@ -155,10 +157,7 @@ to  random-basic-strategy
     
     receive-message-drone
     ;update-drone-tick
-<<<<<<< HEAD
     check-dead
-=======
-    ;check-dead
     
     
     ;Generate options ;pour ces trois là il faut regarder dans les croyances les plans des autres drones et avoir un process de consensus pour répartir les taches 
@@ -169,7 +168,6 @@ to  random-basic-strategy
     ;execute, Pour nous execute se résume à se déplacer vers as-path ou à escorter (changer escorter pour suivre le mécanisme de as-path afin de factorier le tout ?)
     
     
->>>>>>> beec307fa9f4f809e49bc80301594e82aed4b94f
     drone-astar-to-zone [] false
     
   ]
@@ -236,58 +234,10 @@ to drone-eliptic-move
 end
 
 
-
-to move-drone [goal slowdown? cortege?]
-  ;show (word "ici:" patch-here " goal:" goal)
-  ; Calcule de l'angle avec la cible
-  let headingFlag heading
-  let pitchFlag pitch
-  ifelse cortege?
-  [ 
-    set headingFlag (towards goal) 
-    set pitchFlag (towards-pitch goal) 
-  ] ; Si c'est un cortege, on veut qu'il suive toujours le leader par le chemin le plus court (surtout en play-mode ou le joueur n'est pas limite par le nowrap)
-  [ 
-    set headingFlag (towards-nowrap goal) 
-    set pitchFlag (towards-pitch-nowrap goal) 
-  ]
-  let dirCorrection subtract-headings headingFlag heading
-  let upCorrection subtract-headings pitchFlag pitch
-  ; Arrondissement de l'angle (on ne veut pas faire de micro tournant)
-  set dirCorrection precision dirCorrection 2
-  set upCorrection precision upCorrection 2
-  ; Limite de l'angle, pour que ce soit plus realiste (la voiture ne peut pas faire un demi-tour sur place!)
-  ifelse dirCorrection > maxdir [ ; limite a droite
-    set dirCorrection maxdir
-  ]
-  [
-    if dirCorrection < maxdir * -1 [ ; limite a gauche
-      set dirCorrection maxdir * -1
-    ]
-  ]
-  
-
-  ; On tourne
-  right dirCorrection
-  ;print upCorrection
-  set pitch pitch + upCorrection
-  
-
-  ; Limite de vitesse pour les voitures-cortege (pour pas qu'elles ne rentrent dans la voiture leader)
-  let tmp-speed speed
-  if slowdown? [
-    if distance-nowrap goal < 1.1 [
-      set tmp-speed tmp-speed / 20
-    ]
-    if distance-nowrap goal < 0.9 [
-      set tmp-speed 0
-    ]
-  ]
-
-  ; Deplacement!
-  ;set pitch 0 ; make sure there's no pitch ever, else the car will disappear in the ground
-  fd tmp-speed ; Avance
-  set-drone-essence precision (get-drone-essence - tmp-speed) 3 ;; update du carburant
+to move-drone [goal]
+  face goal
+  fd speed ; Avance
+  set-drone-essence precision (get-drone-essence - speed) 3 ;; update du carburant
 end
 
 to update-drone-from-ihm
@@ -341,8 +291,9 @@ to look-around-drone
 end
 
 to check-vital
-  if get-drone-munition < drones-max-ammo * vital-critic [let msg need-ammo send-message msg set label-color red]
-  if get-drone-essence < drones-max-carburant * vital-critic [let msg need-fuel send-message msg set label-color red]
+  let p min-one-of patches with [base?] [(distance-nowrap myself)]
+  ;ifelse get-drone-essence < drones-max-carburant * vital-critic [let msg need-fuel send-message msg set label-color red go-refuel-path][set label-color white ]
+  ifelse get-drone-essence - 20 < distance-nowrap p [let msg need-fuel send-message msg set label-color red go-refuel-path][set label-color white ]
 end
 
 
@@ -375,7 +326,7 @@ to move-to-path-drones ;Ici, l'idée c'est de générer un chemin vers un patch 
       let zz pzcor
       ;set next-patch [patch-at 0 0 0] of next-patch ; mise a niveau de pzcor au cas ou le chemin a ete calculé sur un autre plan
       ; Deplacement vers le prochain waypoint
-      if next-patch != patch-here [move-drone next-patch false false]
+      if next-patch != patch-here [move-drone next-patch]
       ; Si on a atteint ce patch, on le supprime de la liste, et on va donc continuer vers le prochain patch du chemin
       if patch-here = next-patch [
         set my-as-path remove-item 0 my-as-path
@@ -390,4 +341,29 @@ to move-to-path-drones ;Ici, l'idée c'est de générer un chemin vers un patch 
       ;ask patch-here [set pcolor red]
     ]
   ]
+end
+
+
+
+to go-refuel-path
+  ;if not regen? and not finished? [stop]
+  let path (item who as-path)
+  if not empty? path
+  [ 
+    let p last path 
+    set p patch [pxcor] of p [pycor] of p 0
+    
+    if [base? = true] of p [stop]
+  ]
+  let tmp-patch patch pxcor pycor pzcor
+  let goal (one-of patches with [base? = true])
+  let goal1 min-one-of patches with [obstacle? = false and pzcor = 1] [distance-nowrap goal]
+  let tmpplan plan-astar3D ( tmp-patch ) goal1 (false)
+  set as-path replace-item who as-path tmpplan
+  print word (word breed " ") (word (word who) " : Je vais me recharger " tmpplan)
+  if not empty? (item who as-path) [
+    set finished? false
+  ]
+  
+  
 end

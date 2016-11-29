@@ -359,7 +359,7 @@ simu-speed
 simu-speed
 0
 10
-4
+10
 1
 1
 NIL
@@ -425,7 +425,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-20
+1
 1
 0
 Number
@@ -581,16 +581,12 @@ NIL
 HORIZONTAL
 
 INPUTBOX
-206
+200
 210
-296
+295
 270
 total-nb-drones
-<<<<<<< HEAD
-20
-=======
 3
->>>>>>> beec307fa9f4f809e49bc80301594e82aed4b94f
 1
 0
 Number
