@@ -14,6 +14,8 @@ drones-own[
   known-leader-drone
   debug-x
   debug-y
+  objectif
+  intention-courante
   
   vital-critic
   
@@ -155,10 +157,8 @@ to  random-basic-strategy
     
     receive-message-drone
     ;update-drone-tick
-<<<<<<< HEAD
+
     check-dead
-=======
-    ;check-dead
     
     
     ;Generate options ;pour ces trois là il faut regarder dans les croyances les plans des autres drones et avoir un process de consensus pour répartir les taches 
@@ -169,8 +169,8 @@ to  random-basic-strategy
     ;execute, Pour nous execute se résume à se déplacer vers as-path ou à escorter (changer escorter pour suivre le mécanisme de as-path afin de factorier le tout ?)
     
     
->>>>>>> beec307fa9f4f809e49bc80301594e82aed4b94f
-    drone-astar-to-zone [] false
+    ;drone-astar-to-zone [] false
+    execute-intentions
     
   ]
   move-to-path-drones
