@@ -122,7 +122,7 @@ to convois-think
       if timeout_has_expired last-send-time send-interval
       [
         let msg msg-status-leader
-        ;send-message msg
+        send-message msg
         set last-send-time ticks
       ]  
     ]

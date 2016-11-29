@@ -89,7 +89,7 @@ to hostiles-think
    let dest patch x y z
    move-path-position dest
  ]
- ;hostile-fire
+ hostile-fire
 
 end
 

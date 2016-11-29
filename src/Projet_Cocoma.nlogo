@@ -29,7 +29,7 @@ patches-own [obstacle? base? hangar? objectif? bridge? sol?; variables topologiq
 ]
 
 turtles-own [
-  hp ;; [ok = 2, blessé = 1, mort = 0]
+  hp
   dead?
   speed maxdir ; maximal speed of a car, and max angle
   beliefs intentions
@@ -229,7 +229,7 @@ INPUTBOX
 197
 269
 total-nb-cars
-2
+0
 1
 0
 Number
@@ -425,7 +425,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-10
+20
 1
 0
 Number
@@ -574,7 +574,7 @@ cooldown
 cooldown
 2
 100
-4
+2
 1
 1
 NIL
@@ -586,7 +586,7 @@ INPUTBOX
 296
 270
 total-nb-drones
-2
+20
 1
 0
 Number
@@ -628,7 +628,7 @@ SWITCH
 498
 hostile-range-visu?
 hostile-range-visu?
-0
+1
 1
 -1000
 
@@ -639,7 +639,7 @@ SWITCH
 343
 debug-path
 debug-path
-0
+1
 1
 -1000
 
@@ -725,25 +725,25 @@ SWITCH
 461
 drone-range-visu?
 drone-range-visu?
-0
+1
 1
 -1000
 
 CHOOSER
-632
-82
-785
-127
+630
+80
+783
+125
 drone-range-color
 drone-range-color
 "red" "yellow" "blue" "gray" "orange" "brown" "lime" "turquoise" "cyan" "sky" "violet" "magenta" "pink"
 1
 
 CHOOSER
-638
-132
-797
-177
+630
+180
+789
+225
 hostile-range-color
 hostile-range-color
 "red" "yellow" "blue" "gray" "orange" "brown" "lime" "turquoise" "cyan" "sky" "violet" "magenta" "pink"
@@ -756,7 +756,7 @@ SWITCH
 378
 debug-com
 debug-com
-0
+1
 1
 -1000
 
@@ -827,10 +827,10 @@ convoi-range-visu?
 -1000
 
 CHOOSER
-665
-210
-822
-255
+630
+130
+787
+175
 convoi-range-color
 convoi-range-color
 "red" "yellow" "blue" "gray" "orange" "brown" "lime" "turquoise" "cyan" "sky" "violet" "magenta" "pink"
