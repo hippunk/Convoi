@@ -21,6 +21,7 @@ to setup-hostiles
       ; Init apparence NetLogo
       set shape "car" ;; CHANGER LA SHAPE DES HOSTILE
       set color red
+      set last-color color
       ;set shape "person soldier" ;; CHANGER LA SHAPE DES HOSTILE
 
 
@@ -37,6 +38,8 @@ to setup-hostiles
       set cooldown-status 0 ;; Rechargement de l'arme
       set is-random-path? true ;; indique si le chemin est un chemin random ou pas (pas sûr que ce commentaire soit utile)
       
+      
+      set nb-tick-color 0
       set range-visu hostile-range
       set range hostile-range
       set range-color hostile-range-color
@@ -68,13 +71,22 @@ to setup-hostiles
 end
 
 
+to check-dead-hostile
+  if hp <= 0[
+    print word (word breed " ") (word (word who) " : Je suis Mort " )
+    die
+  ]
+
+end
+
+
 to hostiles-think
   ;ask hostiles [
   ;  let start-patch min-one-of (patches with [pzcor = mapAlt and not obstacle?]) [distance ?] ; on s'assure de choisir comme patch de depart un patch libre sans obstacle, sinon quand on split un convoi il se peut qu'il soit sur un obstacle et qu'il ne puisse jamais generer de chemin
   ;  let new-path plan-astar ([patch-at 0 0 (pzcor * -1)] of start-patch) (one-of patches with [base?]) false
   ;]
- ask hostiles [update-hostile-from-ihm]
- ask patches with [pcolor = pink] [set pcolor black]
+ ask hostiles [
+   check-dead-hostile update-hostile-from-ihm]
 
  ifelse empty? convoi-position
  [
@@ -199,18 +211,24 @@ end
 to hostile-fire
  ask hostiles [
    set cooldown-status max list (cooldown-status  - 1) 0 ;; On diminue le cooldown pour pouvoir tirer
-   let convoi-in-range convois in-cone-nowrap hostile-range 360
-   ifelse count convoi-in-range  > 0 [
-     let cible one-of convoi-in-range
+   let agent-set convois in-cone-nowrap hostile-range 360
+   set agent-set (turtle-set agent-set (drones in-cone-nowrap hostile-range 360))
+   ifelse count agent-set  > 0 [
+     let cible one-of agent-set
      ask cible [
        add-to-convoi-position xcor ycor zcor ;; on enregistre la position du convoi
      ]
-
-     if cooldown-status < 1[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
+     if cooldown-status = 0[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
        set cooldown-status cooldown ;; On met le cooldown au max
-       facexyz [xcor] of cible [ycor] of cible [zcor] of cible
-       shoot ;; On tire :-)
+       face-nowrap cible
+       tire cible proba-touche-hostile
      ]
+
+;     if cooldown-status < 1[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
+;       set cooldown-status cooldown ;; On met le cooldown au max
+;       facexyz [xcor] of cible [ycor] of cible [zcor] of cible
+;       shoot ;; On tire :-)
+;     ]
    ]
    [ ;; si je vois personne dans cette zone je la retire des positions connu du convoi
      remove-from-convoi-position xcor ycor zcor
@@ -382,21 +400,10 @@ end
 
 
 to update-hostile-from-ihm
-  
   set range hostile-range
   set range-color hostile-range-color
 end
 
 
 ;; Maj de l'etat d'une voiture du convoi quand ellle est touchée
-to toucher-hostile
-  set hp hp - 1
-  if hp = 5 [set color color - 2]
-  if hp = 0 [ 
-    set dead? true
-    print word (word breed " ") (word (word who) " : Je suis Mort " )
-    set nb-cars nb-cars - 1
-    die
-  ]
-  
-end
+

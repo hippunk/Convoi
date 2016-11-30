@@ -1,3 +1,24 @@
+to tire [cible proba]
+  let tmp random-float 1
+  ifelse tmp > proba [ask cible [toucher] print (word breed " " who " : Je tire sur " cible )][print (word breed " " who " : J'ai raté " cible )]
+  
+end
+
+to toucher
+  print (word breed " " who " : Je suis touché " )
+  if not (last-color = 12) [set last-color color ]
+  set nb-tick-color 0
+  set color 12
+  set hp hp - 1
+  if hp = 5 [set color color - 2]
+  if hp = 0 [ 
+    set dead? true
+    print word (word breed " ") (word (word who) " : Je suis Mort " )
+    ;;set nb-cars nb-cars - 1
+    die
+  ]
+  
+end
 
 to-report path-to-zone [path]
   let zone-path []

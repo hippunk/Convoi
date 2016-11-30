@@ -22,6 +22,7 @@ globals [mapAlt solAlt basseAlt hauteAlt ; variables topologiques Z discretise: 
   is-movie-recording?
   convoi-position ;; position connu du convoi par les agents hostiles
   nb-cars
+
 ]
 
 patches-own [obstacle? base? hangar? objectif? bridge? sol?; variables topologiques au niveau mapAlt, permet de definir les patchs praticables et ceux qui sont des obstacles
@@ -38,6 +39,7 @@ turtles-own [
   range-color
   message-to-forward
   newdetect?
+  last-color nb-tick-color
 ]
 
 
@@ -147,11 +149,16 @@ end
 ;------------------------------------------------------------
 
 to go
+  ask turtles [
+    ;print color
+    set nb-tick-color nb-tick-color + 1
+    if nb-tick-color > 10 [set color  last-color]
+  ]
   convois-think
   hostiles-think
   drones-think
   ;;print convoi-position
-  update-bullets
+  ;update-bullets
   let agent-set turtles with [who = -1]
   if hostile-range-visu? [set agent-set (turtle-set agent-set hostiles)]
   if convoi-range-visu? [set agent-set (turtle-set agent-set convois)]
@@ -443,29 +450,14 @@ Bullets\n
 SLIDER
 435
 310
-571
+607
 343
 bullet-speed
 bullet-speed
-0.01
-.1
-0.09
-0.01
-1
-NIL
-HORIZONTAL
-
-SLIDER
-322
-350
-437
-383
-total-life
-total-life
-30
-200
-57
-1
+0.1
+2
+0.5
+0.1
 1
 NIL
 HORIZONTAL
@@ -544,7 +536,7 @@ convois-hp
 convois-hp
 2
 100
-2
+5
 1
 1
 NIL
@@ -559,7 +551,7 @@ hostiles-hp
 hostiles-hp
 2
 100
-39
+5
 1
 1
 NIL
@@ -574,7 +566,7 @@ cooldown
 cooldown
 2
 100
-2
+20
 1
 1
 NIL
@@ -615,7 +607,7 @@ hostile-range
 hostile-range
 3
 50
-10
+13
 1
 1
 NIL
@@ -667,7 +659,7 @@ convoi-range
 convoi-range
 1
 20
-1
+10
 1
 1
 NIL
@@ -682,7 +674,7 @@ drone-range
 drone-range
 1
 20
-20
+10
 1
 1
 NIL
@@ -809,7 +801,7 @@ drones-max-carburant
 drones-max-carburant
 100
 500
-100
+500
 1
 1
 NIL
@@ -880,6 +872,36 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+785
+355
+987
+388
+proba-touche-drone
+proba-touche-drone
+0.1
+1
+0.5
+0.1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+785
+300
+992
+333
+proba-touche-hostile
+proba-touche-hostile
+0.1
+1
+0.5
+0.1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?

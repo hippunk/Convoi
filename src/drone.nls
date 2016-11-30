@@ -16,7 +16,6 @@ drones-own[
   debug-y
   objectif
   intention-courante
-  
   vital-critic
   
   ]
@@ -80,11 +79,10 @@ to setup-drones
       ;set rand-path []
       set message-to-forward []
      
-      
-      
+      set nb-tick-color 0
+      set last-color color
       set armed? true
       set hp drones-hp
-      set vital-critic 0.2
       set-drone-munition drones-max-ammo
       set-drone-essence drones-max-carburant + random (50)
       
@@ -98,6 +96,7 @@ to setup-drones
     let first-drone min [who] of drones
     ask drone first-drone [
       set color orange
+      set last-color color
       set leader? true
       set-leader-id-drone who
       set known-leader-drone first-drone
@@ -177,7 +176,7 @@ to  random-basic-strategy
   move-to-path-drones
   ;random-move-path-drones
   ;drone-eliptic-move
-  ;drones-fire
+  drones-fire
 end
 
 to drones-think 
@@ -193,13 +192,15 @@ end
 to drones-fire
  ask drones [
    set cooldown-status max list (cooldown-status  - 1) 0 ;; On diminue le cooldown pour pouvoir tirer 
-   let hostiles-in-range hostiles in-cone drone-range 360
+   let hostiles-in-range hostiles in-cone-nowrap drone-range 360
    if count hostiles-in-range  > 0 [
      let cible one-of hostiles-in-range  
      if cooldown-status = 0 and get-drone-munition > 0[  ;; S'il y a un convoi dans le champ de vision ET qu'on peut tirer
        set cooldown-status cooldown ;; On met le cooldown au max
-       facexyz [xcor] of cible [ycor] of cible [zcor] of cible
-       shoot ;; On tire :-)
+       face-nowrap cible
+       tire cible proba-touche-drone
+       ;;shoot ;; On tire :-)
+       set-drone-munition (get-drone-munition - 1)
      ]
    ]
  ]
@@ -237,6 +238,16 @@ to drone-eliptic-move
 end
 
 
+to check-dead
+  if hp < 0 or get-drone-essence < 0[
+    set dead? true
+    print word (word breed " ") (word (word who) " : Je suis Mort " )
+    die
+  ]
+
+end
+
+
 to move-drone [goal]
   face goal
   fd speed ; Avance
@@ -251,31 +262,24 @@ end
 
 
 ;; Maj de l'etat d'une voiture du convoi quand ellle est touchée
-to toucher-drone
-  set hp hp - 1
-  if hp = 5 [set color color - 2]
-  if hp = 0 [ 
-    set dead? true
-    print word (word breed " ") (word (word who) " : Je suis Mort " )
-    set nb-cars nb-cars - 1
-    die
-  ]
-  
-end
+;to toucher-drone
+;  set hp hp - 1
+;  if hp = 5 [set color color - 2]
+;  if hp = 0 [ 
+;    set dead? true
+;    print word (word breed " ") (word (word who) " : Je suis Mort " )
+;    set nb-cars nb-cars - 1
+;    die
+;  ]
+;  
+;end
 
 
 
 
 
 
-to check-dead
-  if hp < 0 or get-drone-essence < 0[
-    set dead? true
-    print word (word breed " ") (word (word who) " : Je suis Mort " )
-    die
-  ]
 
-end
 
 to look-around-drone
   let hostile-in-range hostiles in-cone-nowrap drone-range 360
