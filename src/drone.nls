@@ -311,7 +311,9 @@ to drone-astar-to-zone [zone regen?]
   if empty? zone [set zone [z_zone] of (one-of patches with [not obstacle?])]
   ;printcom (word "(" breed " " who ") je vais " zone) 
   let tmp-patch patch pxcor pycor pzcor
-  let goal (one-of patches with [not obstacle? and compare-list z_zone zone])
+  let p patches with [distance myself < 30 and pzcor < 10 and pzcor > 2]
+  let goal (one-of p with [(not obstacle?)])
+  if goal = nobody [print "nobody" set goal (one-of patches with [(not obstacle?) and pzcor < 10 and pzcor > 2])]
   let tmpplan plan-astar3D ( tmp-patch ) goal (false)
   set as-path replace-item who as-path tmpplan
     if not empty? (item who as-path) [

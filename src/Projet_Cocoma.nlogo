@@ -152,7 +152,7 @@ to go
   ask turtles [
     ;print color
     set nb-tick-color nb-tick-color + 1
-    if nb-tick-color > 10 [set color  last-color]
+    if nb-tick-color > 10 [set color  last-color ]
   ]
   convois-think
   hostiles-think
@@ -620,7 +620,7 @@ SWITCH
 498
 hostile-range-visu?
 hostile-range-visu?
-1
+0
 1
 -1000
 
@@ -674,7 +674,7 @@ drone-range
 drone-range
 1
 20
-10
+12
 1
 1
 NIL
@@ -717,7 +717,7 @@ SWITCH
 461
 drone-range-visu?
 drone-range-visu?
-1
+0
 1
 -1000
 
@@ -814,7 +814,7 @@ SWITCH
 548
 convoi-range-visu?
 convoi-range-visu?
-1
+0
 1
 -1000
 
