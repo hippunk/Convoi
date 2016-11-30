@@ -270,7 +270,7 @@ to move-path-position [dest-patch];Ici, l'idée c'est de générer un chemin ver
   ;let tmp-plan plan-astar patch-here one-of patches with [pzcor = 0 and not obstacle?] false
 
   if debug-path [
-    ask dest-patch [set pcolor pink]
+    ask dest-patch [set pcolor red]
   ]
 
 

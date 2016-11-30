@@ -236,7 +236,7 @@ INPUTBOX
 197
 269
 total-nb-cars
-0
+15
 1
 0
 Number
@@ -264,7 +264,7 @@ INPUTBOX
 95
 204
 nb-mountains
-0
+3
 1
 0
 Number
@@ -275,7 +275,7 @@ INPUTBOX
 150
 204
 nb-lakes
-0
+2
 1
 0
 Number
@@ -286,7 +286,7 @@ INPUTBOX
 226
 203
 nb-rivers
-0
+2
 1
 0
 Number
@@ -432,7 +432,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-1
+5
 1
 0
 Number
@@ -446,21 +446,6 @@ Bullets\n
 12
 0.0
 1
-
-SLIDER
-435
-310
-607
-343
-bullet-speed
-bullet-speed
-0.1
-2
-0.5
-0.1
-1
-NIL
-HORIZONTAL
 
 MONITOR
 99
@@ -620,7 +605,7 @@ SWITCH
 498
 hostile-range-visu?
 hostile-range-visu?
-0
+1
 1
 -1000
 
@@ -631,7 +616,7 @@ SWITCH
 343
 debug-path
 debug-path
-1
+0
 1
 -1000
 
@@ -644,7 +629,7 @@ zone-size
 zone-size
 1
 20
-10
+5
 1
 1
 NIL
@@ -689,7 +674,7 @@ pas-cercle
 pas-cercle
 1
 12
-4
+12
 1
 1
 NIL
@@ -717,7 +702,7 @@ SWITCH
 461
 drone-range-visu?
 drone-range-visu?
-0
+1
 1
 -1000
 
@@ -814,7 +799,7 @@ SWITCH
 548
 convoi-range-visu?
 convoi-range-visu?
-0
+1
 1
 -1000
 
@@ -829,10 +814,10 @@ convoi-range-color
 0
 
 BUTTON
-465
-360
-582
-393
+85
+270
+202
+303
 show beliefs
 printbdi (word \"(BELIEFS)\" )\nprintbdi (word \"(convoi)\" )\nask convois [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-convoi-critic\n  printbdi (word \"(\" breed \" \" who \") Critic? : \" b )\n]\nprintbdi (word \"(drones)\" )\nask drones [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n  \n  set b get-drone-essence\n  printbdi (word \"(\" breed \" \" who \") Fuel : \" b )\n  set b get-drone-munition\n  printbdi (word \"(\" breed \" \" who \") Ammo : \" b )\n]
 NIL

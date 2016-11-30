@@ -110,6 +110,6 @@ end
 to receive-is-new-leader [msg]
   let id who
   let id-l read-from-string get-from msg
-  print (word "(" breed " " who ") mon nouveau leader est  " id-l)
+  if to-protect? [print (word "(" breed " " who ") mon nouveau leader est  " id-l)]
   set-leader-id-convoi id-l
 end

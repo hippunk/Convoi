@@ -1,11 +1,11 @@
 to tire [cible proba]
   let tmp random-float 1
-  ifelse tmp > proba [ask cible [toucher] print (word breed " " who " : Je tire sur " cible )][print (word breed " " who " : J'ai raté " cible )]
+  if tmp > proba [ask cible [toucher]]
   
 end
 
 to toucher
-  print (word breed " " who " : Je suis touché " )
+  ;print (word breed " " who " : Je suis touché " )
   if not (last-color = 12) [set last-color color ]
   set nb-tick-color 0
   set color 12

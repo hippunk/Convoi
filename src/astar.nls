@@ -77,7 +77,7 @@ to-report plan-astar [start goal longpath? zones] ; start et goal sont des patch
 
       ; Dessin en live du chemin parcouru par astar
       if debug-verbose [
-      wait 0.01
+      ;wait 0.01
       ask pos [ set pcolor red ]
       ]
 
