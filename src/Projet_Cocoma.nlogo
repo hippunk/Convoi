@@ -179,8 +179,8 @@ end
 GRAPHICS-WINDOW
 0
 0
-1430
-1451
+630
+651
 -1
 -1
 20.0
@@ -194,9 +194,9 @@ GRAPHICS-WINDOW
 1
 1
 0
-70
+30
 0
-70
+30
 0
 20
 1
@@ -243,7 +243,7 @@ INPUTBOX
 197
 269
 total-nb-cars
-15
+3
 1
 0
 Number
@@ -271,7 +271,7 @@ INPUTBOX
 95
 204
 nb-mountains
-3
+1
 1
 0
 Number
@@ -282,7 +282,7 @@ INPUTBOX
 150
 204
 nb-lakes
-2
+0
 1
 0
 Number
@@ -293,7 +293,7 @@ INPUTBOX
 226
 203
 nb-rivers
-2
+4
 1
 0
 Number
@@ -373,7 +373,7 @@ simu-speed
 simu-speed
 0
 10
-10
+6
 1
 1
 NIL
@@ -439,7 +439,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-5
+0
 1
 0
 Number
@@ -570,7 +570,7 @@ INPUTBOX
 295
 270
 total-nb-drones
-3
+1
 1
 0
 Number
@@ -623,7 +623,7 @@ SWITCH
 343
 debug-path
 debug-path
-0
+1
 1
 -1000
 
@@ -740,7 +740,7 @@ SWITCH
 378
 debug-com
 debug-com
-1
+0
 1
 -1000
 
@@ -826,7 +826,7 @@ BUTTON
 202
 303
 show beliefs
-printbdi (word \"(BELIEFS)\" )\nprintbdi (word \"(convoi)\\n\" )\nask convois [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n  set b get-convoi-critic\n  printbdi (word \"(\" breed \" \" who \") Critic? : \" b )\n  printbdi (word \"-----------------\" )\n]\nprintbdi (word \"(drones)\" )\nask drones [\n    let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n  set b get-convoi-critic\n  printbdi (word \"(\" breed \" \" who \") Critic? : \" b )\n  printbdi (word \"-----------------\" )\n]
+printbdi (word \"(BELIEFS)\" )\nprintbdi (word \"(convoi)\\n\" )\nask convois [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n  set b get-convoi-critic\n  printbdi (word \"(\" breed \" \" who \") Critic? : \" b )\n  \n  set b get-convoi-path-zone\n  printbdi (word \"(\" breed \" \" who \") Path-zone? : \" b )\n  \n  printbdi (word \"-----------------\" )\n]\nprintbdi (word \"(drones)\" )\nask drones [\n    let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n  set b get-drone-munition\n  printbdi (word \"(\" breed \" \" who \") Ammo : \" b )\n  set b get-drone-essence\n  printbdi (word \"(\" breed \" \" who \") Fuel : \" b )\n  set b get-convoi-path-zone\n  printbdi (word \"(\" breed \" \" who \") Path-zone? : \" b )\n  printbdi (word \"-----------------\" )\n]
 NIL
 1
 T
@@ -854,7 +854,7 @@ BUTTON
 402
 43
 split convoi
-ask convoi 0\n[\n  let dest [z_zone] of patch-here\n  add-hostile-belief dest\n  \n  if alone? [stop]\n      set-convoi-critic false\n      set alone? true\n      \n      let msg-split msg-split-split (who + 1)\n      send-message msg-split \n      \n      let tmp msg-status-leader-to-leader-convoi (who + 1)\n      send-message tmp \n      \n      set genlongpath? true\n      set regenpath? true\n  \n]
+ask convoi 0\n[\n  let zzone [z_zone] of patch-here\n  add-hostile-belief zzone\n  split (who + 1)\n  \n]
 NIL
 1
 T
@@ -894,6 +894,23 @@ proba-touche-hostile
 1
 NIL
 HORIZONTAL
+
+BUTTON
+210
+275
+892
+308
+NIL
+ask turtle 0 [send-message create-msg-leader-to-leader-leader \"inform\" 0 3 \"\" \"nLeaderC\"]
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?

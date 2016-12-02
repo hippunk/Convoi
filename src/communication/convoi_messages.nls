@@ -32,6 +32,10 @@ to-report msg-inform-is-new-leader
   report msg
 end 
 
+to-report msg-inform-drone-new-leader-convoi
+  report create-msg-leader-to-leader-leader "inform" who get-leader-id-drone who "nLeaderC"
+end
+
 
 to-report msg-convoi-detect-hostile [zone]
  let content zone
@@ -75,6 +79,16 @@ end
 to receive-status-old-leader [msg]
   
   print (word "(" breed " " who ") receive-status-old-leader " msg)
+  
+  let lD item 1 get-content msg
+  set-leader-id-drone lD
+  set fake-zones get-convoi-path-zone
+  let zones item 2 get-content msg
+  if empty? zones [stop]
+  foreach zones [
+    if ? != "hostile"
+    [add-hostile-belief ?]
+  ]
   
 end
 

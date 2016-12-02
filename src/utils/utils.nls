@@ -94,6 +94,7 @@ end
 
 
 to-report compare-list [l1 l2]
+  if empty? l1 or empty? l2 [report false]
   let i 0
   foreach l1 [ 
     ;print (word ? " " (item i l2))

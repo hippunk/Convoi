@@ -11,8 +11,8 @@ to-report plan-astar [start goal longpath? zones] ; start et goal sont des patch
   let z_goal [z_zone] of goal
   if not empty? zones 
   [
-    if member? z_start zones [set zones remove z_start zones print (word "remove start :" start)]
-    if member? z_goal zones [set zones remove z_goal zones print (word "remove goal :" goal)]
+    if member? z_start zones [set zones remove z_start zones ];print (word "remove start :" start)]
+    if member? z_goal zones [set zones remove z_goal zones]; print (word "remove goal :" goal)]
   ]
   
   
@@ -64,11 +64,10 @@ to-report plan-astar [start goal longpath? zones] ; start et goal sont des patch
       let next first open
       set open but-first open
       let z [z_zone] of (item 3 next)
-      while [member? z zones and resign = false]
+      while [member? z zones and not resign = false]
       [
-        ;print (patch-to-zone (item 3 next))
         ifelse empty? open
-        [set resign true print "resign"] ;;; <--- PROBLEME ICI
+        [set resign true print "resign"]
         [set next first open set open but-first open set z [z_zone] of (item 3 next)]
       ]
       
@@ -129,9 +128,10 @@ to-report plan-astar [start goal longpath? zones] ; start et goal sont des patch
 
     ; Pour la visualisation du chemin, init du premier waypoint
     if astar-visu [
-;      if any? waypoints [
-;        ask waypoints [ die ]
-;      ]
+      if any? waypoints [
+        ask links [set color pink]
+
+      ]
       create-waypoints 1 [ hide-turtle move-to [patch-at 0 0 1] of goal ]
     ]
 
@@ -299,8 +299,8 @@ end
 
 
 to calcul-path-convoi-evite-zone-hotile
-  let zones true
-  calcul-path-convoi zones
+  let zones? true
+  calcul-path-convoi zones? 
 end
 
 to calcul-path-convoi [zones?]
@@ -308,14 +308,7 @@ to calcul-path-convoi [zones?]
   ; Calcul du plan AStar pour chaque leader si necessaire
   foreach sort-on [who] turtle-set convois with [leader? and not finished? and not dead?] 
   [
-    let z [] 
-    if zones?
-    [
-      ask ? 
-      [
-        set z get-hostile-belief
-      ]
-    ] 
+    
     
     let id ([who] of ?) - first-car
     ; Recalcule le chemin si nécessaire (par exemple au début de la simulation ou quand le convoi se sépare)
@@ -323,12 +316,25 @@ to calcul-path-convoi [zones?]
     if empty? as-path or length as-path < (id + 1) or empty? (item id as-path)  or [regenpath?] of ? 
     [ ; s'il n'y a pas encore de chemin du tout, ou pas de chemin pour cette voiture, on cree un plan AStar
       ; Cree le plan AStar (attention a ca que le patch start soit au niveau ou il y a les obstacles, ici pzcor = mapAlt pour les obstacles)
+      let z [] 
+      ;ask patches with [pcolor = pink and pzcor = 3] [set pcolor black]
+      if zones? [
+        ask ? [
+          set z get-hostile-belief
+          set z sentence fake-zones z
+          foreach fake-zones[
+            ask patches with [compare-list ? z_zone and pzcor = 0] [set pcolor pink]
+          ]
+          set fake-zones []
+        ]
+      ]
       let start-patch min-one-of (patches with [pzcor = mapAlt and not obstacle?]) [distance ?] ; on s'assure de choisir comme patch de depart un patch libre sans obstacle, sinon quand on split un convoi il se peut qu'il soit sur un obstacle et qu'il ne puisse jamais generer de chemin
       let new-path plan-astar ([patch-at 0 0 (pzcor * -1)] of start-patch) (one-of patches with [objectif?]) ([genlongpath?] of ?)  z
       ; S'il n'y a pas de plan et qu'on a essayé de trouver un long chemin, on attend la prochaine iteration et on reessaie mais avec un plan court
-      if empty? new-path and [genlongpath?] of ? [ ask ? [ set genlongpath? false ]]
+      if empty? new-path and [genlongpath?] of ? [PRINT  "empty" ask ? [set genlongpath? false ]]
       ; S'il n'y a pas deja une entree pour cette voiture on la cree
-        
+      ifelse empty? new-path and not [genlongpath?] of ? [ ask ? [ set resign-cpt resign-cpt + 1]] [ask ? [ set resign-cpt 0]]
+       
         
       if [regenpath?] of ? 
       [ 

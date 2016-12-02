@@ -100,12 +100,19 @@ to receive-message-drone
       
       if perf = "request" and sub = "check-pos" [receive-check-pos-drone msg stop]
       if perf = "request" and sub = "kill-pos" [receive-check-pos-drone msg stop]
-      ;if perf = "inform" and sub = "nLeader" [receive-is-new-leader msg stop]
+      if perf = "inform" and sub = "nLeaderC" [receive-is-new-leader-convoi msg stop]
     ]
     [
       add-to-forwarded-msg msg
     ]
   ]
+end
+
+to receive-is-new-leader-convoi [msg]
+  printcom (word "(" breed " " who ") receive-is-new-leader-convoi " msg) 
+  let m get-content msg
+  print m
+  set-leader-id-convoi m
 end
 
 to receive-check-pos-drone [msg]

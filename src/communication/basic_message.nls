@@ -20,13 +20,16 @@ to-report create-msg-convoi-to-convoi-broadcast [performative from dest content 
 end
 
 to-report create-msg-leader-to-leader-leader [performative from dest content sujet]
-  let breed-to [breed] of turtle dest  
+  let breed-to [breed] of turtle dest
   let receivers (breed-to in-cone range 360 with [who = dest])
   let msg create-message performative
-  set msg add-multiple-receivers receivers msg
+  ask receivers [set msg add-receiver who msg]
+  ;set msg add-multiple-receivers receivers msg
   set msg add-content content msg
   set msg add-from from msg
-  set msg add-to dest msg
+  set msg add-to (list dest) msg
+  set msg add-sujet sujet msg
+  print msg
   report msg
 end
 
