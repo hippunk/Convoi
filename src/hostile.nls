@@ -257,7 +257,7 @@ to add-to-convoi-position [xcord ycord zcord]
   let dest patch x y zcord
    if [obstacle?] of dest [
      ;; Si la destination est un obstacle on trouve le patch le plus près qui n'en est pas un
-     set dest min-one-of patches with [obstacle? = false and pzcor = zcord] [distance dest]
+     set dest min-one-of patches with [obstacle? = false and pzcor = solAlt] [distance dest]
    ]
   let tmp-list (list [pxcor] of dest [pycor] of dest [pzcor] of dest)
   if not member? tmp-list convoi-position [

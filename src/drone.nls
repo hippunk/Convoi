@@ -37,7 +37,7 @@ to setup-drones
       ; Init apparence NetLogo
       ; Visu
       set label (word who " : " hp) ; display the car names
-      set size 3
+      set size 2
       set shape "airplane 2"
       set color grey
 
@@ -84,7 +84,7 @@ to setup-drones
       set armed? true
       set hp drones-hp
       set-drone-munition drones-max-ammo
-      set-drone-essence drones-max-carburant + random (50)
+      set-drone-essence drones-max-carburant - random (50)
       
       
       
@@ -375,4 +375,12 @@ to go-refuel-path
   ]
   
   
+end
+
+
+to init-beliefs-drone [lC lD path]
+  set-leader-id-convoi lC
+  set-leader-id-drone lD
+  let zzone path-to-zone path
+  set-convoi-path-zone zzone
 end

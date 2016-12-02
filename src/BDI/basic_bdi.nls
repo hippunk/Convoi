@@ -79,7 +79,7 @@ end
 
 to-report get-convoi-critic
   let bel read-first-belief-of-type "critic"
-  report item 1 bel
+  ifelse empty? bel [report -1][report item 1 bel] 
 end
 
 to set-leader-id-convoi [id]
@@ -91,7 +91,7 @@ end
 
 to-report get-leader-id-convoi
   let bel read-first-belief-of-type "leaderC"
-  report item 1 bel
+  ifelse empty? bel [report -1][report item 1 bel] 
 end
 
 to set-leader-id-drone [id]
@@ -103,12 +103,13 @@ end
 
 to-report get-leader-id-drone
   let bel read-first-belief-of-type "leaderD"
-  report item 1 bel
+  ifelse empty? bel [report -1][report item 1 bel] 
+  ;report item 1 bel
 end
 
 to add-hostile-belief [zone]
   let bel create-belief "hostile" zone
-  ifelse exists-belief bel [set newdetect? false ] [add-belief bel set newdetect? true]
+  ifelse exists-belief bel [set newdetect? false ] [add-belief bel set newdetect? true ask patches with [compare-list z_zone zone and pzcor = 0] [set pcolor 23]]
 end 
 
 to remove-hostile-belief [zone]

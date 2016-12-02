@@ -18,6 +18,14 @@ to-report msg-status-leader
   report msg
 end
 
+to-report msg-status-leader-to-leader-convoi [leader]
+  let my-id who
+  let l (list ticks get-leader-id-drone get-hostile-belief) 
+  let msg create-msg-convoi-to-convoi "inform" who leader l [] "splitstatus"
+  report msg
+end
+
+
 to-report msg-inform-is-new-leader 
   let my-id who
   let msg create-msg-convoi-to-convoi-broadcast "inform" who (convois in-cone range 360 with [who > my-id]) my-id [] "nLeader"
@@ -55,11 +63,19 @@ to receive-message-convoi
       if perf = "inform" and sub = "status" [receive-status msg stop]
       if perf = "inform" and sub = "hostile" [receive-hostile-inform msg stop]
       if perf = "inform" and sub = "nLeader" [receive-is-new-leader msg stop]
+      if perf = "inform" and sub = "splitstatus" [receive-status-old-leader msg stop]
     ]
     [
       add-to-forwarded-msg msg
     ]
   ]
+end
+
+
+to receive-status-old-leader [msg]
+  
+  print (word "(" breed " " who ") receive-status-old-leader " msg)
+  
 end
 
 to receive-split-request [msg]
@@ -110,6 +126,9 @@ end
 to receive-is-new-leader [msg]
   let id who
   let id-l read-from-string get-from msg
-  if to-protect? [print (word "(" breed " " who ") mon nouveau leader est  " id-l)]
+  let from get-sender msg
+  if to-protect? [
+    print msg 
+    print (word "(" breed " " who ") mon nouveau leader est  " id-l " sender : " from)]
   set-leader-id-convoi id-l
 end

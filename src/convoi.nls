@@ -8,6 +8,7 @@ convois-own[
   last-send-time ; communication historical time-stamp
   ;drone-leader-id
   goal-zone
+  alone?
   
   ]
 
@@ -55,7 +56,6 @@ to setup-convois
     set dead? false
     set regenpath? false
     set hp convois-hp
-    set-convoi-critic true
     set goal-zone [z_zone] of one-of patches with [objectif? and pzcor = mapAlt]
     set newdetect? false
 
@@ -64,6 +64,7 @@ to setup-convois
     ; FOV
     set range-visu convoi-range
     set range convoi-range
+    set alone? false
     
     ;messages
     set send-interval 30
@@ -95,7 +96,7 @@ to setup-convois
     ; ask non leader cars
     ask turtle-set sort-on [who] convois with [who > first-car]
     [
-      set-leader-id-convoi first-car
+      ;set-leader-id-convoi first-car
       ; we create a link between them
       create-convoi-link-to turtle (who - 1)
       ;if who >= 4 and who mod 2 = 0 [ create-convoi-link-with turtle (who - 3) ]
@@ -185,10 +186,11 @@ to make-leader
   set color orange
   set last-color color
   set-leader-id-convoi who
-  set genlongpath? true
+  set genlongpath? false
   set regenpath? true
   ;print (word "(" breed " " who ") Je suis nouveau leader ")
   send-message msg-inform-is-new-leader
+  ;;INFORMER LE DRONE !!!!!!!!!!
   remove-convoi-links-between who who - 1
 end
 
@@ -209,8 +211,18 @@ to look-around
     if leader? 
     [
       ;print word (word breed " ") (word (word who) " : J'ai vu un ennemie je split " )
+      if alone? [stop]
+      set-convoi-critic false
+      set alone? true
+      
       let msg-split msg-split-split (who + 1)
       send-message msg-split 
+      
+      let tmp msg-status-leader-to-leader-convoi (who + 1)
+      send-message tmp 
+      
+      set genlongpath? true
+      set regenpath? true
     ]
   ]
   [
@@ -355,5 +367,14 @@ to turn-away
    ;let free-patches neighbors with [not any? patches ]
    ;if any? free-patches [face one-of free-patches]
    rt random 10 - 5
+end
+
+
+to init-beliefs-convoi [lC lD path]
+  set-convoi-critic true
+  set-leader-id-convoi lC
+  set-leader-id-drone lD
+  let zzone path-to-zone path
+  set-convoi-path-zone zzone
 end
 

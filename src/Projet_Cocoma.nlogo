@@ -78,8 +78,15 @@ to setup
       set as-path replace-item 0 as-path start-path
       let i path-to-zone item 0 as-path
       if not empty? start-path [ set path-is-possible? true]
+
+      let lC [who] of one-of convois with [leader?]
+      let lD [who] of one-of drones with [leader?]
+      ask convois [init-beliefs-convoi lC lD start-path]
+      ask drones [init-beliefs-drone lC lD start-path]
     ]
   ]
+
+
 
   if not debug and not debug-verbose [no-display]
   ;setup-drones
@@ -353,7 +360,7 @@ SWITCH
 456
 astar-visu
 astar-visu
-1
+0
 1
 -1000
 
@@ -819,7 +826,7 @@ BUTTON
 202
 303
 show beliefs
-printbdi (word \"(BELIEFS)\" )\nprintbdi (word \"(convoi)\" )\nask convois [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-convoi-critic\n  printbdi (word \"(\" breed \" \" who \") Critic? : \" b )\n]\nprintbdi (word \"(drones)\" )\nask drones [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n  \n  set b get-drone-essence\n  printbdi (word \"(\" breed \" \" who \") Fuel : \" b )\n  set b get-drone-munition\n  printbdi (word \"(\" breed \" \" who \") Ammo : \" b )\n]
+printbdi (word \"(BELIEFS)\" )\nprintbdi (word \"(convoi)\\n\" )\nask convois [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n  set b get-convoi-critic\n  printbdi (word \"(\" breed \" \" who \") Critic? : \" b )\n  printbdi (word \"-----------------\" )\n]\nprintbdi (word \"(drones)\" )\nask drones [\n    let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n  set b get-convoi-critic\n  printbdi (word \"(\" breed \" \" who \") Critic? : \" b )\n  printbdi (word \"-----------------\" )\n]
 NIL
 1
 T
@@ -847,7 +854,7 @@ BUTTON
 402
 43
 split convoi
-ask convois with [leader?]\n[\n  let msg-split msg-split-split (who + 1)\n  send-message msg-split\n]
+ask convoi 0\n[\n  let dest [z_zone] of patch-here\n  add-hostile-belief dest\n  \n  if alone? [stop]\n      set-convoi-critic false\n      set alone? true\n      \n      let msg-split msg-split-split (who + 1)\n      send-message msg-split \n      \n      let tmp msg-status-leader-to-leader-convoi (who + 1)\n      send-message tmp \n      \n      set genlongpath? true\n      set regenpath? true\n  \n]
 NIL
 1
 T

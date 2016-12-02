@@ -129,9 +129,9 @@ to-report plan-astar [start goal longpath? zones] ; start et goal sont des patch
 
     ; Pour la visualisation du chemin, init du premier waypoint
     if astar-visu [
-      if any? waypoints [
-        ask waypoints [ die ]
-      ]
+;      if any? waypoints [
+;        ask waypoints [ die ]
+;      ]
       create-waypoints 1 [ hide-turtle move-to [patch-at 0 0 1] of goal ]
     ]
 

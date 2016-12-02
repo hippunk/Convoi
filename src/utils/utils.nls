@@ -29,7 +29,6 @@ to-report path-to-zone [path]
     if empty? zone-path or not (compare-list last zone-path z)  
     [set zone-path lput z zone-path]
   ]
-  ;print zone-path
   report zone-path
 end
 
