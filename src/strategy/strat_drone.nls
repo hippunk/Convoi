@@ -21,7 +21,6 @@ to-report check-pos-done
 
 end
 
-
 to kill-pos-intention [obj]
   ;calcul du chemin si celui-ci ne correspond pas à l'intention
   if intention-courante != (word "kill-pos " obj)

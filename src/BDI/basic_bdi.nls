@@ -33,8 +33,20 @@ to add-drone-in-range [num]
 end
 
 to-report get-drone-in-range
-  let bel beliefs-of-type "in-range"
-  report bel
+;  let bel beliefs-of-type "in-range"
+;  report bel
+
+  ifelse exist-beliefs-of-type "in-range"
+  [
+    let l []
+    let bels beliefs-of-type "in-range"
+    foreach bels
+    [
+      set l lput item 1 ? l
+    ]
+    report l
+  ]
+  [report []]
 end
 
 to drop-in-range
