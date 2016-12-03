@@ -1,13 +1,11 @@
-to strat-check-pos [zone]
-  set objectif zone
-end
-  
-to check-pos-intention
+;Exemple : ask drone 0 [ add-intention (word "check-pos-intention " [z_zone] of  patch 10 10 10) "check-pos-done"]  
+to check-pos-intention [obj]
   ;calcul du chemin si celui-ci ne correspond pas à l'intention
-  if intention-courante != "check-pos"
+  if intention-courante != (word "check-pos " obj)
   [
-    set intention-courante "check-pos"
-    drone-astar-to-zone objectif false
+
+    set intention-courante (word "check-pos " obj)
+    drone-astar-to-zone obj false
   ]
   
 end
@@ -15,7 +13,6 @@ end
 to-report check-pos-done
   ;revoie true si on est dans la zone à checker
   if finished?[
-    set objectif []
     set intention-courante ""
   ]
   report finished?
@@ -24,10 +21,34 @@ end
 
 
 to strat-kill-pos [pos]
-  drone-astar-to-zone pos false
+  set objectif pos
+  set fire? true
+
   ;+Autorisation de tir une fois dans la zone ?
 end
 
+
+
+to kill-pos-intention [obj]
+  ;calcul du chemin si celui-ci ne correspond pas à l'intention
+  if intention-courante != (word "kill-pos " obj)
+  [
+    set fire? true
+    set intention-courante (word "kill-pos " obj)
+    drone-astar-to-zone obj false
+  ]
+  
+end
+
+to-report kill-pos-done
+  ;revoie true si on est dans la zone à checker
+  if finished?[
+    set fire? false
+    set intention-courante ""
+  ]
+  report finished?
+
+end
 
 
 
