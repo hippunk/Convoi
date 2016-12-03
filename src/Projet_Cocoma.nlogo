@@ -570,7 +570,7 @@ INPUTBOX
 295
 270
 total-nb-drones
-1
+5
 1
 0
 Number
@@ -623,7 +623,7 @@ SWITCH
 343
 debug-path
 debug-path
-0
+1
 1
 -1000
 
@@ -740,7 +740,7 @@ SWITCH
 378
 debug-com
 debug-com
-1
+0
 1
 -1000
 
@@ -793,7 +793,7 @@ drones-max-carburant
 drones-max-carburant
 100
 500
-500
+197
 1
 1
 NIL

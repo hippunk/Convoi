@@ -17,7 +17,7 @@ drones-own[
   objectif
   intention-courante
   vital-critic
-  
+  fire?
   ]
 
 
@@ -176,7 +176,7 @@ to  random-basic-strategy
   ;move-to-path-drones
   ;random-move-path-drones
   drone-eliptic-move
-  drones-fire
+  ;drones-fire
 end
 
 to drones-think 
@@ -234,6 +234,7 @@ to drone-eliptic-move
 
     ;show pas
     fd speed
+    set-drone-essence precision (get-drone-essence - speed) 3 ;; update du carburant
     set angle-eli angle-eli + 360 / pas
     set angle-eli angle-eli mod 360
   ]
@@ -302,9 +303,35 @@ end
 to check-vital
   let p min-one-of patches with [base?] [(distance-nowrap myself)]
   ;ifelse get-drone-essence < drones-max-carburant * vital-critic [let msg need-fuel send-message msg set label-color red go-refuel-path][set label-color white ]
-  ifelse get-drone-essence - 20 < distance-nowrap p [let msg need-fuel send-message msg set label-color red go-refuel-path][set label-color white ]
+  if get-drone-essence - 40 > distance-nowrap p [set label-color white stop]
+  
+  ifelse get-drone-essence - 20 < distance-nowrap p [
+    if leader? 
+    [
+      print "CHOIX STRAT pplus de fuel et pas de leader possible " 
+      let d get-drone-in-range
+      print d
+    ]
+    let msg need-fuel 
+    send-message msg 
+    set label-color red 
+    go-refuel-path
+  ]
+  [
+    if leader? 
+    [
+      print "choix nouveau leader"
+      let d get-drone-in-range
+      print d
+    ]
+  ]
 end
 
+
+to-report choix-drones []
+
+
+end
 
 
 to drone-astar-to-zone [zone regen?]
@@ -386,3 +413,5 @@ to init-beliefs-drone [lC lD path]
   let zzone path-to-zone path
   set-convoi-path-zone zzone
 end
+
+

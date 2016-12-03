@@ -28,6 +28,8 @@ to-report msg-drone-detect-hostile [zone]
 end
 
 
+
+
 ;;;;;;;;;;;;;;;
 ;;;; ORDER ;;;;
 ;;;;;;;;;;;;;;;
@@ -81,8 +83,7 @@ end
 
 to receive-message-drone
   
-  
-  if not empty? incoming-queue
+  while [not empty? incoming-queue]
   [
     let msg get-message
     printcom (word "\t(" breed " " who ") reçoi : " msg)
@@ -146,13 +147,13 @@ end
 to receive-status-drone [msg]
   let id who
   let zones item 4 get-content msg
-  foreach zones
-  [
-    
+  foreach zones [
     if ? != "hostile"
     [add-hostile-belief ?]
   ]
-  add-drone-in-range get-sender msg
+  let c get-content msg
+  let l (list get-sender msg item 2 c item 3 c)
+  add-drone-in-range l
 end
 
 to receive-hostile-inform-drone [msg]

@@ -22,7 +22,7 @@ end
 
 to strat-kill-pos [pos]
   set objectif pos
-  set fire? true
+  ;set fire? true
 
   ;+Autorisation de tir une fois dans la zone ?
 end
