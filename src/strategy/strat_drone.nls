@@ -20,15 +20,6 @@ to-report check-pos-done
 end
 
 
-to strat-kill-pos [pos]
-  set objectif pos
-  set fire? true
-
-  ;+Autorisation de tir une fois dans la zone ?
-end
-
-
-
 to kill-pos-intention [obj]
   ;calcul du chemin si celui-ci ne correspond pas à l'intention
   if intention-courante != (word "kill-pos " obj)
@@ -51,16 +42,22 @@ to-report kill-pos-done
 end
 
 
-
-
-to strat-go-refuel
-  drone-astar-to-zone [z_zone] of patch 0 0 10 false
+to check-path-intention
+  ;calcul du chemin si celui-ci ne correspond pas à l'intention
+  if intention-courante != (word "check-path") ;Passage en paramètre du convoi suivi ?
+  [
+    set fire? true
+    set intention-courante (word "chekc-path") ; 
+    ;drone-astar-to-zone obj false Calcul du chemin ? Récupération ?
+  ]
+  
 end
 
+to-report check-path-done
+  ;revoie true si on est dans la zone à checker
+  if finished?[  
+    set intention-courante ""
+  ]
+  report finished?
 
-to strat-cover-convoi [id]
-  
-  ;position leader pour escort
-  ;Correction nécéssaire du eli-path pour traiter d'une position en croyance ?
-  
 end
