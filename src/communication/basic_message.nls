@@ -29,7 +29,6 @@ to-report create-msg-leader-to-leader-leader [performative from dest content suj
   set msg add-from from msg
   set msg add-to (list dest) msg
   set msg add-sujet sujet msg
-  print msg
   report msg
 end
 

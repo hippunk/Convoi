@@ -85,7 +85,7 @@ to receive-message-drone
   if not empty? incoming-queue
   [
     let msg get-message
-    printcom (word "(" breed " " who ") reçoi : " msg)
+    printcom (word "\t(" breed " " who ") reçoi : " msg)
     let dest read-from-string get-to msg
     let bool (is-number? dest and dest = who) or (is-list? dest and member? who dest)
     ifelse bool
@@ -111,7 +111,6 @@ end
 to receive-is-new-leader-convoi [msg]
   printcom (word "(" breed " " who ") receive-is-new-leader-convoi " msg) 
   let m get-content msg
-  print m
   set-leader-id-convoi m
 end
 

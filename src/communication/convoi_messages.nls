@@ -54,7 +54,7 @@ to receive-message-convoi
   if not empty? incoming-queue
   [
     let msg get-message
-    printcom (word "(" breed " " who ") reçoi : " msg)
+    printcom (word "\t(" breed " " who ") reçoi : " msg)
     let dest read-from-string get-to msg
     let bool (is-number? dest and dest = who) or (is-list? dest and member? who dest)
     ifelse bool
@@ -142,7 +142,6 @@ to receive-is-new-leader [msg]
   let id-l read-from-string get-from msg
   let from get-sender msg
   if to-protect? [
-    print msg 
     print (word "(" breed " " who ") mon nouveau leader est  " id-l " sender : " from)]
   set-leader-id-convoi id-l
 end

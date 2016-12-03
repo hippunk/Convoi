@@ -179,8 +179,8 @@ end
 GRAPHICS-WINDOW
 0
 0
-630
-651
+1430
+1451
 -1
 -1
 20.0
@@ -194,9 +194,9 @@ GRAPHICS-WINDOW
 1
 1
 0
-30
+70
 0
-30
+70
 0
 20
 1
@@ -271,7 +271,7 @@ INPUTBOX
 95
 204
 nb-mountains
-1
+3
 1
 0
 Number
@@ -282,7 +282,7 @@ INPUTBOX
 150
 204
 nb-lakes
-0
+1
 1
 0
 Number
@@ -293,7 +293,7 @@ INPUTBOX
 226
 203
 nb-rivers
-4
+2
 1
 0
 Number
@@ -740,7 +740,7 @@ SWITCH
 378
 debug-com
 debug-com
-0
+1
 1
 -1000
 
@@ -854,7 +854,7 @@ BUTTON
 402
 43
 split convoi
-ask convoi 0\n[\n  let zzone [z_zone] of patch-here\n  add-hostile-belief zzone\n  split (who + 1)\n  \n]
+ask convoi max [who] of convois with [leader?]\n[\n  let zzone [z_zone] of patch-here\n  add-hostile-belief zzone\n  split (who + 1)\n  \n]
 NIL
 1
 T

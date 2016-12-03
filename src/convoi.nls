@@ -194,7 +194,6 @@ to make-leader
   set regenpath? true
   send-message msg-inform-is-new-leader
   send-message msg-inform-drone-new-leader-convoi
-  ;;INFORMER LE DRONE !!!!!!!!!!
   remove-convoi-links-between who who - 1
 end
 
