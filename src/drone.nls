@@ -171,16 +171,16 @@ to  random-basic-strategy
     ;execute, Pour nous execute se résume à se déplacer vers as-path ou à escorter (changer escorter pour suivre le mécanisme de as-path afin de factorier le tout ?)
     
     
-    drone-astar-to-zone [] false
-    ;execute-intentions
+    ;drone-astar-to-zone [] false
+    execute-intentions
       if fire?[
         drones-fire
     ]
     
   ]
-  ;move-to-path-drones
+  move-to-path-drones
   ;random-move-path-drones
-  drone-eliptic-move
+  ;drone-eliptic-move
 
 end
 
@@ -318,9 +318,13 @@ to drone-astar-to-zone [zone regen?]
   if empty? zone [set zone [z_zone] of (one-of patches with [not obstacle?])]
   ;printcom (word "(" breed " " who ") je vais " zone) 
   let tmp-patch patch pxcor pycor pzcor
-  let p patches with [distance myself < 30 and pzcor < 10 and pzcor > 2]
-  let goal (one-of p with [(not obstacle?)])
-  if goal = nobody [print "nobody" set goal (one-of patches with [(not obstacle?) and pzcor < 10 and pzcor > 2])]
+  
+  let goal (one-of patches with [not obstacle? and compare-list z_zone zone])
+  
+  ;let p patches with [distance myself < 30 and pzcor < 10 and pzcor > 2]
+  ;let goal (one-of p with [(not obstacle? and compare-list z_zone zone)])
+  ;if goal = nobody [print "nobody" set goal (one-of patches with [(not obstacle? and compare-list z_zone zone) and pzcor < 10 and pzcor > 2])]
+  
   let tmpplan plan-astar3D ( tmp-patch ) goal (false)
   set as-path replace-item who as-path tmpplan
     if not empty? (item who as-path) [

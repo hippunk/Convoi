@@ -5,7 +5,9 @@ to check-pos-intention [obj]
   [
 
     set intention-courante (word "check-pos " obj)
+    print "obj" print obj
     drone-astar-to-zone obj false
+    print item who as-path
   ]
   
 end
@@ -44,10 +46,32 @@ end
 
 to check-path-intention
   ;calcul du chemin si celui-ci ne correspond pas à l'intention
+  
+
   if intention-courante != (word "check-path") ;Passage en paramètre du convoi suivi ?
   [
-    set fire? true
-    set intention-courante (word "chekc-path") ; 
+      
+
+
+    let tmp-path get-convoi-path-zone 
+    
+    ;Convertir chaque zone avec coord en 5
+    let path []
+    foreach tmp-path [
+      let px item 0 ? * zone-size + zone-size / 2
+      let py item 1 ? * zone-size + zone-size / 2
+      let pz 5
+      set path lput patch px py pz path
+      
+    ]
+   
+   
+    set as-path replace-item who as-path path
+   
+    if not empty? (item who as-path) [
+      set finished? false
+    ]
+    set intention-courante (word "check-path") ; 
     ;drone-astar-to-zone obj false Calcul du chemin ? Récupération ?
   ]
   
