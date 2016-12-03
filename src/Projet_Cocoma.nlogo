@@ -623,7 +623,7 @@ SWITCH
 343
 debug-path
 debug-path
-1
+0
 1
 -1000
 

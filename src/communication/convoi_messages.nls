@@ -44,7 +44,7 @@ to-report msg-convoi-detect-hostile [zone]
 end
 
 to-report msg-send-path 
-  let msg create-msg-leader-to-leader-leader "inform" who get-leader-id-drone as-path "path"
+  let msg create-msg-leader-to-leader-leader "inform" who get-leader-id-drone get-convoi-path-zone "path"
   report msg
 end
 

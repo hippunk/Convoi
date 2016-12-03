@@ -101,11 +101,17 @@ to receive-message-drone
       if perf = "request" and sub = "check-pos" [receive-check-pos-drone msg stop]
       if perf = "request" and sub = "kill-pos" [receive-check-pos-drone msg stop]
       if perf = "inform" and sub = "nLeaderC" [receive-is-new-leader-convoi msg stop]
+      if perf = "inform" and sub = "path" [receive-path-convoi msg stop]
     ]
     [
       add-to-forwarded-msg msg
     ]
   ]
+end
+
+to receive-path-convoi [msg]
+  print (word "(" breed " " who ") receive-path-convoi " msg) 
+  
 end
 
 to receive-is-new-leader-convoi [msg]

@@ -173,9 +173,9 @@ to  random-basic-strategy
     ;execute-intentions
     
   ]
-  move-to-path-drones
+  ;move-to-path-drones
   ;random-move-path-drones
-  ;drone-eliptic-move
+  drone-eliptic-move
   drones-fire
 end
 
@@ -207,9 +207,11 @@ to drones-fire
 end
 
 to drone-eliptic-move
-  let u ([xcor] of convoi 0)
-  let v ([ycor] of convoi 0)
+  
   ask drones[
+    let id get-leader-id-convoi
+    let u ([xcor] of convoi id)
+    let v ([ycor] of convoi id)
     ;set debug-x ([xcor] of convoi 0) ; Pas de poroblèmes avec la récupération des coordonnées.
     ;set debug-y ([ycor] of convoi 0)
     
