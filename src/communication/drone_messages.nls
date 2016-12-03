@@ -110,7 +110,8 @@ to receive-message-drone
 end
 
 to receive-path-convoi [msg]
-  print (word "(" breed " " who ") receive-path-convoi " msg) 
+  set-convoi-path-zone get-content msg
+  ;print (word "(" breed " " who ") receive-path-convoi " msg) 
   
 end
 

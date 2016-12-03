@@ -301,12 +301,15 @@ end
 to calcul-path-convoi-evite-zone-hotile
   let zones? true
   calcul-path-convoi zones? 
-;  ask convois [
-;    let path item who as-path
-;    let zzone path-to-zone path
-;    set-convoi-path-zone zzone
-;  
-;  ]
+  ask convois [
+    let path item who as-path
+    if not empty? path [
+      let zzone path-to-zone path
+      set-convoi-path-zone zzone
+    ]
+    
+  
+  ]
 end
 
 to calcul-path-convoi [zones?]
@@ -328,7 +331,6 @@ to calcul-path-convoi [zones?]
         ask ? [
           set z get-hostile-belief
           set z sentence fake-zones z
-          print z
           foreach fake-zones[
             ask patches with [compare-list ? z_zone and pzcor = 0] [set pcolor pink]
           ]

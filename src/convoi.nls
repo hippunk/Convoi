@@ -290,13 +290,9 @@ to deplacement-convoi
         
         let zzone path-to-zone my-as-path
         set-convoi-path-zone zzone
-;        if leader? and get-convoi-critic [
-;          print "--A--"
-;          print zzone
-;          print "--A--"
-;        
-;          send-message msg-send-path
-;        ]
+        if leader? and get-convoi-critic [
+          send-message msg-send-path
+        ]
         
       ]
     ]

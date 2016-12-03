@@ -763,7 +763,7 @@ elipseA
 elipseA
 0
 100
-7
+0
 1
 1
 NIL
@@ -778,7 +778,7 @@ elipseB
 elipseB
 0
 100
-7
+0
 1
 1
 NIL
