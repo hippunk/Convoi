@@ -59,6 +59,8 @@ to setup-drones
       set dead? false
       set regenpath? false
       
+      set fire? false
+      
       
       
       ; Init des structures BDI
@@ -171,12 +173,19 @@ to  random-basic-strategy
     
     drone-astar-to-zone [] false
     ;execute-intentions
+      if fire?[
+        drones-fire
+    ]
     
   ]
   ;move-to-path-drones
   ;random-move-path-drones
   drone-eliptic-move
+<<<<<<< HEAD
   ;drones-fire
+=======
+
+>>>>>>> a161f85ba7a76ebde840dd067eb11d8dfe97a86c
 end
 
 to drones-think 
@@ -190,7 +199,7 @@ to reload
 end
 
 to drones-fire
- ask drones [
+ ;ask drones [
    set cooldown-status max list (cooldown-status  - 1) 0 ;; On diminue le cooldown pour pouvoir tirer 
    let hostiles-in-range hostiles in-cone-nowrap drone-range 360
    if count hostiles-in-range  > 0 [
@@ -203,7 +212,7 @@ to drones-fire
        set-drone-munition (get-drone-munition - 1)
      ]
    ]
- ]
+ ;]
 end
 
 to drone-eliptic-move
