@@ -438,7 +438,10 @@ to drone-astar-to-zone [zone regen?]
   ;printcom (word "(" breed " " who ") je vais " zone) 
   let tmp-patch patch pxcor pycor pzcor
   let goal (one-of patches with [not obstacle? and compare-list z_zone zone])
+  
   let tmpplan plan-astar3D ( tmp-patch ) goal (false)
+  if empty? tmpplan [print "empty" stop]
+  print (word "(" breed " " who ") je vais " [z_zone] of last tmpplan) 
   set as-path replace-item who as-path tmpplan
     if not empty? (item who as-path) [
       set finished? false
@@ -512,15 +515,23 @@ end
 
 to move-side-convoi
   if not empty? item who as-path[stop]
-  let z zcor
-  let p []
-  ask convoi get-leader-id-convoi [set p patches in-cone-nowrap convoi-range 360 with [pzcor = 10 and not obstacle?]] ;; a changer
-  let goal (one-of p)
-  let tmp-patch patch pxcor pycor pzcor
-  let tmpplan plan-astar3D ( tmp-patch ) goal (false)
-  set as-path replace-item who as-path tmpplan
-    if not empty? (item who as-path) [
-      set finished? false
-    ]
+;;;  let z zcor
+;;;  let p []
+;;;  ask convoi get-leader-id-convoi [set p patches in-cone-nowrap convoi-range 360 with [pzcor = 10 and not obstacle?]] ;; a changer
+;;;  let goal (one-of p)
+;;;  let tmp-patch patch pxcor pycor pzcor
+;;;  let tmpplan plan-astar3D ( tmp-patch ) goal (false)
+;;;  set as-path replace-item who as-path tmpplan
+;;;    if not empty? (item who as-path) [
+;;;      set finished? false
+;;;    ]
+  
+  let zones get-convoi-path-zone
+  let i 0
+  let convois-in-range convois in-cone-nowrap drone-range 360
+  if not member? turtle get-leader-id-convoi convois-in-range and length zones > 1 [set i i + 1]
+  print (word "(" breed " " who ") suivi convoi " item 0 zones ) 
+  drone-astar-to-zone item 0 zones true
+  
   
 end

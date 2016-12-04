@@ -57,22 +57,6 @@ to-report msg-convoiL-inform-is-new-leader-convoi
 end 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 to receive-message-convoi
   while [not empty? incoming-queue]
   [
@@ -208,8 +192,15 @@ end
 
 
 to convoi-receive-status-droneL [msg]
-  print (word "(" breed " " who ") convoi-receive-status-droneL ") 
-  
+  ; let l (list ticks get-leader-id-convoi get-hostile-belief get-drone-plan) 
+  let id who
+  let content get-content msg
+  let zones item 2 content
+  foreach zones
+  [
+    if ? != "hostile"
+    [add-hostile-belief ?]
+  ]
   
 end
 

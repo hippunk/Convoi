@@ -21,7 +21,7 @@ end
 ;;;;;;;;;;;;;;;;
 to-report msg-droneL-inform-status-drones
   let my-id who
-  let l (list ticks get-leader-id-convoi get-hostile-belief get-drone-plan) 
+  let l (list ticks get-leader-id-convoi get-hostile-belief get-convoi-path-zone) 
   let msg leader-drone-to-drone-broadcast "inform"  l [] "statusLeader"
   report msg
 end
@@ -129,8 +129,8 @@ to drone-receive-status-leader [msg]
   let id who
   let content get-content msg
   set-leader-id-convoi item 1 content
-  set-drone-plan item 2 content
-  let zones item 3 content
+  set-convoi-path-zone item 3 content
+  let zones item 2 content
   foreach zones [
     if ? != "hostile"
     [add-hostile-belief ?]
@@ -226,12 +226,14 @@ end
 
 to drone-receive-path-convoi [msg]
   set-convoi-path-zone get-content msg
+  send-message msg-droneL-inform-status-drones
   
 end
 
 to drone-receive-is-new-leader-convoi [msg]
   let m get-content msg
   set-leader-id-convoi m
+  send-message msg-droneL-inform-status-drones
 end
 
 
