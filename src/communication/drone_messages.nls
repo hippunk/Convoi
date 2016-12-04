@@ -97,7 +97,7 @@ to receive-message-drone
       if perf = "request" and sub = "check-pos" [drone-receive-check-pos-drone msg set b false] ; OK
       if perf = "request" and sub = "nLeader" [drone-receive-im-new-leader-drone msg set b false] ; OK
       if perf = "request" and sub = "nLeaderD" [drone-receive-new-leader-drone msg set b false] ; OK
-      if perf = "request" and sub = "kill-pos" [drone-receive-check-pos-drone msg set b false] ; OK
+      if perf = "request" and sub = "kill-pos" [drone-receive-kill-pos-drone msg set b false] ; OK
       if perf = "request" and sub = "check-path" [drone-receive-check-path-drone msg set b false] ; NTEST
       
       
@@ -161,6 +161,16 @@ to drone-receive-check-pos-drone [msg]
   ;Ici juste besoin d'empiler l'intention
     print "ordre de check pos reçu"
 end 
+
+to drone-receive-kill-pos-drone [msg]
+  ;let id who
+  let pos item 1 get-content msg
+  ;drone-astar-to-zone pos true
+  ;Ici juste besoin d'empiler l'intention
+    print "ordre de kill pos reçu"
+    add-intention (word "kill-pos-intention " pos) "kill-pos-done"
+end 
+
 
 to drone-receive-check-path-drone [msg]
   ;let id who

@@ -62,6 +62,14 @@ to set-assigned-kill-order [id zone]
    printbdi (word "(" breed " " who ") assigned-kill-order " get-assigned-kill-order)
 end
 
+to add-assigned-kill-order [id zone]
+  let l []
+  set l lput id l
+  set l lput zone l
+  let bel create-belief "assigned-kill-order" l
+  add-belief bel
+end 
+
 to-report get-assigned-kill-order
   
     ifelse exist-beliefs-of-type "assigned-kill-order"
