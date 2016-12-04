@@ -740,7 +740,7 @@ SWITCH
 378
 debug-com
 debug-com
-0
+1
 1
 -1000
 
@@ -793,7 +793,7 @@ drones-max-carburant
 drones-max-carburant
 100
 500
-197
+115
 1
 1
 NIL
@@ -826,7 +826,7 @@ BUTTON
 202
 303
 show beliefs
-printbdi (word \"(BELIEFS)\" )\nprintbdi (word \"(convoi)\\n\" )\nask convois [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n  set b get-convoi-critic\n  printbdi (word \"(\" breed \" \" who \") Critic? : \" b )\n  \n  set b get-convoi-path-zone\n  printbdi (word \"(\" breed \" \" who \") Path-zone? : \" b )\n  \n  printbdi (word \"-----------------\" )\n]\nprintbdi (word \"(drones)\" )\nask drones [\n    let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n  set b get-drone-munition\n  printbdi (word \"(\" breed \" \" who \") Ammo : \" b )\n  set b get-drone-essence\n  printbdi (word \"(\" breed \" \" who \") Fuel : \" b )\n  set b get-convoi-path-zone\n  printbdi (word \"(\" breed \" \" who \") Path-zone? : \" b )\n  printbdi (word \"-----------------\" )\n]
+printbdi (word \"(BELIEFS)\" )\nprintbdi (word \"(convoi)\\n\" )\nask convois [\n  printbdi (word \"(\" breed \" \" who \") beliefs\" )\n  let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n  set b get-convoi-critic\n  printbdi (word \"(\" breed \" \" who \") Critic? : \" b )\n  \n  set b get-convoi-path-zone\n  printbdi (word \"(\" breed \" \" who \") Path-zone? : \" b )\n  \n  printbdi (word \"-----------------\" )\n]\nprintbdi (word \"(drones)\" )\nask drones [\n    let b get-hostile-belief\n  printbdi (word \"(\" breed \" \" who \") Hostile : \" b )\n  set b get-leader-id-convoi\n  printbdi (word \"(\" breed \" \" who \") LeaderC : \" b )\n  set b get-leader-id-drone\n  printbdi (word \"(\" breed \" \" who \") LeaderD : \" b )\n  set b get-drone-munition\n  printbdi (word \"(\" breed \" \" who \") Ammo : \" b )\n  set b get-drone-essence\n  printbdi (word \"(\" breed \" \" who \") Fuel : \" b )\n  set b get-drone-in-range\n  printbdi (word \"(\" breed \" \" who \") In range : \" b )\n  set b get-convoi-path-zone\n  printbdi (word \"(\" breed \" \" who \") Path-zone? : \" b )\n  printbdi (word \"-----------------\" )\n]
 NIL
 1
 T
@@ -911,6 +911,21 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+435
+310
+607
+343
+random-fuel
+random-fuel
+0
+200
+40
+10
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?

@@ -19,6 +19,10 @@ to-report create-msg-convoi-to-convoi-broadcast [performative from dest content 
   report aux-create-msg-broadcast performative from dest content fd-list convois sujet
 end
 
+to-report create-msg-drone-to-drone-broadcast [performative from dest content fd-list sujet]
+  report aux-create-msg-broadcast performative from dest content fd-list drones sujet
+end
+
 to-report create-msg-leader-to-leader-leader [performative from dest content sujet]
   let breed-to [breed] of turtle dest
   let receivers (breed-to in-cone range 360 with [who = dest])

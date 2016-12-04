@@ -20,18 +20,6 @@ to-report check-pos-done
 end
 
 
-<<<<<<< HEAD
-to strat-kill-pos [pos]
-  set objectif pos
-  ;set fire? true
-
-  ;+Autorisation de tir une fois dans la zone ?
-end
-
-
-
-=======
->>>>>>> a161f85ba7a76ebde840dd067eb11d8dfe97a86c
 to kill-pos-intention [obj]
   ;calcul du chemin si celui-ci ne correspond pas à l'intention
   if intention-courante != (word "kill-pos " obj)
