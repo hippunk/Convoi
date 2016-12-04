@@ -137,7 +137,7 @@ to  random-basic-strategy
     [
       if ticks = 10
       [
-        let msg go-check-position [3 3 1] 3
+        let msg msg-droneL-request-go-check-position [3 3 1] 3
         send-message msg
         set last-send-time ticks
       ]  
@@ -321,7 +321,7 @@ to check-vital
       ifelse h != nobody [
         let id read-from-string item 0 h
         set-leader-id-drone id
-        send-message order-isNewLeader-drone id
+        send-message msg-droneL-request-NewLeader-drone id
         set leader? false
         set color gray
       ]

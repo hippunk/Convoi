@@ -1,13 +1,45 @@
 
-to-report msg-convoiL-request-split-convoi [nLeader_id]
-  let l (list ticks get-leader-id-drone get-hostile-belief) 
-  let msg convoi-create-message "request" nLeader_id l [] "split"
-  report msg
-end
 
+;;;;;;;;;;;;;;;;
+;;; TO LEADER
+;;;;;;;;;;;;;;;;
 to-report msg-convoi-inform-status-convoiL 
   let l (list ticks get-convoi-critic get-leader-id-drone get-hostile-belief) 
   let msg convoi-create-message "inform" get-leader-id-convoi l [] "status"
+  report msg
+end
+
+to-report msg-convoi-inform-detect-hostile-convoiL [zone]
+ let content zone
+ let msg convoi-create-message "inform" get-leader-id-convoi content [] "hostile"
+ report msg
+end
+
+
+
+;;;;;;;;;;;;;;;;
+;;; TO DRONE
+;;;;;;;;;;;;;;;;
+to-report msg-convoiL-inform-path-regen-droneL [regen?]
+  report convoi-create-message-to-drone "inform" regen? "pathregen"
+end
+to-report msg-convoiL-inform-new-leader-droneL
+  report convoi-create-message-to-drone "inform" who "nLeaderC"
+end
+
+to-report msg-convoiL-send-path-droneL
+  let msg convoi-create-message-to-drone "inform" get-convoi-path-zone "path"
+  report msg
+end
+
+
+;;;;;;;;;;;;;;;;
+;;; TO CONVOI
+;;;;;;;;;;;;;;;;
+
+to-report msg-convoiL-request-split-convoi [nLeader_id]
+  let l (list ticks get-leader-id-drone get-hostile-belief) 
+  let msg convoi-create-message "request" nLeader_id l [] "split"
   report msg
 end
 
@@ -19,28 +51,25 @@ to-report msg-convoiL-inform-status-convoi
   report msg
 end
 
-
-
 to-report msg-convoiL-inform-is-new-leader-convoi 
   let msg leader-convoi-to-convoi-broadcast "inform" who [] "nLeader"
   report msg
 end 
 
-to-report msg-convoiL-inform-new-leader-droneL
-  report convoi-create-message-to-drone "inform" who "nLeaderC"
-end
 
 
-to-report msg-convoi-inform-detect-hostile-convoiL [zone]
- let content zone
- let msg convoi-create-message "inform" get-leader-id-convoi content [] "hostile"
- report msg
-end
 
-to-report msg-convoiL-send-path-droneL
-  let msg convoi-create-message-to-drone "inform" get-convoi-path-zone "path"
-  report msg
-end
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -53,22 +82,30 @@ to receive-message-convoi
     let bool (is-number? dest and dest = who) or (is-list? dest and member? who dest)
     ifelse bool
     [
+      let b true
       ;print msg
       let perf get-performative msg
       let sub get-sujet msg
       
-      ;; from convoi
-      if perf = "request" and sub = "split" [convoi-receive-split-request msg]
-      if perf = "inform" and sub = "statusLeader" [convoi-receive-status-leader msg]
-      if perf = "inform" and sub = "status" [convoi-receive-status msg]
-      if perf = "inform" and sub = "nLeader" [convoi-receive-is-new-leader msg]
       
-      ;; from drone
-      if perf = "inform" and sub = "nLeaderD" [convoi-receive-new-leader-droneL-to-convoiL msg]
+      ;; from leader OK
+       if perf = "inform" and sub = "statusLeader" [convoi-receive-status-leader msg set b false]
+       if perf = "request" and sub = "split" [convoi-receive-split-request msg set b false]
+       if perf = "inform" and sub = "nLeader" [convoi-receive-is-new-leader msg set b false]
       
-      ;; from both
-      if perf = "inform" and sub = "hostile" [convoi-receive-hostile-inform msg]
+      ;; from convoi OK
+      if perf = "inform" and sub = "status" [convoi-receive-status msg set b false]
+      if perf = "inform" and sub = "hostile" [convoi-receive-hostile-inform msg set b false]
       
+      
+      ;; from drone OK
+      if perf = "inform" and sub = "nLeaderD" [convoi-receive-new-leader-droneL-to-convoiL msg set b false]
+      if perf = "inform" and sub = "statusDrone" [convoi-receive-status-droneL msg set b false]
+      ;
+      
+      
+      
+      if b [print (word "MESSAGE NON TRAITER : " msg)]
       
     ]
     [
@@ -77,16 +114,12 @@ to receive-message-convoi
   ]
 end
 
-to convoi-receive-new-leader-droneL-to-convoiL [msg]
-
-  let id who
-  let id-l read-from-string get-from msg
-  ;print (word "(" breed " " who ") receive-new-leader-drone-to-convoi " id-l) 
-  set-leader-id-drone id-l
-  send-message msg-convoiL-send-path-droneL
-end
 
 
+
+;;;;;;;;;;;;;;;;
+;;; FROM LEADER
+;;;;;;;;;;;;;;;;
 to convoi-receive-split-request [msg]
   let id who 
   let id2 read-from-string get-to msg
@@ -95,23 +128,6 @@ to convoi-receive-split-request [msg]
     
   ]
   [ printcom (word "(" breed " " who ") ERREUR  receive-split-request " msg) ]
-end
-
-to convoi-receive-hostile-inform [msg]
-  let id who
-  let zone get-content msg
-  add-hostile-belief zone
-end
-
-to convoi-receive-status [msg]
-  let id who
-  let zones item 3 get-content msg
-  foreach zones
-  [
-    if ? != "hostile"
-    [add-hostile-belief ?]
-  ]
-  
 end
 
 to convoi-receive-status-leader [msg]
@@ -130,9 +146,6 @@ to convoi-receive-status-leader [msg]
   
 end
 
-
-
-
 to convoi-receive-is-new-leader [msg]
   let id who
   let id-l read-from-string get-from msg
@@ -144,3 +157,55 @@ to convoi-receive-is-new-leader [msg]
     print (word "(" breed " " who ") mon nouveau leader est  " id-l " sender : " from)]
   set-leader-id-convoi id-l
 end
+
+;;;;;;;;;;;;;;;;
+;;; FROM CONVOI
+;;;;;;;;;;;;;;;;
+to convoi-receive-hostile-inform [msg]
+  let id who
+  let zone get-content msg
+  add-hostile-belief zone
+end
+
+
+to convoi-receive-status [msg]
+  let id who
+  let zones item 3 get-content msg
+  foreach zones
+  [
+    if ? != "hostile"
+    [add-hostile-belief ?]
+  ]
+  
+end
+
+
+;;;;;;;;;;;;;;;;
+;;; FROM DRONE
+;;;;;;;;;;;;;;;;
+to convoi-receive-new-leader-droneL-to-convoiL [msg]
+
+  let id who
+  let id-l read-from-string get-from msg
+  ;print (word "(" breed " " who ") receive-new-leader-drone-to-convoi " id-l) 
+  set-leader-id-drone id-l
+  send-message msg-convoiL-send-path-droneL
+end
+
+
+to convoi-receive-status-droneL [msg]
+  print (word "(" breed " " who ") convoi-receive-status-droneL ") 
+  
+end
+
+
+
+
+
+
+
+
+
+
+
+

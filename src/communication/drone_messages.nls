@@ -1,25 +1,11 @@
-;;;;;;;;;;;;;;
-;;;; SEND ;;;;
-;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;
+;;; TO LEADER
+;;;;;;;;;;;;;;;;
 
 to-report msg-drone-inform-status-droneL
   ;; envoi du status courant au leader
   let content (list ticks get-leader-id-drone get-drone-munition get-drone-essence get-hostile-belief)
   let msg drone-create-message "inform" get-leader-id-drone content [] "status"
-  report msg
-end
-
-
-;to-report need-fuel 
-;  let content (list ticks get-drone-essence)
-;  let msg drone-create-message "need" get-leader-id-drone  content [] "need-fuel"
-;  report msg
-;end
-
-to-report msg-droneL-inform-status-drones
-  let my-id who
-  let l (list ticks get-leader-id-convoi get-hostile-belief get-drone-plan) 
-  let msg leader-convoi-to-convoi-broadcast "inform"  l [] "statusLeader"
   report msg
 end
 
@@ -29,61 +15,59 @@ to-report msg-drone-inform-detect-hostile-droneL [zone]
  report msg
 end
 
+;;;;;;;;;;;;;;;;
+;;; TO DRONE
+;;;;;;;;;;;;;;;;
+to-report msg-droneL-inform-status-drones
+  let my-id who
+  let l (list ticks get-leader-id-convoi get-hostile-belief get-drone-plan) 
+  let msg leader-drone-to-drone-broadcast "inform"  l [] "statusLeader"
+  report msg
+end
+
 to-report msg-droneL-inform-im-new-leader-drone
  let msg leader-drone-to-drone-broadcast "inform" (drones in-cone range 360) [] "nLeader"
  report msg
 end
 
 
-
-
-;;;;;;;;;;;;;;;
-;;;; ORDER ;;;;
-;;;;;;;;;;;;;;;
-
-
-to-report go-check-position [zone dest] ; order 1
+to-report msg-droneL-request-go-check-position [zone dest] ; order 1
   let content (list ticks zone)
   let msg drone-create-message "request" dest content [] "check-pos"
   ;printcom (word "(" breed " " who ")  send : "  msg)
   report msg
 end
 
-to-report order-isNewLeader-drone [dest] ; order 1
+to-report msg-droneL-request-NewLeader-drone [dest] ; order 1
   let msg drone-create-message "request" dest "" [] "nLeaderD"
   report msg
 end
 
-
-
-to-report go-kill-position [zone dest] ; order 2
+to-report msg-droneL-request-go-kill-position [zone dest] ; order 2
   let content (list ticks zone)
   let msg drone-create-message "request" dest content [] "kill-pos"
   report msg
 end
 
 
-to go-refuel [dest] ; order 4
-  let content (list 4 ticks)
-  let msg drone-create-message "request" dest content [] "refuel"
-   ifelse not empty? (get-receivers msg)
-   [
-     send msg
-     printcom (word "(" breed " " who ")  send : "  msg)
-   ]
-   [ 
-     printcom (word "(" breed " " who ")  messages non envoyé " ticks)
-   ]
-end 
-
-to-report msg-droneL-inform-im-new-leader-convoiL
-  report drone-create-message-to-convoi "inform" who "nLeaderD"
+;;;;;;;;;;;;;;;;
+;;; TO CONVOI
+;;;;;;;;;;;;;;;;
+to-report msg-droneL-inform-status-convoiL
+  let my-id who
+  let l (list ticks get-leader-id-convoi get-hostile-belief get-drone-plan) 
+  let msg drone-create-message-to-convoi "inform"  l "statusDrone"
+  report msg
 end
 
 
-;;;;;;;;;;;;;;;;;
-;;;; RECEIVE ;;;;
-;;;;;;;;;;;;;;;;;
+to-report msg-droneL-inform-im-new-leader-convoiL
+  let msg drone-create-message-to-convoi "inform"  who "nLeaderD"
+  report msg
+end
+
+
+
 
 to receive-message-drone
   while [not empty? incoming-queue]
@@ -95,20 +79,38 @@ to receive-message-drone
     let bool (is-number? dest and dest = who) or (is-list? dest and member? who dest)
     ifelse bool
     [
+      let b true
       let perf get-performative msg
       let sub get-sujet msg
-      if perf = "inform" and sub = "statusLeader" [drone-receive-status-leader msg stop]
-      if perf = "inform" and sub = "status" [drone-receive-status-drone msg]
-      if perf = "inform" and sub = "hostile" [drone-receive-hostile-inform-drone msg]
+      
+      
+      ;; from leader
+      if perf = "inform" and sub = "statusLeader" [drone-receive-status-leader msg set b false] ; OK
+      if perf = "request" and sub = "check-pos" [drone-receive-check-pos-drone msg set b false] ; OK
+      if perf = "request" and sub = "nLeaderD" [drone-receive-im-new-leader-drone msg set b false]
+      if perf = "request" and sub = "kill-pos" [drone-receive-check-pos-drone msg set b false]
+      
+      
+      ;; from convoi
+      if perf = "inform" and sub = "nLeaderC" [drone-receive-is-new-leader-convoi msg set b false]
+      if perf = "inform" and sub = "path" [drone-receive-path-convoi msg set b false]
+      if perf = "inform" and sub = "pathregen" [drone-receive-path-regen msg set b false]
+   
+   
+      ;; from drone
+      if perf = "inform" and sub = "status" [drone-receive-status-drone msg set b false]
+      if perf = "inform" and sub = "hostile" [drone-receive-hostile-inform-drone msg set b false]
+      
+      
+      
       ;if perf = "need" and sub = "need-ammo" [receive-need-ammo-drone msg]
       ;if perf = "need" and sub = "need-fuel" [receive-need-fuel-drone msg]
+      if b [print (word "MESSAGE NON TRAITER : " msg)]
       
-      if perf = "request" and sub = "check-pos" [drone-receive-check-pos-drone msg]
-      if perf = "request" and sub = "nLeaderD" [drone-receive-im-new-leader-drone msg]
-      if perf = "request" and sub = "kill-pos" [drone-receive-check-pos-drone msg]
-      if perf = "inform" and sub = "nLeaderC" [drone-receive-is-new-leader-convoi msg]
-      if perf = "inform" and sub = "nLeader" [drone-receive-new-leader-drone msg]
-      if perf = "inform" and sub = "path" [drone-receive-path-convoi msg]
+      
+      
+      
+      
     ]
     [
       add-to-forwarded-msg msg
@@ -116,15 +118,11 @@ to receive-message-drone
   ]
 end
 
-;let l (list ticks get-leader-id-convoi get-hostile-belief get-drone-plan) 
-;  let b get-hostile-belief
-;  set b get-leader-id-convoi
-;  set b get-leader-id-drone
-;  set b get-drone-munition
-;  set b get-drone-essence
-;  set b get-drone-in-range
-;  set b get-convoi-path-zone
-  
+
+;;;;;;;;;;;;;;;;
+;;; FROM LEADER
+;;;;;;;;;;;;;;;;
+
 to drone-receive-status-leader [msg]
   let id who
   let content get-content msg
@@ -137,63 +135,33 @@ to drone-receive-status-leader [msg]
   ]
 end
 
-
 to drone-receive-new-leader-drone [msg]
   let id who
   let id-l read-from-string get-from msg
   let from get-sender msg
-  ;print (word "(" breed " " who ") mon nouveau leader est  " id-l " sender : " from)
   set-leader-id-drone id-l
   send-message msg-drone-inform-status-droneL
 end
 
 
 to drone-receive-im-new-leader-drone [msg]
-  ;printcom (word "(" breed " " who ") receive-im-new-leader-drone " msg) 
   set-leader-id-drone who
   set leader? true
   set color orange
   send-message msg-droneL-inform-im-new-leader-drone
   send-message msg-droneL-inform-im-new-leader-convoiL
-  ;print (word "(" breed " " who ")  TODO : Informer les autres drones que je suis le nouveau leader drone" )
-end
-
-
-to drone-receive-path-convoi [msg]
-  set-convoi-path-zone get-content msg
-  ;print (word "(" breed " " who ") receive-path-convoi " msg) 
-  
-end
-
-to drone-receive-is-new-leader-convoi [msg]
-  ;printcom (word "(" breed " " who ") receive-is-new-leader-convoi " msg) 
-  let m get-content msg
-  set-leader-id-convoi m
- 
 end
 
 to drone-receive-check-pos-drone [msg]
   let id who
   let pos item 1 get-content msg
-  ;strat-check-pos pos
-  ;printcom (word "(" breed " " who ") receive-check-pos-drone " get-from msg " pos" pos) 
   drone-astar-to-zone pos true
   
 end 
-to drone-receive-need-ammo-drone [msg]
-  let id who
-  let ammo item 1 get-content msg
-  printcom (word "(" breed " " who ") ammo " get-from msg " last" ammo) 
-  
-end
 
-to drone-receive-need-fuel-drone [msg]
-  let id who
-  let fuel item 1 get-content msg
-  printcom (word "(" breed " " who ") ammo " get-from msg " last" fuel) 
-  
-end
-
+;;;;;;;;;;;;;;;;
+;;; FROM DRONE
+;;;;;;;;;;;;;;;;
 to drone-receive-status-drone [msg]
   let id who
   let zones item 4 get-content msg
@@ -206,9 +174,57 @@ to drone-receive-status-drone [msg]
   add-drone-in-range l
 end
 
+
+
 to drone-receive-hostile-inform-drone [msg]
   
   let id who
   let zone get-content msg
   add-hostile-belief zone
 end
+
+
+to drone-receive-need-fuel-drone [msg]
+  let id who
+  let fuel item 1 get-content msg
+  printcom (word "(" breed " " who ") ammo " get-from msg " last" fuel) 
+  
+end
+
+;;;;;;;;;;;;;;;;
+;;; FROM CONVOI
+;;;;;;;;;;;;;;;;
+
+to drone-receive-path-regen [msg]
+  let content get-content msg
+  print (word "(" breed " " who ")  TODO : drone-receive-path-regen : "  content)
+end
+
+to drone-receive-path-convoi [msg]
+  set-convoi-path-zone get-content msg
+  
+end
+
+to drone-receive-is-new-leader-convoi [msg]
+  let m get-content msg
+  set-leader-id-convoi m
+end
+
+
+
+
+
+
+
+
+
+
+
+;to drone-receive-need-ammo-drone [msg]
+;  let id who
+;  let ammo item 1 get-content msg
+;  printcom (word "(" breed " " who ") ammo " get-from msg " last" ammo) 
+;  
+;end
+
+
