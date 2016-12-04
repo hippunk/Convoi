@@ -8,7 +8,7 @@ to set-convoi-path-zone [zones]
   ifelse exist-beliefs-of-type "path-Zone"
   [update-belief bel ]
   [add-belief bel]
-  print (word "(" breed " " who ") convoi-path-zone " get-convoi-path-zone)
+  ;print (word "(" breed " " who ") convoi-path-zone " get-convoi-path-zone)
 end
 
 to-report get-convoi-path-zone

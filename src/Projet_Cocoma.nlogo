@@ -315,7 +315,7 @@ INPUTBOX
 197
 566
 astar-max-depth
-10000
+1000
 1
 0
 Number
@@ -623,7 +623,7 @@ SWITCH
 343
 debug-path
 debug-path
-1
+0
 1
 -1000
 
@@ -844,7 +844,7 @@ SWITCH
 413
 debug-bdi
 debug-bdi
-0
+1
 1
 -1000
 
