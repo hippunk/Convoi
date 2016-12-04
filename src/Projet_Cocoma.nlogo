@@ -793,7 +793,7 @@ drones-max-carburant
 drones-max-carburant
 100
 500
-500
+141
 1
 1
 NIL
@@ -894,23 +894,6 @@ proba-touche-hostile
 1
 NIL
 HORIZONTAL
-
-BUTTON
-210
-275
-892
-308
-NIL
-ask turtle 0 [send-message create-msg-leader-to-leader-leader \"inform\" 0 3 \"\" \"nLeaderC\"]
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
 
 SLIDER
 435

@@ -3,7 +3,7 @@
 ;;;;;;;;;;;;;;;;
 
 to-report msg-drone-inform-status-droneL
-  ;; envoi du status courant au leader
+  ;; envoi du status courant au drone leader
   let content (list ticks get-leader-id-drone get-drone-munition get-drone-essence get-hostile-belief)
   let msg drone-create-message "inform" get-leader-id-drone content [] "status"
   report msg
@@ -26,7 +26,7 @@ to-report msg-droneL-inform-status-drones
 end
 
 to-report msg-droneL-inform-im-new-leader-drone
- let msg leader-drone-to-drone-broadcast "inform" (drones in-cone range 360) [] "nLeader"
+ let msg leader-drone-to-drone-broadcast "request" (drones in-cone range 360) [] "nLeader"
  report msg
 end
 
@@ -84,11 +84,12 @@ to receive-message-drone
       let sub get-sujet msg
       
       
-      ;; from leader
+      ;; from leader OK
       if perf = "inform" and sub = "statusLeader" [drone-receive-status-leader msg set b false] ; OK
       if perf = "request" and sub = "check-pos" [drone-receive-check-pos-drone msg set b false] ; OK
-      if perf = "request" and sub = "nLeaderD" [drone-receive-im-new-leader-drone msg set b false]
-      if perf = "request" and sub = "kill-pos" [drone-receive-check-pos-drone msg set b false]
+      if perf = "request" and sub = "nLeader" [drone-receive-im-new-leader-drone msg set b false] ; OK
+      if perf = "request" and sub = "nLeaderD" [drone-receive-new-leader-drone msg set b false] ; OK
+      if perf = "request" and sub = "kill-pos" [drone-receive-check-pos-drone msg set b false] ; OK
       
       
       ;; from convoi
@@ -97,20 +98,13 @@ to receive-message-drone
       if perf = "inform" and sub = "pathregen" [drone-receive-path-regen msg set b false]
    
    
-      ;; from drone
+      ;; from drone OK
       if perf = "inform" and sub = "status" [drone-receive-status-drone msg set b false]
       if perf = "inform" and sub = "hostile" [drone-receive-hostile-inform-drone msg set b false]
-      
-      
-      
-      ;if perf = "need" and sub = "need-ammo" [receive-need-ammo-drone msg]
-      ;if perf = "need" and sub = "need-fuel" [receive-need-fuel-drone msg]
+
+
       if b [print (word "MESSAGE NON TRAITER : " msg)]
-      
-      
-      
-      
-      
+
     ]
     [
       add-to-forwarded-msg msg
@@ -209,22 +203,3 @@ to drone-receive-is-new-leader-convoi [msg]
   let m get-content msg
   set-leader-id-convoi m
 end
-
-
-
-
-
-
-
-
-
-
-
-;to drone-receive-need-ammo-drone [msg]
-;  let id who
-;  let ammo item 1 get-content msg
-;  printcom (word "(" breed " " who ") ammo " get-from msg " last" ammo) 
-;  
-;end
-
-
