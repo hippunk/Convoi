@@ -101,6 +101,7 @@ to receive-message-convoi
       ;; from drone
       if perf = "inform" and sub = "nLeaderD" [convoi-receive-new-leader-droneL-to-convoiL msg set b false]
       if perf = "inform" and sub = "statusDrone" [convoi-receive-status-droneL msg set b false]
+      ;if perf = "request" and sub = "regenPath" [convoi-receive-request-regenpath-droneL msg set b false]
       ;
       
       

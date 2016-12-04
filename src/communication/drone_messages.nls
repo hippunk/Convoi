@@ -71,7 +71,10 @@ to-report msg-droneL-inform-im-new-leader-convoiL
   report msg
 end
 
-
+to-report msg-droneL-request-regen-path-convoiL
+  let msg drone-create-message-to-convoi "request"  who "regenPath"
+  report msg
+end
 
 
 to receive-message-drone
