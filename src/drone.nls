@@ -17,6 +17,7 @@ drones-own[
   intention-courante
   vital-critic
   fire?
+  path-explored?
   ]
 
 
@@ -132,7 +133,7 @@ to  random-basic-strategy
     ;update beliefs
     
     let p min-one-of patches with [base? =  true] [distance-nowrap myself]
-    if distance-nowrap p < 2 [set-drone-essence drones-max-carburant]   
+    if distance-nowrap p < 2 [set-drone-essence drones-max-carburant set intention-courante ""]   
     if leader? 
     [
       if ticks = 10
@@ -149,10 +150,11 @@ to  random-basic-strategy
     check-vital
     
     
-    ;look-around-drone
+    look-around-drone
     ;forward-messages pb string instead of turtle number during run
     if timeout_has_expired last-send-time send-interval ;; on informe le leader de nos connaissance tout les send-interval ticks
     [
+      ;drop-assigned-explo-order
       drop-in-range 
       let msg msg-drone-inform-status-droneL
       send-message msg
@@ -171,17 +173,20 @@ to  random-basic-strategy
     ;execute, Pour nous execute se résume à se déplacer vers as-path ou à escorter (changer escorter pour suivre le mécanisme de as-path afin de factorier le tout ?)
     
     
-    move-side-convoi ;[] false
-    ;execute-intentions
+    ifelse empty? intentions
+    [move-side-convoi] ;[] false
+    [execute-intentions]
       if fire?[
         drones-fire
     ]
     
   ]
   ]
+  
+  
   ;move-to-path-drones
   ;random-move-path-drones
-  
+  order-loop
   ;drones-fire
 
 end
@@ -287,7 +292,44 @@ end
 
 
 
+to order-loop
+  ask drones with [leader?][
+    let inrange get-drone-in-range
+    foreach inrange[
+      ;print item 0 ?
+      let dest read-from-string item 0 ?
+      ;Si chemin non découvert
+      ifelse empty? get-assigned-explo-order[
+        send-message msg-droneL-request-go-check-path dest
+        set-assigned-explo-order dest
+        
+      ][ifelse not empty? get-hostile-belief
+          [
+            let hostiles-bel get-hostile-belief
+            let hostiles-pool get-assigned-kill-order
+            foreach hostiles-bel[;Pour chaque hostile
+              let hbel ?
+              print hbel
+              foreach hostiles-pool[ ; on cherche un hostile qui n'a pas été assigné à un ordre de tir
+                let hpool ?
+                let pool-zone item 1 item 0 hpool ;pour récupérer la zone du pool
+                print "hbel" print hbel
+                print "pool" print hpool
+              ] 
+                ;if []
+            ]
+          ]
+          []
+      ]
+    ]
 
+      
+  ]
+      ;Si ennemi connu
+      ;si pas de chemin praticable
+      ;si rien à faire
+      
+end
 
 
 
@@ -331,6 +373,7 @@ to check-vital
 ;    send-message msg 
     set label-color red 
     go-refuel-path
+    set intention-courante "refuel"
   ]
   [
     if leader? 

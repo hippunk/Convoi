@@ -15,6 +15,76 @@ to-report get-convoi-path-zone
   report item 1 bel
 end
 
+
+;##################################
+;########  Order Beliefs   ########
+;##################################
+
+to set-assigned-explo-order [id]
+  let bel create-belief "assigned-explo-order" id
+  ifelse exist-beliefs-of-type "assigned-explo-order"
+  [update-belief bel]
+  [add-belief bel]
+end
+
+to-report get-assigned-explo-order
+  
+    ifelse exist-beliefs-of-type "assigned-explo-order"
+  [
+    let l []
+    let bels beliefs-of-type "assigned-explo-order"
+    foreach bels
+    [
+      set l lput item 1 ? l
+    ]
+    report l
+  ]
+  [report []]
+end
+
+to drop-assigned-explo-order
+    let bels beliefs-of-type "assigned-explo-order"
+    foreach bels
+    [
+      remove-belief ?
+    ]
+end
+
+to set-assigned-kill-order [id zone]
+  let l []
+  set l lput id l
+  set l lput zone l
+  let bel create-belief "assigned-kill-order" l
+  ifelse exist-beliefs-of-type "assigned-kill-order"
+  [update-belief bel]
+  [add-belief bel]
+end
+
+to-report get-assigned-kill-order
+  
+    ifelse exist-beliefs-of-type "assigned-kill-order"
+  [
+    let l []
+    let bels beliefs-of-type "assigned-kill-order"
+    foreach bels
+    [
+      set l lput item 1 ? l
+    ]
+    report l
+  ]
+  [report []]
+end
+
+to drop-assigned-kill-order
+    let bels beliefs-of-type "assigned-kill-order"
+    foreach bels
+    [
+      remove-belief ?
+    ]
+end
+
+;##################################
+
 to set-drone-plan [plan]
   let bel create-belief "plan" plan
   ifelse exist-beliefs-of-type "plan"
