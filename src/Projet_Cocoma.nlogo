@@ -844,7 +844,7 @@ SWITCH
 413
 debug-bdi
 debug-bdi
-0
+1
 1
 -1000
 
@@ -909,6 +909,17 @@ random-fuel
 1
 NIL
 HORIZONTAL
+
+SWITCH
+345
+370
+547
+403
+show-msg-not-send?
+show-msg-not-send?
+0
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?

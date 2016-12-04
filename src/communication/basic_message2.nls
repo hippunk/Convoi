@@ -31,7 +31,7 @@ to-report aux-create-msg [performative dest content fd-list sujet]
 end
 
 to-report add-receivers [breeds dest fwlist msg]
-  if turtle dest = nobody [report msg]
+  if turtle dest = nobody or dest = who [report msg]
   let id who
   let receivers (breeds in-cone range 360 with [who != id and not member? who fwlist])
   ifelse member? turtle dest receivers
@@ -96,10 +96,10 @@ end
 to-report convoi-create-message-to-drone [performative content sujet]
   let receiver get-leader-id-drone
   let msg create-message performative
-  set msg add-receiver who msg
+  set msg add-receiver receiver msg
   set msg add-content content msg
   set msg add-from who msg
-  set msg add-to get-leader-id-convoi msg
+  set msg add-to receiver msg
   set msg add-sujet sujet msg
   report msg
 end
@@ -122,8 +122,10 @@ end
 
 
 to send-message [msg]
+  if length get-receivers msg = 0 [if show-msg-not-send? [print (word "message non envoyé pas de destinataire : " msg)] stop] ; pas de destinataire
+  
   let recvs read-from-string get-to msg
-  if (length recvs = 1 and item 0 recvs = who) or length get-receivers msg = 0 [stop]
+  if (length recvs = 1 and item 0 recvs = who) [if show-msg-not-send? [print (word "message non envoyé message a moi meme : " msg)] stop] ;message a moi meme
   send msg
   printcom (word "(" breed " " who ") envoi  " msg)
 end
