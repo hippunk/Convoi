@@ -373,7 +373,7 @@ simu-speed
 simu-speed
 0
 10
-6
+5
 1
 1
 NIL
@@ -570,7 +570,7 @@ INPUTBOX
 295
 270
 total-nb-drones
-5
+1
 1
 0
 Number

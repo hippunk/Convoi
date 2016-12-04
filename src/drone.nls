@@ -143,7 +143,9 @@ to  random-basic-strategy
       ]  
     ]
     update-drone-from-ihm
-    drone-eliptic-move
+    ;move-side-convoi
+    move-to-path-drones
+    ;drone-eliptic-move
     check-vital
     
     
@@ -169,7 +171,7 @@ to  random-basic-strategy
     ;execute, Pour nous execute se résume à se déplacer vers as-path ou à escorter (changer escorter pour suivre le mécanisme de as-path afin de factorier le tout ?)
     
     
-    drone-astar-to-zone [] false
+    move-side-convoi [] false
     ;execute-intentions
       if fire?[
         drones-fire
@@ -439,3 +441,21 @@ to init-beliefs-drone [lC lD path]
 end
 
 
+to move-side-convoi
+  if not empty? item who as-path[stop]
+  let z zcor
+  let p []
+  ask convoi get-leader-id-convoi [set p patches in-cone-nowrap convoi-range 360 with [pzcor = 10 and not obstacle?]]
+  ;print p
+  ;ask p [set pcolor white]
+  let goal (one-of p)
+  ;ask goal [set pcolor white]
+  ;if goal = nobody [print "nobody" set goal (one-of patches with [(not obstacle?) and pzcor < 10 and pzcor > 2])]
+  let tmp-patch patch pxcor pycor pzcor
+  let tmpplan plan-astar3D ( tmp-patch ) goal (false)
+  set as-path replace-item who as-path tmpplan
+    if not empty? (item who as-path) [
+      set finished? false
+    ]
+  
+end
