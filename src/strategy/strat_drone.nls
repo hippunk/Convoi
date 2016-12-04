@@ -14,7 +14,7 @@ end
 
 to-report check-pos-done
   ;revoie true si on est dans la zone à checker
-  if finished?[
+  if finished? and intention-courante != ""[
     set intention-courante ""
     print "pos-done"
   ]
@@ -26,6 +26,7 @@ to kill-pos-intention [obj]
   ;calcul du chemin si celui-ci ne correspond pas à l'intention
   if intention-courante != (word "kill-pos " obj) and intention-courante != (word "refuel")
   [
+    print "as set kill pos intent" print self
     set fire? true
     set intention-courante (word "kill-pos " obj)
     drone-astar-to-zone obj false
@@ -35,10 +36,10 @@ end
 
 to-report kill-pos-done
   ;revoie true si on est dans la zone à checker
-  if finished?[
+  if finished? and intention-courante != ""[
     set fire? false
     set intention-courante ""
-    print "kill-done"
+    print "kill-done" print self 
   ]
   report finished?
 
@@ -76,7 +77,7 @@ end
 
 to-report check-path-done
   ;revoie true si on est dans la zone à checker
-  if finished?[  
+  if finished? and intention-courante != ""[  
     set intention-courante ""
     print "path-done"
   ]
