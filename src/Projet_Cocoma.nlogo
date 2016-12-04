@@ -740,7 +740,7 @@ SWITCH
 378
 debug-com
 debug-com
-1
+0
 1
 -1000
 

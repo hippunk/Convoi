@@ -17,7 +17,6 @@ drones-own[
   intention-courante
   vital-critic
   fire?
-  refuel?
   ]
 
 
@@ -55,7 +54,7 @@ to setup-drones
       set leader? false
       set to-protect? false
       set genlongpath? false
-      set refuel? false
+      
       set dead? false
       set regenpath? false
       
@@ -133,7 +132,7 @@ to  random-basic-strategy
     ;update beliefs
     
     let p min-one-of patches with [base? =  true] [distance-nowrap myself]
-    if distance-nowrap p < 2 [set-drone-essence drones-max-carburant set intention-courante "" print "refuled"]   
+    if distance-nowrap p < 2 [set-drone-essence drones-max-carburant]   
     if leader? 
     [
       if ticks = 10
@@ -150,12 +149,12 @@ to  random-basic-strategy
     check-vital
     
     
-    look-around-drone
+    ;look-around-drone
     ;forward-messages pb string instead of turtle number during run
     if timeout_has_expired last-send-time send-interval ;; on informe le leader de nos connaissance tout les send-interval ticks
     [
       drop-in-range 
-      let msg send-status-drone
+      let msg msg-drone-inform-status-droneL
       send-message msg
       set last-send-time ticks
     ]
@@ -172,9 +171,8 @@ to  random-basic-strategy
     ;execute, Pour nous execute se résume à se déplacer vers as-path ou à escorter (changer escorter pour suivre le mécanisme de as-path afin de factorier le tout ?)
     
     
-    ifelse not empty? intentions[
-    execute-intentions]
-    [move-side-convoi]
+    move-side-convoi ;[] false
+    ;execute-intentions
       if fire?[
         drones-fire
     ]
@@ -300,7 +298,7 @@ to look-around-drone
     let cible one-of hostile-in-range
     let dest [z_zone] of ([patch-here] of cible)
     add-hostile-belief dest
-    send-message msg-drone-detect-hostile dest
+    send-message msg-drone-inform-detect-hostile-droneL dest
   ]
   [
     set newdetect? false
@@ -329,11 +327,9 @@ to check-vital
       ]
       [print (word "(" breed " " who ")  CHOIX STRAT plus de fuel et pas de leader possible " ) ]
     ]
-    let msg need-fuel 
-    send-message msg 
+;    let msg need-fuel 
+;    send-message msg 
     set label-color red 
-    set refuel? true
-    set intention-courante "refuel"
     go-refuel-path
   ]
   [
@@ -449,12 +445,8 @@ to move-side-convoi
   if not empty? item who as-path[stop]
   let z zcor
   let p []
-  ask convoi get-leader-id-convoi [set p patches in-cone-nowrap convoi-range 360 with [pzcor = 10 and not obstacle?]]
-  ;print p
-  ;ask p [set pcolor white]
+  ask convoi get-leader-id-convoi [set p patches in-cone-nowrap convoi-range 360 with [pzcor = 10 and not obstacle?]] ;; a changer
   let goal (one-of p)
-  ;ask goal [set pcolor white]
-  ;if goal = nobody [print "nobody" set goal (one-of patches with [(not obstacle?) and pzcor < 10 and pzcor > 2])]
   let tmp-patch patch pxcor pycor pzcor
   let tmpplan plan-astar3D ( tmp-patch ) goal (false)
   set as-path replace-item who as-path tmpplan
