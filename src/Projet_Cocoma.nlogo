@@ -793,7 +793,7 @@ drones-max-carburant
 drones-max-carburant
 100
 500
-115
+391
 1
 1
 NIL
@@ -921,7 +921,7 @@ random-fuel
 random-fuel
 0
 200
-40
+100
 10
 1
 NIL

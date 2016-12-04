@@ -143,6 +143,7 @@ to  random-basic-strategy
       ]  
     ]
     update-drone-from-ihm
+    drone-eliptic-move
     check-vital
     
     
@@ -168,28 +169,17 @@ to  random-basic-strategy
     ;execute, Pour nous execute se résume à se déplacer vers as-path ou à escorter (changer escorter pour suivre le mécanisme de as-path afin de factorier le tout ?)
     
     
-    ;drone-astar-to-zone [] false
-    execute-intentions
+    drone-astar-to-zone [] false
+    ;execute-intentions
       if fire?[
         drones-fire
     ]
     
   ]
-<<<<<<< HEAD
   ]
   ;move-to-path-drones
-=======
-  move-to-path-drones
->>>>>>> 80f264eccfdc022c85fcaf2f0783c0a846a3725a
   ;random-move-path-drones
-
-  ;drone-eliptic-move
-
-  drone-eliptic-move
-<<<<<<< HEAD
-=======
-
->>>>>>> 80f264eccfdc022c85fcaf2f0783c0a846a3725a
+  
   ;drones-fire
 
 end
@@ -331,6 +321,7 @@ to check-vital
         set-leader-id-drone id
         send-message order-isNewLeader-drone id
         set leader? false
+        set color gray
       ]
       [print (word "(" breed " " who ")  CHOIX STRAT plus de fuel et pas de leader possible " ) ]
     ]
@@ -354,7 +345,7 @@ to-report choix-drones-new-leader-refuel [drones-list dist]
   
   foreach drones-list [
     let l ?
-    ;if item 2 l < (dist * 2) [(set drones-list remove l drones-list) ]
+    if item 2 l < (dist * 1) [(set drones-list remove l drones-list) ]
   ]
   
   if empty? drones-list [report nobody]
@@ -373,13 +364,9 @@ to drone-astar-to-zone [zone regen?]
   if empty? zone [set zone [z_zone] of (one-of patches with [not obstacle?])]
   ;printcom (word "(" breed " " who ") je vais " zone) 
   let tmp-patch patch pxcor pycor pzcor
-  
-  let goal (one-of patches with [not obstacle? and compare-list z_zone zone])
-  
-  ;let p patches with [distance myself < 30 and pzcor < 10 and pzcor > 2]
-  ;let goal (one-of p with [(not obstacle? and compare-list z_zone zone)])
-  ;if goal = nobody [print "nobody" set goal (one-of patches with [(not obstacle? and compare-list z_zone zone) and pzcor < 10 and pzcor > 2])]
-  
+  let p patches with [distance myself < 30 and pzcor < 10 and pzcor > 2]
+  let goal (one-of p with [(not obstacle?)])
+  if goal = nobody [print "nobody" set goal (one-of patches with [(not obstacle?) and pzcor < 10 and pzcor > 2])]
   let tmpplan plan-astar3D ( tmp-patch ) goal (false)
   set as-path replace-item who as-path tmpplan
     if not empty? (item who as-path) [

@@ -51,7 +51,7 @@ end
 
 
 to receive-message-convoi
-  if not empty? incoming-queue
+  while [not empty? incoming-queue]
   [
     let msg get-message
     printcom (word "\t(" breed " " who ") reçoi : " msg)
@@ -62,12 +62,13 @@ to receive-message-convoi
       ;print msg
       let perf get-performative msg
       let sub get-sujet msg
-      if perf = "request" and sub = "split" [receive-split-request msg stop]
-      if perf = "inform" and sub = "statusLeader" [receive-status-leader msg stop]
-      if perf = "inform" and sub = "status" [receive-status msg stop]
-      if perf = "inform" and sub = "hostile" [receive-hostile-inform msg stop]
-      if perf = "inform" and sub = "nLeader" [receive-is-new-leader msg stop]
-      if perf = "inform" and sub = "splitstatus" [receive-status-old-leader msg stop]
+      if perf = "request" and sub = "split" [receive-split-request msg]
+      if perf = "inform" and sub = "statusLeader" [receive-status-leader msg]
+      if perf = "inform" and sub = "status" [receive-status msg]
+      if perf = "inform" and sub = "hostile" [receive-hostile-inform msg]
+      if perf = "inform" and sub = "nLeader" [receive-is-new-leader msg]
+      if perf = "inform" and sub = "splitstatus" [receive-status-old-leader msg]
+      if perf = "inform" and sub = "nLeaderD" [receive-new-leader-drone-to-convoi msg]
     ]
     [
       add-to-forwarded-msg msg
@@ -75,6 +76,14 @@ to receive-message-convoi
   ]
 end
 
+to receive-new-leader-drone-to-convoi [msg]
+  
+ let id who
+  let id-l read-from-string get-from msg
+  print (word "(" breed " " who ") receive-new-leader-drone-to-convoi " id-l) 
+  set-leader-id-drone id-l
+  
+end
 
 to receive-status-old-leader [msg]
   
@@ -136,6 +145,9 @@ to receive-status-leader [msg]
   ]
   
 end
+
+
+
 
 to receive-is-new-leader [msg]
   let id who

@@ -21,10 +21,6 @@ to-report check-pos-done
 
 end
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 80f264eccfdc022c85fcaf2f0783c0a846a3725a
 to kill-pos-intention [obj]
   ;calcul du chemin si celui-ci ne correspond pas à l'intention
   if intention-courante != (word "kill-pos " obj)

@@ -87,7 +87,9 @@ to go-refuel [dest] ; order 4
    ]
 end 
 
-
+to-report msg-inform-convoi-new-leader-drone
+  report create-msg-leader-to-leader-leader "inform" who get-leader-id-convoi who "nLeaderD"
+end
 
 
 ;;;;;;;;;;;;;;;;;
@@ -129,17 +131,19 @@ to receive-new-leader-drone [msg]
   let id who
   let id-l read-from-string get-from msg
   let from get-sender msg
-  print (word "(" breed " " who ") mon nouveau leader est  " id-l " sender : " from)
+  ;print (word "(" breed " " who ") mon nouveau leader est  " id-l " sender : " from)
   set-leader-id-drone id-l
   send-message send-status-drone
 end
 
 
 to receive-im-new-leader-drone [msg]
-  printcom (word "(" breed " " who ") receive-im-new-leader-drone " msg) 
+  ;printcom (word "(" breed " " who ") receive-im-new-leader-drone " msg) 
   set-leader-id-drone who
   set leader? true
+  set color orange
   send-message msg-drone-inform-im-new-leader
+  send-message msg-inform-convoi-new-leader-drone
   ;print (word "(" breed " " who ")  TODO : Informer les autres drones que je suis le nouveau leader drone" )
 end
 
@@ -151,7 +155,7 @@ to receive-path-convoi [msg]
 end
 
 to receive-is-new-leader-convoi [msg]
-  printcom (word "(" breed " " who ") receive-is-new-leader-convoi " msg) 
+  ;printcom (word "(" breed " " who ") receive-is-new-leader-convoi " msg) 
   let m get-content msg
   set-leader-id-convoi m
  
