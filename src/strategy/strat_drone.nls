@@ -1,7 +1,7 @@
 ;Exemple : ask drone 0 [ add-intention (word "check-pos-intention " [z_zone] of  patch 10 10 10) "check-pos-done"]  
 to check-pos-intention [obj]
   ;calcul du chemin si celui-ci ne correspond pas à l'intention
-  if intention-courante != (word "check-pos " obj)
+  if intention-courante != (word "check-pos " obj) and intention-courante != (word "refuel")
   [
 
     set intention-courante (word "check-pos " obj)
@@ -16,6 +16,7 @@ to-report check-pos-done
   ;revoie true si on est dans la zone à checker
   if finished?[
     set intention-courante ""
+    print "pos-done"
   ]
   report finished?
 
@@ -23,7 +24,7 @@ end
 
 to kill-pos-intention [obj]
   ;calcul du chemin si celui-ci ne correspond pas à l'intention
-  if intention-courante != (word "kill-pos " obj)
+  if intention-courante != (word "kill-pos " obj) and intention-courante != (word "refuel")
   [
     set fire? true
     set intention-courante (word "kill-pos " obj)
@@ -37,6 +38,7 @@ to-report kill-pos-done
   if finished?[
     set fire? false
     set intention-courante ""
+    print "kill-done"
   ]
   report finished?
 
@@ -47,7 +49,7 @@ to check-path-intention
   ;calcul du chemin si celui-ci ne correspond pas à l'intention
   
 
-  if intention-courante != (word "check-path") ;Passage en paramètre du convoi suivi ?
+  if intention-courante != (word "check-path") and intention-courante != (word "refuel");Passage en paramètre du convoi suivi ?
   [
       
 
@@ -80,6 +82,7 @@ to-report check-path-done
   ;revoie true si on est dans la zone à checker
   if finished?[  
     set intention-courante ""
+    print "path-done"
   ]
   report finished?
 

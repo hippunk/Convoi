@@ -17,6 +17,7 @@ drones-own[
   intention-courante
   vital-critic
   fire?
+  refuel?
   ]
 
 
@@ -54,7 +55,7 @@ to setup-drones
       set leader? false
       set to-protect? false
       set genlongpath? false
-      
+      set refuel? false
       set dead? false
       set regenpath? false
       
@@ -132,7 +133,7 @@ to  random-basic-strategy
     ;update beliefs
     
     let p min-one-of patches with [base? =  true] [distance-nowrap myself]
-    if distance-nowrap p < 2 [set-drone-essence drones-max-carburant]   
+    if distance-nowrap p < 2 [set-drone-essence drones-max-carburant set intention-courante "" print "refuled"]   
     if leader? 
     [
       if ticks = 10
@@ -149,7 +150,7 @@ to  random-basic-strategy
     check-vital
     
     
-    ;look-around-drone
+    look-around-drone
     ;forward-messages pb string instead of turtle number during run
     if timeout_has_expired last-send-time send-interval ;; on informe le leader de nos connaissance tout les send-interval ticks
     [
@@ -171,8 +172,9 @@ to  random-basic-strategy
     ;execute, Pour nous execute se résume à se déplacer vers as-path ou à escorter (changer escorter pour suivre le mécanisme de as-path afin de factorier le tout ?)
     
     
-    move-side-convoi [] false
-    ;execute-intentions
+    ifelse not empty? intentions[
+    execute-intentions]
+    [move-side-convoi]
       if fire?[
         drones-fire
     ]
@@ -330,6 +332,8 @@ to check-vital
     let msg need-fuel 
     send-message msg 
     set label-color red 
+    set refuel? true
+    set intention-courante "refuel"
     go-refuel-path
   ]
   [
