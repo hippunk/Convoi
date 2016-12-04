@@ -1,12 +1,12 @@
 ;to-report create-msg-convoi-to-convoi [performative from dest content fd-list sujet]
 to-report msg-split-split [nLeader_id]
-  let msg create-msg-convoi-to-convoi "request" who nLeader_id "" [] "split"
+  let msg convoi-create-message "request" nLeader_id "" [] "split"
   report msg
 end
 
 to-report msg-status 
   let l (list ticks get-convoi-critic get-leader-id-convoi get-hostile-belief) 
-  let msg create-msg-convoi-to-convoi "inform" who get-leader-id-convoi l [] "status"
+  let msg convoi-create-message "inform" get-leader-id-convoi l [] "status"
   report msg
 end
 
@@ -14,37 +14,37 @@ end
 to-report msg-status-leader 
   let my-id who
   let l (list ticks get-convoi-critic get-leader-id-convoi get-hostile-belief) 
-  let msg create-msg-convoi-to-convoi-broadcast "inform" who (convois in-cone range 360 with [who > my-id]) l [] "statusLeader"
+  let msg leader-convoi-to-convoi-broadcast "inform"  l [] "statusLeader"
   report msg
 end
 
 to-report msg-status-leader-to-leader-convoi [leader]
   let my-id who
   let l (list ticks get-leader-id-drone get-hostile-belief) 
-  let msg create-msg-convoi-to-convoi "inform" who leader l [] "splitstatus"
+  let msg convoi-create-message "inform" leader l [] "splitstatus"
   report msg
 end
 
 
 to-report msg-inform-is-new-leader 
   let my-id who
-  let msg create-msg-convoi-to-convoi-broadcast "inform" who (convois in-cone range 360 with [who > my-id]) my-id [] "nLeader"
+  let msg leader-convoi-to-convoi-broadcast "inform" my-id [] "nLeader"
   report msg
 end 
 
 to-report msg-inform-drone-new-leader-convoi
-  report create-msg-leader-to-leader-leader "inform" who get-leader-id-drone who "nLeaderC"
+  report convoi-create-message-to-drone "inform" who "nLeaderC"
 end
 
 
 to-report msg-convoi-detect-hostile [zone]
  let content zone
- let msg create-msg-convoi-to-convoi "inform" who get-leader-id-convoi content [] "hostile"
+ let msg convoi-create-message "inform" get-leader-id-convoi content [] "hostile"
  report msg
 end
 
-to-report msg-send-path 
-  let msg create-msg-leader-to-leader-leader "inform" who get-leader-id-drone get-convoi-path-zone "path"
+to-report msg-send-path-to-drone
+  let msg convoi-create-message-to-drone "inform" get-convoi-path-zone "path"
   report msg
 end
 

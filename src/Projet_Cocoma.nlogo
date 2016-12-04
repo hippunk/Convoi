@@ -1,4 +1,4 @@
-__includes["BDI/communication.nls" "BDI/bdi.nls" "astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls" "drone.nls" "visu.nls" "communication/basic_message.nls" "communication/drone_messages.nls" "communication/convoi_messages.nls" "BDI/basic_bdi.nls" "utils/utils.nls" "strategy/strat_drone.nls"]
+__includes["BDI/communication.nls" "BDI/bdi.nls" "astar.nls" "convoi.nls" "env.nls" "hostile.nls" "bullet.nls" "drone.nls" "visu.nls" "communication/basic_message2.nls" "communication/drone_messages.nls" "communication/convoi_messages.nls" "BDI/basic_bdi.nls" "utils/utils.nls" "strategy/strat_drone.nls"]
 breed [waypoints waypoint]
 breed [envconstructors envconstructor]
 breed [convois convoi]
@@ -570,7 +570,7 @@ INPUTBOX
 295
 270
 total-nb-drones
-1
+5
 1
 0
 Number
@@ -793,7 +793,7 @@ drones-max-carburant
 drones-max-carburant
 100
 500
-391
+500
 1
 1
 NIL
@@ -921,7 +921,7 @@ random-fuel
 random-fuel
 0
 200
-100
+130
 10
 1
 NIL

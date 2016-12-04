@@ -1,0 +1,228 @@
+to printcom [com]
+  if debug-com [
+    print com
+  ]
+end
+
+
+
+to-report drone-create-message [performative dest content fd-list sujet]
+  report aux-create-msg performative dest content fd-list sujet
+end
+
+
+to-report convoi-create-message [performative dest content fd-list sujet]
+  report aux-create-msg performative dest content fd-list sujet
+end
+
+
+
+
+to-report aux-create-msg [performative dest content fd-list sujet]
+  let msg create-message performative
+  set msg add-receivers [breed] of turtle who dest [] msg
+  set msg add-content content msg
+  set fd-list add-list-to-fw-list (get-receivers msg) fd-list
+  set msg add-from who msg
+  set msg add-to (list dest) msg
+  set msg add-forward (add-to-fw-list who fd-list) msg
+  set msg add-sujet sujet msg
+  report msg
+end
+
+to-report add-receivers [breeds dest fwlist msg]
+  let id who
+  let receivers (breeds in-cone range 360 with [who != id and not member? who fwlist])
+  ifelse member? turtle dest receivers
+    [set msg add-receiver dest msg]
+    [set receivers (sort-on [who] receivers) set msg add-multiple-receivers receivers msg]
+  
+  report msg
+end
+
+
+
+to-report leader-convoi-to-convoi-broadcast [performative content fd-list sujet]
+  report aux-create-msg-broadcast performative content fd-list sujet
+end
+
+to-report leader-drone-to-drone-broadcast [performative content fd-list sujet]
+  report aux-create-msg-broadcast performative content fd-list sujet
+end
+
+to-report aux-create-msg-broadcast [performative content fd-list sujet]
+  let msg create-message performative
+  set msg add-all-receivers breed [] msg
+  set msg add-content content msg
+  foreach (get-receivers msg) [
+    let id read-from-string ?
+    set fd-list add-to-fw-list id fd-list
+  ]
+  
+  set msg add-from who msg
+  let to-list []
+  foreach sort-on [who] breed [
+    let id [who] of ?
+    set to-list add-to-fw-list id to-list
+  ]
+  set msg add-to to-list msg
+  set msg add-forward (add-to-fw-list who fd-list) msg
+  set msg add-sujet sujet msg
+  report msg
+
+end
+
+to-report add-all-receivers [breeds fwlist msg]
+  let id who
+  let receivers (breeds in-cone range 360 with [who != id and not member? who fwlist])
+  foreach sort-on [who] receivers[
+    let mem ?
+    set msg add-receiver mem msg
+  ]
+  report msg
+end
+
+to-report drone-create-message-to-convoi [performative content sujet]
+  let receiver get-leader-id-convoi
+  let msg create-message performative
+  set msg add-receiver who msg
+  set msg add-content content msg
+  set msg add-from who msg
+  set msg add-to get-leader-id-convoi msg
+  set msg add-sujet sujet msg
+  report msg
+end
+
+to-report convoi-create-message-to-drone [performative content sujet]
+  let receiver get-leader-id-drone
+  let msg create-message performative
+  set msg add-receiver who msg
+  set msg add-content content msg
+  set msg add-from who msg
+  set msg add-to get-leader-id-convoi msg
+  set msg add-sujet sujet msg
+  report msg
+end
+
+
+to-report add-to-fw-list [element fw-list]
+ if is-agent? element [ set element [who] of element ]
+ if not member?  element fw-list [set fw-list lput element fw-list]
+ report fw-list
+end
+
+
+to-report add-list-to-fw-list [liste fw-list]
+  foreach liste [
+     let id read-from-string ?
+     set fw-list add-to-fw-list id fw-list
+  ]
+ report fw-list
+end
+
+
+to send-message [msg]
+  let recvs read-from-string get-to msg
+  if (length recvs = 1 and item 0 recvs = who) or length get-receivers msg = 0 [stop]
+  send msg
+  printcom (word "(" breed " " who ") envoi  " msg)
+end
+
+to-report add-forward [fwd-list msg]
+  report add-field msg "fw-list:" fwd-list
+end
+
+to-report get-forward [msg]
+  report read-from-string item 0 get-field "fw-list" msg
+end
+
+to-report add-from [from msg]
+  report add-field msg "from:" from
+end
+
+to-report get-from [msg]
+  report item 0 get-field "from" msg
+end
+
+to-report add-to [field msg]
+  if not is-list? field [set field (list field)]
+  report add-field msg "to:" field
+end
+
+to-report get-to [msg]
+  report item 0 get-field "to" msg
+end
+
+to-report add-sujet [sujet msg]
+  report add-field msg "sujet:" sujet
+end
+
+to-report get-sujet [msg]
+  report item 0 get-field "sujet" msg
+end
+
+
+;to-report create-msg-leader-to-leader-leader [performative from dest content sujet]
+;  let breed-to [breed] of turtle dest
+;  let receivers (breed-to in-cone range 360 with [who = dest])
+;  let msg create-message performative
+;  ask receivers [set msg add-receiver who msg]
+;  ;set msg add-multiple-receivers receivers msg
+;  set msg add-content content msg
+;  set msg add-from from msg
+;  set msg add-to (list dest) msg
+;  set msg add-sujet sujet msg
+;  report msg
+;end
+;
+;to-report create-reply-drone-to-drone [msg content from breeds]
+;  let msg2 create-message "reply-to"
+;  set msg2 add-receivers breeds (get-to msg) [] msg2
+;  set msg2 add-content content msg2
+;  set msg2 add-from from msg
+;  set msg2 add-to get-to msg msg
+;  set msg2 add-sujet get-sujet msg msg
+;  report msg2
+;end
+;
+
+;
+
+to-report forward-message [breeds msg]
+  let msg2 create-message get-performative msg
+  let fd-list add-list-to-fw-list (get-receivers msg) get-forward msg
+  set msg2 add-receivers breeds get-to msg fd-list msg2
+  set msg2 add-content get-content msg msg2
+  set msg add-from get-from msg msg
+  set msg add-to get-to msg msg
+  set msg add-forward fd-list msg
+  set msg add-sujet get-sujet msg msg
+  report msg2
+end
+
+
+to add-to-forwarded-msg [msg]
+  set message-to-forward lput msg message-to-forward
+end
+
+to forward-messages
+  let tmp message-to-forward
+  foreach tmp [
+   let msg ?
+   set message-to-forward remove msg message-to-forward
+   set msg forward-message breed msg
+   add-to-forwarded-msg msg
+   if not empty? (get-receivers msg) [
+
+     foreach (get-receivers msg) [
+       let id read-from-string ?
+       if (read-from-string item 0 get-field "to" msg) = id
+       [set message-to-forward remove msg message-to-forward printcom (word "(" breed " " who ")  Remove from forward") ]
+     ]
+     send msg
+     printcom (word "(" breed " " who ")  Pour " read-from-string item 0 get-field "to" msg " forward : " msg )
+     printcom ""
+   ]
+  ]
+end
+

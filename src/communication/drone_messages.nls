@@ -5,31 +5,30 @@
 to-report send-status-drone
   ;; envoi du status courant au leader
   let content (list ticks get-leader-id-drone get-drone-munition get-drone-essence get-hostile-belief)
-  let msg create-msg-drone-to-drone "inform" who get-leader-id-drone content [] "status"
+  let msg drone-create-message "inform" get-leader-id-drone content [] "status"
   report msg
 end
 
 to-report need-ammo 
   let content (list ticks get-drone-munition )
-  let msg create-msg-drone-to-drone "need" who get-leader-id-drone  content [] "need-ammo"
+  let msg drone-create-message "need" get-leader-id-drone  content [] "need-ammo"
   report msg
 end
 
 to-report need-fuel 
   let content (list ticks get-drone-essence)
-  let msg create-msg-drone-to-drone "need" who get-leader-id-drone  content [] "need-fuel"
+  let msg drone-create-message "need" get-leader-id-drone  content [] "need-fuel"
   report msg
 end
 
 to-report msg-drone-detect-hostile [zone]
  let content zone
- let msg create-msg-drone-to-drone "inform" who get-leader-id-drone  content [] "hostile"
+ let msg drone-create-message "inform" get-leader-id-drone  content [] "hostile"
  report msg
 end
 
 to-report msg-drone-inform-im-new-leader
- let my-id who
- let msg create-msg-drone-to-drone-broadcast "inform" who (drones in-cone range 360) my-id [] "nLeader"
+ let msg leader-drone-to-drone-broadcast "inform" (drones in-cone range 360) [] "nLeader"
  report msg
 end
 
@@ -43,13 +42,13 @@ end
 
 to-report go-check-position [zone dest] ; order 1
   let content (list ticks zone)
-  let msg create-msg-drone-to-drone "request" who dest content [] "check-pos"
+  let msg drone-create-message "request" dest content [] "check-pos"
   ;printcom (word "(" breed " " who ")  send : "  msg)
   report msg
 end
 
 to-report order-isNewLeader-drone [dest] ; order 1
-  let msg create-msg-drone-to-drone "request" who dest "" [] "nLeaderD"
+  let msg drone-create-message "request" dest "" [] "nLeaderD"
   report msg
 end
 
@@ -57,26 +56,14 @@ end
 
 to-report go-kill-position [zone dest] ; order 2
   let content (list ticks zone)
-  let msg create-msg-drone-to-drone "request" who dest content [] "kill-pos"
+  let msg drone-create-message "request" dest content [] "kill-pos"
   report msg
 end
 
-to go-reload [dest]; order 3
-  let content (list 3 ticks)
-  let msg create-msg-drone-to-drone "request" who dest content [] "reload"
-   ifelse not empty? (get-receivers msg)
-   [
-     send msg
-     printcom (word "(" breed " " who ")  send : "  msg)
-   ]
-   [ 
-     printcom (word "(" breed " " who ")  messages non envoyé " ticks)
-   ]
-end
 
 to go-refuel [dest] ; order 4
   let content (list 4 ticks)
-  let msg create-msg-drone-to-drone "request" who dest content [] "refuel"
+  let msg drone-create-message "request" dest content [] "refuel"
    ifelse not empty? (get-receivers msg)
    [
      send msg
@@ -88,7 +75,7 @@ to go-refuel [dest] ; order 4
 end 
 
 to-report msg-inform-convoi-new-leader-drone
-  report create-msg-leader-to-leader-leader "inform" who get-leader-id-convoi who "nLeaderD"
+  report drone-create-message-to-convoi "inform" who "nLeaderD"
 end
 
 

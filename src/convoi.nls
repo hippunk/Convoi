@@ -291,7 +291,7 @@ to deplacement-convoi
         let zzone path-to-zone my-as-path
         set-convoi-path-zone zzone
         if leader? and get-convoi-critic [
-          send-message msg-send-path
+          send-message msg-send-path-to-drone
         ]
         
       ]
