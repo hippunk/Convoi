@@ -46,13 +46,13 @@ end
 
 to-report msg-convoiL-inform-status-convoi
   let my-id who
-  let l (list ticks get-convoi-critic get-leader-id-convoi get-hostile-belief) 
+  let l (list ticks get-convoi-critic get-leader-id-drone get-hostile-belief) 
   let msg leader-convoi-to-convoi-broadcast "inform"  l [] "statusLeader"
   report msg
 end
 
 to-report msg-convoiL-inform-is-new-leader-convoi 
-  let msg leader-convoi-to-convoi-broadcast "inform" who [] "nLeader"
+  let msg leader-convoi-to-convoi-broadcast "inform" who [] "nLeaderC"
   report msg
 end 
 
@@ -89,12 +89,12 @@ to receive-message-convoi
       
       
       ;; from leader OK
-       if perf = "inform" and sub = "statusLeader" [convoi-receive-status-leader msg set b false]
-       if perf = "request" and sub = "split" [convoi-receive-split-request msg set b false]
-       if perf = "inform" and sub = "nLeader" [convoi-receive-is-new-leader msg set b false]
+       if perf = "inform" and sub = "statusLeader" [convoi-receive-status-leader msg set b false] ; let l (list ticks get-convoi-critic get-leader-id-drone get-hostile-belief) 
+       if perf = "request" and sub = "split" [convoi-receive-split-request msg set b false] ; let l (list ticks get-leader-id-drone get-hostile-belief) 
+       if perf = "inform" and sub = "nLeaderC" [convoi-receive-is-new-leader msg set b false] ; id 
       
       ;; from convoi OK
-      if perf = "inform" and sub = "status" [convoi-receive-status msg set b false]
+      if perf = "inform" and sub = "status" [convoi-receive-status msg set b false] ;   let l (list ticks get-convoi-critic get-leader-id-drone get-hostile-belief) 
       if perf = "inform" and sub = "hostile" [convoi-receive-hostile-inform msg set b false]
       
       
@@ -121,16 +121,24 @@ end
 ;;; FROM LEADER
 ;;;;;;;;;;;;;;;;
 to convoi-receive-split-request [msg]
+;  let l (list ticks get-leader-id-drone get-hostile-belief) 
   let id who 
   let id2 read-from-string get-to msg
+  let zones item 2 get-content msg
+  set-leader-id-drone item 1 get-content msg
+  foreach zones
+  [
+    if ? != "hostile"
+    [add-hostile-belief ?]
+  ]
   ifelse member? id id2 [
-    make-leader
-    
+    make-leader ;; 
   ]
   [ printcom (word "(" breed " " who ") ERREUR  receive-split-request " msg) ]
 end
 
 to convoi-receive-status-leader [msg]
+  ; let l (list ticks get-convoi-critic get-leader-id-drone get-hostile-belief) 
   let id who
   let content get-content msg
   let zones item 3 content
@@ -169,6 +177,7 @@ end
 
 
 to convoi-receive-status [msg]
+  ; let l (list ticks get-convoi-critic get-leader-id-drone get-hostile-belief) 
   let id who
   let zones item 3 get-content msg
   foreach zones

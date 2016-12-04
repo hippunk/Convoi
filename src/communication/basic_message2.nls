@@ -31,11 +31,12 @@ to-report aux-create-msg [performative dest content fd-list sujet]
 end
 
 to-report add-receivers [breeds dest fwlist msg]
+  if turtle dest = nobody [report msg]
   let id who
   let receivers (breeds in-cone range 360 with [who != id and not member? who fwlist])
   ifelse member? turtle dest receivers
-    [set msg add-receiver dest msg]
-    [set receivers (sort-on [who] receivers) set msg add-multiple-receivers receivers msg]
+  [set msg add-receiver dest msg]
+  [set receivers (sort-on [who] receivers) set msg add-multiple-receivers receivers msg]
   
   report msg
 end
