@@ -172,9 +172,14 @@ to  random-basic-strategy
     ;execute, Pour nous execute se résume à se déplacer vers as-path ou à escorter (changer escorter pour suivre le mécanisme de as-path afin de factorier le tout ?)
     
     
+<<<<<<< HEAD
+    move-side-convoi ;[] false
+    ;execute-intentions
+=======
     ifelse not empty? intentions[
     execute-intentions]
     [move-side-convoi]
+>>>>>>> c7024b00499a8d975d0f966eee56206315276bc1
       if fire?[
         drones-fire
     ]
@@ -449,12 +454,8 @@ to move-side-convoi
   if not empty? item who as-path[stop]
   let z zcor
   let p []
-  ask convoi get-leader-id-convoi [set p patches in-cone-nowrap convoi-range 360 with [pzcor = 10 and not obstacle?]]
-  ;print p
-  ;ask p [set pcolor white]
+  ask convoi get-leader-id-convoi [set p patches in-cone-nowrap convoi-range 360 with [pzcor = 10 and not obstacle?]] ;; a changer
   let goal (one-of p)
-  ;ask goal [set pcolor white]
-  ;if goal = nobody [print "nobody" set goal (one-of patches with [(not obstacle?) and pzcor < 10 and pzcor > 2])]
   let tmp-patch patch pxcor pycor pzcor
   let tmpplan plan-astar3D ( tmp-patch ) goal (false)
   set as-path replace-item who as-path tmpplan
