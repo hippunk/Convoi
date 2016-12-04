@@ -439,7 +439,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-1
+5
 1
 0
 Number
@@ -570,7 +570,7 @@ INPUTBOX
 295
 270
 total-nb-drones
-3
+5
 1
 0
 Number
@@ -666,7 +666,7 @@ drone-range
 drone-range
 1
 20
-12
+20
 1
 1
 NIL
@@ -874,7 +874,7 @@ proba-touche-drone
 proba-touche-drone
 0.1
 1
-0.5
+1
 0.1
 1
 NIL

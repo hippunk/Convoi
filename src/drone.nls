@@ -138,8 +138,8 @@ to  random-basic-strategy
     [
       if ticks = 10
       [
-        let msg msg-droneL-request-go-check-position [3 3 1] 3
-        send-message msg
+        ;let msg msg-droneL-request-go-check-position [3 3 1] 3
+        ;send-message msg
         set last-send-time ticks
       ]  
     ]
@@ -176,9 +176,9 @@ to  random-basic-strategy
     ifelse empty? intentions
     [move-side-convoi] ;[] false
     [execute-intentions]
-      if fire?[
+    ;if fire?[
         drones-fire
-    ]
+    ;]
     
   ]
   ]
@@ -291,6 +291,39 @@ end
 
 
 
+to assign-explo [dest]
+    send-message msg-droneL-request-go-check-path dest
+    set-assigned-explo-order dest
+end
+
+to assign-kill [dest]
+  let hostiles-bel get-hostile-belief
+  let hostiles-pool get-assigned-kill-order
+  let hbel 0
+  let hpool []
+  let assigned []
+  
+  foreach hostiles-pool[ ; on cherche un hostile qui n'a pas été assigné à un ordre de tir
+    set hpool lput item 1 ? hpool
+    set assigned lput item 0 ? assigned
+  ] 
+  
+  foreach hostiles-bel[;Pour chaque hostile
+    set hbel ?
+    ;print "hbel" print hbel
+    
+
+    ;print "hpool" print hpool
+    ;print "assigned" print assigned
+    if not member? hbel hpool and not member? dest assigned[ ; ici on assigne l'ordre
+      ;print "dest : " print dest
+      send-message msg-droneL-request-go-kill-position hbel dest
+      add-assigned-kill-order dest hbel
+      stop 
+    ]     
+  ]
+end
+
 
 to order-loop
   ask drones with [leader?][
@@ -299,35 +332,14 @@ to order-loop
       ;print item 0 ?
       let dest read-from-string item 0 ?
       ;Si chemin non découvert
-      ifelse empty? get-assigned-explo-order[
-        send-message msg-droneL-request-go-check-path dest
-        set-assigned-explo-order dest
-        
-      ][ifelse not empty? get-hostile-belief
-          [
-            let hostiles-bel get-hostile-belief
-            let hostiles-pool get-assigned-kill-order
-            foreach hostiles-bel[;Pour chaque hostile
-              let hbel ?
-              print hbel
-              foreach hostiles-pool[ ; on cherche un hostile qui n'a pas été assigné à un ordre de tir
-                let hpool ?
-                let pool-zone item 1 item 0 hpool ;pour récupérer la zone du pool
-                print "hbel" print hbel
-                print "pool" print hpool
-              ] 
-                ;if []
-            ]
-          ]
+      ifelse empty? get-assigned-explo-order
+      [assign-explo dest]
+      [ifelse not empty? get-hostile-belief
+          [assign-kill dest]
           []
       ]
-    ]
-
-      
+    ]      
   ]
-      ;Si ennemi connu
-      ;si pas de chemin praticable
-      ;si rien à faire
       
 end
 
