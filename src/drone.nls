@@ -339,7 +339,6 @@ to look-around-drone
   [
     let cible one-of hostile-in-range
     let dest [z_zone] of ([patch-here] of cible)
-    print (word "(" breed " " who ") detect HOst : ") 
     add-hostile-belief dest
     send-message msg-drone-inform-detect-hostile-droneL dest
   ]
