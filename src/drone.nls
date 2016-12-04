@@ -149,6 +149,10 @@ to  random-basic-strategy
     ;drone-eliptic-move
     check-vital
     
+    if ticks mod 100 = 0[
+      drop-assigned-explo-order
+    ]
+    
     
     look-around-drone
     ;forward-messages pb string instead of turtle number during run
@@ -160,6 +164,8 @@ to  random-basic-strategy
       send-message msg
       set last-send-time ticks
     ]
+    
+    
     receive-message-drone
     ;update-drone-tick
     check-dead
@@ -176,9 +182,9 @@ to  random-basic-strategy
     ifelse empty? intentions
     [move-side-convoi] ;[] false
     [execute-intentions]
-    ;if fire?[
+    if fire?[
         drones-fire
-    ;]
+    ]
     
   ]
   ]
@@ -315,7 +321,7 @@ to assign-kill [dest]
 
     ;print "hpool" print hpool
     ;print "assigned" print assigned
-    if not member? hbel hpool and not member? dest assigned[ ; ici on assigne l'ordre
+    if not member? hbel hpool [;and not member? dest assigned[ ; ici on assigne l'ordre
       ;print "dest : " print dest
       send-message msg-droneL-request-go-kill-position hbel dest
       add-assigned-kill-order dest hbel
