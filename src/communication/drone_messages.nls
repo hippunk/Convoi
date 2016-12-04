@@ -203,3 +203,22 @@ to drone-receive-is-new-leader-convoi [msg]
   let m get-content msg
   set-leader-id-convoi m
 end
+
+
+
+
+
+
+
+
+
+
+
+;to drone-receive-need-ammo-drone [msg]
+;  let id who
+;  let ammo item 1 get-content msg
+;  printcom (word "(" breed " " who ") ammo " get-from msg " last" ammo) 
+;  
+;end
+
+

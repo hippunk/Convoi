@@ -844,7 +844,7 @@ SWITCH
 413
 debug-bdi
 debug-bdi
-1
+0
 1
 -1000
 

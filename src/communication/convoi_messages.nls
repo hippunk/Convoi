@@ -98,7 +98,7 @@ to receive-message-convoi
       if perf = "inform" and sub = "hostile" [convoi-receive-hostile-inform msg set b false]
       
       
-      ;; from drone OK
+      ;; from drone
       if perf = "inform" and sub = "nLeaderD" [convoi-receive-new-leader-droneL-to-convoiL msg set b false]
       if perf = "inform" and sub = "statusDrone" [convoi-receive-status-droneL msg set b false]
       ;
