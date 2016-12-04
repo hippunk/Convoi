@@ -188,7 +188,7 @@ end
 
 
 to drone-receive-hostile-inform-drone [msg]
-  
+  print (word "(" breed " " who ") drone-receive-hostile-inform-drone : " msg) 
   let id who
   let zone get-content msg
   add-hostile-belief zone

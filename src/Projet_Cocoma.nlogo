@@ -439,7 +439,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-0
+1
 1
 0
 Number
@@ -793,7 +793,7 @@ drones-max-carburant
 drones-max-carburant
 100
 500
-141
+270
 1
 1
 NIL

@@ -36,8 +36,7 @@ to-report add-receivers [breeds dest fwlist msg]
   let receivers (breeds in-cone range 360 with [who != id and not member? who fwlist])
   ifelse member? turtle dest receivers
   [set msg add-receiver dest msg]
-  [set receivers (sort-on [who] receivers) set msg add-multiple-receivers receivers msg]
-  
+  [set receivers (sort-on [who] receivers) set msg add-multiple-receivers receivers msg] 
   report msg
 end
 

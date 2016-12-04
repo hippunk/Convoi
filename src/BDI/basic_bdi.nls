@@ -6,7 +6,7 @@ end
 to set-convoi-path-zone [zones]
   let bel create-belief "path-Zone" zones
   ifelse exist-beliefs-of-type "path-Zone"
-  [update-belief bel]
+  [update-belief bel ];printbdi (word "(" breed " " who ") convoi-path-zone " get-convoi-path-zone) ]
   [add-belief bel]
 end
 
@@ -23,7 +23,7 @@ end
 to set-assigned-explo-order [id]
   let bel create-belief "assigned-explo-order" id
   ifelse exist-beliefs-of-type "assigned-explo-order"
-  [update-belief bel]
+  [update-belief bel printbdi (word "(" breed " " who ") assigned-explo-order " get-assigned-explo-order)]
   [add-belief bel]
 end
 
@@ -56,7 +56,7 @@ to set-assigned-kill-order [id zone]
   set l lput zone l
   let bel create-belief "assigned-kill-order" l
   ifelse exist-beliefs-of-type "assigned-kill-order"
-  [update-belief bel]
+  [update-belief bel printbdi (word "(" breed " " who ") assigned-kill-order " get-assigned-kill-order)]
   [add-belief bel]
 end
 
@@ -88,7 +88,7 @@ end
 to set-drone-plan [plan]
   let bel create-belief "plan" plan
   ifelse exist-beliefs-of-type "plan"
-  [update-belief bel]
+  [update-belief bel printbdi (word "(" breed " " who ") drone-plan " get-drone-plan)]
   [add-belief bel]
 end
 
@@ -100,6 +100,7 @@ end
 to add-drone-in-range [num]
   let bel create-belief "in-range" num
   add-belief bel
+  printbdi (word "(" breed " " who ") drone-in-range " get-drone-in-range)
 end
 
 to-report get-drone-in-range
@@ -131,7 +132,7 @@ end
 to set-drone-munition [munition]
   let bel create-belief "munition" munition
   ifelse exist-beliefs-of-type "munition"
-  [update-belief bel]
+  [update-belief bel printbdi (word "(" breed " " who ") drone-munition " get-drone-munition)]
   [add-belief bel]
 end
 
@@ -155,7 +156,7 @@ end
 to set-convoi-critic [critic?]
   let bel create-belief "critic" critic?
   ifelse exist-beliefs-of-type "critic"
-  [update-belief bel]
+  [update-belief bel printbdi (word "(" breed " " who ") convoi-critic " get-convoi-critic)]
   [add-belief bel]
 end
 
@@ -167,7 +168,7 @@ end
 to set-leader-id-convoi [id]
   let bel create-belief "leaderC" id
   ifelse exist-beliefs-of-type "leaderC"
-  [update-belief bel]
+  [update-belief bel printbdi (word "(" breed " " who ") leader-id-convoi " get-leader-id-convoi)]
   [add-belief bel]
 end
 
@@ -179,7 +180,7 @@ end
 to set-leader-id-drone [id]
   let bel create-belief "leaderD" id
   ifelse exist-beliefs-of-type "leaderD"
-  [update-belief bel]
+  [update-belief bel printbdi (word "(" breed " " who ") leader-id-drone " get-leader-id-drone)]
   [add-belief bel]
 end
 
