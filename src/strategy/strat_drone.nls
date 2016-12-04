@@ -51,9 +51,6 @@ to check-path-intention
 
   if intention-courante != (word "check-path") and intention-courante != (word "refuel");Passage en paramètre du convoi suivi ?
   [
-      
-
-
     let tmp-path get-convoi-path-zone 
     
     ;Convertir chaque zone avec coord en 5
@@ -65,15 +62,14 @@ to check-path-intention
       set path lput patch px py pz path
       
     ]
-   
-   
+    
     set as-path replace-item who as-path path
    
-    if not empty? (item who as-path) [
+   if not empty? (item who as-path) [
       set finished? false
     ]
     set intention-courante (word "check-path") ; 
-    ;drone-astar-to-zone obj false Calcul du chemin ? Récupération ?
+
   ]
   
 end

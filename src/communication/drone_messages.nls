@@ -15,6 +15,7 @@ to-report msg-drone-inform-detect-hostile-droneL [zone]
  report msg
 end
 
+
 ;;;;;;;;;;;;;;;;
 ;;; TO DRONE
 ;;;;;;;;;;;;;;;;
@@ -30,6 +31,10 @@ to-report msg-droneL-inform-im-new-leader-drone
  report msg
 end
 
+to-report msg-droneL-request-go-check-path [dest] ; order 1
+  let msg drone-create-message "request" dest "" [] "check-path"
+  report msg
+end
 
 to-report msg-droneL-request-go-check-position [zone dest] ; order 1
   let content (list ticks zone)
@@ -90,13 +95,13 @@ to receive-message-drone
       if perf = "request" and sub = "nLeader" [drone-receive-im-new-leader-drone msg set b false] ; OK
       if perf = "request" and sub = "nLeaderD" [drone-receive-new-leader-drone msg set b false] ; OK
       if perf = "request" and sub = "kill-pos" [drone-receive-check-pos-drone msg set b false] ; OK
+      if perf = "request" and sub = "check-path" [drone-receive-check-path-drone msg set b false] ; NTEST
       
       
       ;; from convoi
       if perf = "inform" and sub = "nLeaderC" [drone-receive-is-new-leader-convoi msg set b false]
       if perf = "inform" and sub = "path" [drone-receive-path-convoi msg set b false]
-      if perf = "inform" and sub = "pathregen" [drone-receive-path-regen msg set b false]
-   
+      if perf = "inform" and sub = "pathregen" [drone-receive-path-regen msg set b false]     
    
       ;; from drone OK
       if perf = "inform" and sub = "status" [drone-receive-status-drone msg set b false]
@@ -147,9 +152,21 @@ to drone-receive-im-new-leader-drone [msg]
 end
 
 to drone-receive-check-pos-drone [msg]
-  let id who
-  let pos item 1 get-content msg
-  drone-astar-to-zone pos true
+  ;let id who
+  ;let pos item 1 get-content msg
+  ;drone-astar-to-zone pos true
+  ;Ici juste besoin d'empiler l'intention
+    print "ordre de check pos reçu"
+end 
+
+to drone-receive-check-path-drone [msg]
+  ;let id who
+  ;let pos item 1 get-content msg
+  ;drone-astar-to-zone pos true
+  ;Ici juste besoin d'empiler l'intention
+  print "ordre d'explo path reçu"
+  add-intention "check-path-intention" "check-path-done"
+
   
 end 
 
