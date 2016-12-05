@@ -26,8 +26,8 @@ to-report msg-droneL-inform-status-drones
   report msg
 end
 
-to-report msg-droneL-inform-im-new-leader-drone
- let msg leader-drone-to-drone-broadcast "request" (drones in-cone range 360) [] "nLeader"
+to-report msg-droneL-inform-im-new-leader-drone ;; 1
+ let msg leader-drone-to-drone-broadcast "inform" (drones in-cone range 360) [] "nLeader" ; 
  report msg
 end
 
@@ -44,6 +44,7 @@ to-report msg-droneL-request-go-check-position [zone dest] ; order 1
 end
 
 to-report msg-droneL-request-NewLeader-drone [dest] ; order 1
+  ; 1
   let msg drone-create-message "request" dest "" [] "nLeaderD"
   report msg
 end
@@ -95,8 +96,8 @@ to receive-message-drone
       ;; from leader OK
       if perf = "inform" and sub = "statusLeader" [drone-receive-status-leader msg set b false] ; OK
       if perf = "request" and sub = "check-pos" [drone-receive-check-pos-drone msg set b false] ; OK
-      if perf = "request" and sub = "nLeader" [drone-receive-im-new-leader-drone msg set b false] ; OK
-      if perf = "request" and sub = "nLeaderD" [drone-receive-new-leader-drone msg set b false] ; OK
+      if perf = "inform" and sub = "nLeader" [drone-receive-im-new-leader-drone msg set b false] ; OK 1
+      if perf = "request" and sub = "nLeaderD" [drone-receive-new-leader-drone msg set b false] ; OK 1 je deviens le nouveau leader
       if perf = "request" and sub = "kill-pos" [drone-receive-kill-pos-drone msg set b false] ; OK
       if perf = "request" and sub = "check-path" [drone-receive-check-path-drone msg set b false] ; NTEST
       
@@ -138,20 +139,21 @@ to drone-receive-status-leader [msg]
 end
 
 to drone-receive-new-leader-drone [msg]
-  let id who
-  let id-l read-from-string get-from msg
-  let from get-sender msg
-  set-leader-id-drone id-l
-  send-message msg-drone-inform-status-droneL
-end
-
-
-to drone-receive-im-new-leader-drone [msg]
   set-leader-id-drone who
   set leader? true
   set color orange
   send-message msg-droneL-inform-im-new-leader-drone
   send-message msg-droneL-inform-im-new-leader-convoiL
+  
+end
+
+
+to drone-receive-im-new-leader-drone [msg]
+  let id who
+  let id-l read-from-string get-from msg
+  let from get-sender msg
+  set-leader-id-drone id-l
+  send-message msg-drone-inform-status-droneL
 end
 
 to drone-receive-check-pos-drone [msg]
@@ -167,8 +169,7 @@ to drone-receive-kill-pos-drone [msg]
   let pos item 1 get-content msg
   ;drone-astar-to-zone pos true
   ;Ici juste besoin d'empiler l'intention
-    print "ordre de kill pos reçu" print pos print self 
-    set intention-courante (word "check-pos " pos)
+    print "ordre de kill pos reçu"
     add-intention (word "kill-pos-intention " pos) "kill-pos-done"
 end 
 

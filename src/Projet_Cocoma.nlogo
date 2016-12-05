@@ -243,7 +243,7 @@ INPUTBOX
 197
 269
 total-nb-cars
-2
+4
 1
 0
 Number
@@ -439,7 +439,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-1
+5
 1
 0
 Number
@@ -570,7 +570,7 @@ INPUTBOX
 295
 270
 total-nb-drones
-3
+8
 1
 0
 Number
@@ -844,7 +844,7 @@ SWITCH
 413
 debug-bdi
 debug-bdi
-1
+0
 1
 -1000
 
