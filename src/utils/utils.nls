@@ -10,7 +10,7 @@ to toucher
   set nb-tick-color 0
   set color 12
   set hp hp - 1
-  if hp = 5 [set color color - 2]
+  ;if hp = 5 [set color color - 2]
   if hp = 0 [ 
     set dead? true
     print word (word breed " ") (word (word who) " : Je suis Mort " )

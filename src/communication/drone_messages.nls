@@ -157,13 +157,13 @@ to drone-receive-im-new-leader-drone [msg]
 end
 
 
-to drone-receive-im-new-leader-drone [msg]
-  set-leader-id-drone who
-  set leader? true
-  set color orange
-  send-message msg-droneL-inform-im-new-leader-drone
-  send-message msg-droneL-inform-im-new-leader-convoiL
-end
+;;;to drone-receive-im-new-leader-drone [msg]
+;;;  set-leader-id-drone who
+;;;  set leader? true
+;;;  set color orange
+;;;  send-message msg-droneL-inform-im-new-leader-drone
+;;;  send-message msg-droneL-inform-im-new-leader-convoiL
+;;;end
 
 to drone-receive-check-pos-drone [msg]
   ;let id who

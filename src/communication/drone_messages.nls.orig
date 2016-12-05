@@ -21,13 +21,13 @@ end
 ;;;;;;;;;;;;;;;;
 to-report msg-droneL-inform-status-drones
   let my-id who
-  let l (list ticks get-leader-id-convoi get-hostile-belief get-convoi-path-zone) 
+  let l (list ticks get-leader-id-convoi get-hostile-belief get-convoi-path-zone)
   let msg leader-drone-to-drone-broadcast "inform"  l [] "statusLeader"
   report msg
 end
 
 to-report msg-droneL-inform-im-new-leader-drone ;; 1
- let msg leader-drone-to-drone-broadcast "inform" (drones in-cone range 360) [] "nLeader" ; 
+ let msg leader-drone-to-drone-broadcast "inform" (drones in-cone range 360) [] "nLeader" ;
  report msg
 end
 
@@ -61,7 +61,7 @@ end
 ;;;;;;;;;;;;;;;;
 to-report msg-droneL-inform-status-convoiL
   let my-id who
-  let l (list ticks get-leader-id-convoi get-hostile-belief get-drone-plan) 
+  let l (list ticks get-leader-id-convoi get-hostile-belief get-drone-plan)
   let msg drone-create-message-to-convoi "inform"  l "statusDrone"
   report msg
 end
@@ -82,7 +82,7 @@ to receive-message-drone
   while [not empty? incoming-queue]
   [
     let msg get-message
-    
+
     printcom (word "\t(" breed " " who ") reçoi : " msg)
     let dest read-from-string get-to msg
     let bool (is-number? dest and dest = who) or (is-list? dest and member? who dest)
@@ -91,8 +91,8 @@ to receive-message-drone
       let b true
       let perf get-performative msg
       let sub get-sujet msg
-      
-      
+
+
       ;; from leader OK
       if perf = "inform" and sub = "statusLeader" [drone-receive-status-leader msg set b false] ; OK
       if perf = "request" and sub = "check-pos" [drone-receive-check-pos-drone msg set b false] ; OK
@@ -100,13 +100,13 @@ to receive-message-drone
       if perf = "request" and sub = "nLeaderD" [drone-receive-new-leader-drone msg set b false] ; OK 1 je deviens le nouveau leader
       if perf = "request" and sub = "kill-pos" [drone-receive-kill-pos-drone msg set b false] ; OK
       if perf = "request" and sub = "check-path" [drone-receive-check-path-drone msg set b false] ; NTEST
-      
-      
+
+
       ;; from convoi
       if perf = "inform" and sub = "nLeaderC" [drone-receive-is-new-leader-convoi msg set b false]
       if perf = "inform" and sub = "path" [drone-receive-path-convoi msg set b false]
-      if perf = "inform" and sub = "pathregen" [drone-receive-path-regen msg set b false]     
-   
+      if perf = "inform" and sub = "pathregen" [drone-receive-path-regen msg set b false]
+
       ;; from drone OK
       if perf = "inform" and sub = "status" [drone-receive-status-drone msg set b false]
       if perf = "inform" and sub = "hostile" [drone-receive-hostile-inform-drone msg set b false]
@@ -144,7 +144,7 @@ to drone-receive-new-leader-drone [msg]
   set color orange
   send-message msg-droneL-inform-im-new-leader-drone
   send-message msg-droneL-inform-im-new-leader-convoiL
-  
+
 end
 
 
@@ -162,21 +162,18 @@ to drone-receive-check-pos-drone [msg]
   ;drone-astar-to-zone pos true
   ;Ici juste besoin d'empiler l'intention
     print "ordre de check pos reçu"
-end 
+end
 
 to drone-receive-kill-pos-drone [msg]
   ;let id who
   let pos item 1 get-content msg
   ;drone-astar-to-zone pos true
   ;Ici juste besoin d'empiler l'intention
-<<<<<<< HEAD
-    print "ordre de kill pos reçu"
-=======
-    print (word "ordre de kill pos reçu" pos self) 
+
+    print (word "ordre de kill pos reçu" pos self)
     ;set intention-courante (word "check-pos " pos)
->>>>>>> 69afb58363ffb670ee4d7d60cccf252f966003d9
     add-intention (word "kill-pos-intention " pos) "kill-pos-done"
-end 
+end
 
 
 to drone-receive-check-path-drone [msg]
@@ -187,8 +184,8 @@ to drone-receive-check-path-drone [msg]
   print "ordre d'explo path reçu"
   add-intention "check-path-intention" "check-path-done"
 
-  
-end 
+
+end
 
 ;;;;;;;;;;;;;;;;
 ;;; FROM DRONE
@@ -208,7 +205,7 @@ end
 
 
 to drone-receive-hostile-inform-drone [msg]
-  print (word "(" breed " " who ") drone-receive-hostile-inform-drone : " msg) 
+  print (word "(" breed " " who ") drone-receive-hostile-inform-drone : " msg)
   let id who
   let zone get-content msg
   add-hostile-belief zone
@@ -218,8 +215,8 @@ end
 to drone-receive-need-fuel-drone [msg]
   let id who
   let fuel item 1 get-content msg
-  printcom (word "(" breed " " who ") ammo " get-from msg " last" fuel) 
-  
+  printcom (word "(" breed " " who ") ammo " get-from msg " last" fuel)
+
 end
 
 ;;;;;;;;;;;;;;;;
@@ -234,7 +231,7 @@ end
 to drone-receive-path-convoi [msg]
   set-convoi-path-zone get-content msg
   send-message msg-droneL-inform-status-drones
-  
+
 end
 
 to drone-receive-is-new-leader-convoi [msg]
@@ -256,8 +253,6 @@ end
 ;to drone-receive-need-ammo-drone [msg]
 ;  let id who
 ;  let ammo item 1 get-content msg
-;  printcom (word "(" breed " " who ") ammo " get-from msg " last" ammo) 
-;  
+;  printcom (word "(" breed " " who ") ammo " get-from msg " last" ammo)
+;
 ;end
-
-
