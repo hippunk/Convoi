@@ -322,7 +322,7 @@ to assign-kill [dest]
         [set hbel ?]
   ]
   
-  if not member? hbel hpool[; and not member? dest assigned[ ; ici on assigne l'ordre
+  if hbel != 0 [; and not member? dest assigned[ ; ici on assigne l'ordre
                             ;print "dest : " print dest
     send-message msg-droneL-request-go-kill-position hbel dest
     add-assigned-kill-order dest hbel  
@@ -454,7 +454,7 @@ to drone-astar-to-zone [zone regen?]
   
   let tmpplan plan-astar3D ( tmp-patch ) goal (false)
   if empty? tmpplan [print "empty" stop]
-  print (word "(" breed " " who ") je voulais aller "  zone " et je vais " [z_zone] of last tmpplan) 
+  ;print (word "(" breed " " who ") je voulais aller "  zone " et je vais " [z_zone] of last tmpplan) 
   set as-path replace-item who as-path tmpplan
     if not empty? (item who as-path) [
       set finished? false
@@ -542,7 +542,7 @@ to move-side-convoi
   let zones get-convoi-path-zone
   let convois-in-range convois in-cone-nowrap drone-range 360
   let t turtle get-leader-id-convoi
-  if t != nobody not member? t convois-in-range and length zones > 1 [set zones remove-item 0 zones set-convoi-path-zone zones ]
+  if t != nobody and not member? t convois-in-range and length zones > 1 [set zones remove-item 0 zones set-convoi-path-zone zones ]
   ;print (word "(" breed " " who ") suivi convoi " item 0 zones ) 
   drone-astar-to-zone item 0 zones true
   

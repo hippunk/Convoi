@@ -439,7 +439,7 @@ INPUTBOX
 107
 269
 nb-cars-hostile
-1
+5
 1
 0
 Number
@@ -528,7 +528,7 @@ convois-hp
 convois-hp
 2
 100
-5
+12
 1
 1
 NIL
@@ -543,7 +543,7 @@ hostiles-hp
 hostiles-hp
 2
 100
-5
+2
 1
 1
 NIL
@@ -570,7 +570,7 @@ INPUTBOX
 295
 270
 total-nb-drones
-3
+5
 1
 0
 Number
@@ -584,7 +584,7 @@ drones-hp
 drones-hp
 2
 100
-5
+100
 1
 1
 NIL
@@ -599,7 +599,7 @@ hostile-range
 hostile-range
 3
 50
-13
+26
 1
 1
 NIL
@@ -623,7 +623,7 @@ SWITCH
 343
 debug-path
 debug-path
-0
+1
 1
 -1000
 
@@ -793,7 +793,7 @@ drones-max-carburant
 drones-max-carburant
 100
 500
-270
+500
 1
 1
 NIL
@@ -874,7 +874,7 @@ proba-touche-drone
 proba-touche-drone
 0.1
 1
-0.5
+1
 0.1
 1
 NIL

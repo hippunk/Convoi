@@ -167,8 +167,8 @@ to drone-receive-kill-pos-drone [msg]
   let pos item 1 get-content msg
   ;drone-astar-to-zone pos true
   ;Ici juste besoin d'empiler l'intention
-    print "ordre de kill pos reçu" print pos print self 
-    set intention-courante (word "check-pos " pos)
+    print (word "ordre de kill pos reçu" pos self) 
+    ;set intention-courante (word "check-pos " pos)
     add-intention (word "kill-pos-intention " pos) "kill-pos-done"
 end 
 
