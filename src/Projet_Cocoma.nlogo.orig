@@ -570,7 +570,11 @@ INPUTBOX
 295
 270
 total-nb-drones
+<<<<<<< HEAD
+8
+=======
 5
+>>>>>>> 69afb58363ffb670ee4d7d60cccf252f966003d9
 1
 0
 Number
@@ -844,7 +848,7 @@ SWITCH
 413
 debug-bdi
 debug-bdi
-1
+0
 1
 -1000
 

@@ -17,7 +17,7 @@ drones-own[
   intention-courante
   vital-critic
   fire?
-  refuel?
+  path-explored?
   ]
 
 
@@ -55,7 +55,7 @@ to setup-drones
       set leader? false
       set to-protect? false
       set genlongpath? false
-      set refuel? false
+      
       set dead? false
       set regenpath? false
       
@@ -133,13 +133,13 @@ to  random-basic-strategy
     ;update beliefs
     
     let p min-one-of patches with [base? =  true] [distance-nowrap myself]
-    if distance-nowrap p < 2 [set-drone-essence drones-max-carburant set intention-courante "" print "refuled"]   
+    if distance-nowrap p < 2 [set-drone-essence drones-max-carburant set intention-courante ""]   
     if leader? 
     [
       if ticks = 10
       [
-        let msg go-check-position [3 3 1] 3
-        send-message msg
+        ;let msg msg-droneL-request-go-check-position [3 3 1] 3
+        ;send-message msg
         set last-send-time ticks
       ]  
     ]
@@ -154,8 +154,9 @@ to  random-basic-strategy
     ;forward-messages pb string instead of turtle number during run
     if timeout_has_expired last-send-time send-interval ;; on informe le leader de nos connaissance tout les send-interval ticks
     [
+      ;drop-assigned-explo-order
       drop-in-range 
-      let msg send-status-drone
+      let msg msg-drone-inform-status-droneL
       send-message msg
       set last-send-time ticks
     ]
@@ -172,23 +173,20 @@ to  random-basic-strategy
     ;execute, Pour nous execute se résume à se déplacer vers as-path ou à escorter (changer escorter pour suivre le mécanisme de as-path afin de factorier le tout ?)
     
     
-<<<<<<< HEAD
-    move-side-convoi ;[] false
-    ;execute-intentions
-=======
-    ifelse not empty? intentions[
-    execute-intentions]
-    [move-side-convoi]
->>>>>>> c7024b00499a8d975d0f966eee56206315276bc1
-      if fire?[
+    ifelse empty? intentions
+    [move-side-convoi] ;[] false
+    [execute-intentions]
+    ;if fire?[
         drones-fire
-    ]
+    ;]
     
   ]
   ]
+  
+  
   ;move-to-path-drones
   ;random-move-path-drones
-  
+  order-loop
   ;drones-fire
 
 end
@@ -293,8 +291,70 @@ end
 
 
 
+to assign-explo [dest]
+    send-message msg-droneL-request-go-check-path dest
+    set-assigned-explo-order dest
+end
+
+to assign-kill [dest]
+  let hostiles-bel get-hostile-belief
+  let hostiles-pool get-assigned-kill-order
+  let hbel 0
+  let hpool []
+  let assigned []
+  
+  foreach hostiles-pool[ ; on cherche un hostile qui n'a pas été assigné à un ordre de tir
+    set hpool lput item 1 ? hpool
+    set assigned lput item 0 ? assigned
+  ] 
+  
+<<<<<<< HEAD
+  foreach hostiles-bel[;Pour chaque hostile
+    set hbel ?
+    ;print "hbel" print hbel
+    
+
+=======
+  foreach hostiles-bel[;liste des zones à vérifer
+    ;print "foreach zones verif"
+    if not member? ? hpool
+        [set hbel ?]
+  ]
+  
+  if hbel != 0 [; and not member? dest assigned[ ; ici on assigne l'ordre
+                            ;print "dest : " print dest
+    send-message msg-droneL-request-go-kill-position hbel dest
+    add-assigned-kill-order dest hbel  
+>>>>>>> 69afb58363ffb670ee4d7d60cccf252f966003d9
+    ;print "hpool" print hpool
+    ;print "assigned" print assigned
+    if not member? hbel hpool and not member? dest assigned[ ; ici on assigne l'ordre
+      ;print "dest : " print dest
+      send-message msg-droneL-request-go-kill-position hbel dest
+      add-assigned-kill-order dest hbel
+      stop 
+    ]     
+  ]
+end
 
 
+to order-loop
+  ask drones with [leader?][
+    let inrange get-drone-in-range
+    foreach inrange[
+      ;print item 0 ?
+      let dest read-from-string item 0 ?
+      ;Si chemin non découvert
+      ifelse empty? get-assigned-explo-order
+      [assign-explo dest]
+      [ifelse not empty? get-hostile-belief
+          [assign-kill dest]
+          []
+      ]
+    ]      
+  ]
+      
+end
 
 
 
@@ -305,14 +365,30 @@ to look-around-drone
     let cible one-of hostile-in-range
     let dest [z_zone] of ([patch-here] of cible)
     add-hostile-belief dest
-    send-message msg-drone-detect-hostile dest
+    send-message msg-drone-inform-detect-hostile-droneL dest
   ]
   [
     set newdetect? false
     let dest [z_zone] of patch-here
     remove-hostile-belief dest
   ]
+  let convois-in-range convois in-cone-nowrap drone-range 360
+  let drones-in-range drones in-cone-nowrap drone-range 360
+  
+  ;if member? turtle get-leader-id-convoi convois-in-range and not member? turtle get-leader-id-drone drones-in-range [print "r" make-drone-leader]
+  
+  
 end
+
+to make-drone-leader
+ print (word "(" breed " " who ") Je suis nouveau leader") 
+  set-leader-id-drone who
+  set leader? true
+  set color orange
+  send-message msg-droneL-inform-im-new-leader-drone
+  send-message msg-droneL-inform-im-new-leader-convoiL
+  
+end 
 
 to check-vital
   let p min-one-of patches with [base?] [(distance-nowrap myself)]
@@ -328,18 +404,17 @@ to check-vital
       ifelse h != nobody [
         let id read-from-string item 0 h
         set-leader-id-drone id
-        send-message order-isNewLeader-drone id
+        send-message msg-droneL-request-NewLeader-drone id
         set leader? false
         set color gray
       ]
       [print (word "(" breed " " who ")  CHOIX STRAT plus de fuel et pas de leader possible " ) ]
     ]
-    let msg need-fuel 
-    send-message msg 
+;    let msg need-fuel 
+;    send-message msg 
     set label-color red 
-    set refuel? true
-    set intention-courante "refuel"
     go-refuel-path
+    set intention-courante "refuel"
   ]
   [
     if leader? 
@@ -370,15 +445,32 @@ end
 
 
 to drone-astar-to-zone [zone regen?]
-  if not regen? and not finished? [stop]
+;;;  if not regen? and not finished? [stop]
+;;;  ;printcom (word "(" breed " " who ") regen" regen? " " zone)
+;;;  if empty? zone [set zone [z_zone] of (one-of patches with [not obstacle?])]
+;;;  ;printcom (word "(" breed " " who ") je vais " zone) 
+;;;  let tmp-patch patch pxcor pycor pzcor
+;;;  ;let p patches with [distance myself < 30 and pzcor < 10 and pzcor > 2]
+;;;  let goal (one-of patches with [not obstacle? and compare-list z_zone zone])
+;;;  ;let goal (one-of p with [(not obstacle?)])
+;;;  ;if goal = nobody [print "nobody" set goal (one-of patches with [(not obstacle?) and pzcor < 10 and pzcor > 2])]
+;;;  let tmpplan plan-astar3D ( tmp-patch ) goal (false)
+;;;  set as-path replace-item who as-path tmpplan
+;;;    if not empty? (item who as-path) [
+;;;      set finished? false
+;;;    ]
+
+
+ if not regen? and not finished? [stop]
   ;printcom (word "(" breed " " who ") regen" regen? " " zone)
   if empty? zone [set zone [z_zone] of (one-of patches with [not obstacle?])]
   ;printcom (word "(" breed " " who ") je vais " zone) 
   let tmp-patch patch pxcor pycor pzcor
-  let p patches with [distance myself < 30 and pzcor < 10 and pzcor > 2]
-  let goal (one-of p with [(not obstacle?)])
-  if goal = nobody [print "nobody" set goal (one-of patches with [(not obstacle?) and pzcor < 10 and pzcor > 2])]
+  let goal (one-of patches with [not obstacle? and compare-list z_zone zone])
+  
   let tmpplan plan-astar3D ( tmp-patch ) goal (false)
+  if empty? tmpplan [print "empty" stop]
+  ;print (word "(" breed " " who ") je voulais aller "  zone " et je vais " [z_zone] of last tmpplan) 
   set as-path replace-item who as-path tmpplan
     if not empty? (item who as-path) [
       set finished? false
@@ -452,15 +544,23 @@ end
 
 to move-side-convoi
   if not empty? item who as-path[stop]
-  let z zcor
-  let p []
-  ask convoi get-leader-id-convoi [set p patches in-cone-nowrap convoi-range 360 with [pzcor = 10 and not obstacle?]] ;; a changer
-  let goal (one-of p)
-  let tmp-patch patch pxcor pycor pzcor
-  let tmpplan plan-astar3D ( tmp-patch ) goal (false)
-  set as-path replace-item who as-path tmpplan
-    if not empty? (item who as-path) [
-      set finished? false
-    ]
+;;;  let z zcor
+;;;  let p []
+;;;  ask convoi get-leader-id-convoi [set p patches in-cone-nowrap convoi-range 360 with [pzcor = 10 and not obstacle?]] ;; a changer
+;;;  let goal (one-of p)
+;;;  let tmp-patch patch pxcor pycor pzcor
+;;;  let tmpplan plan-astar3D ( tmp-patch ) goal (false)
+;;;  set as-path replace-item who as-path tmpplan
+;;;    if not empty? (item who as-path) [
+;;;      set finished? false
+;;;    ]
+  
+  let zones get-convoi-path-zone
+  let convois-in-range convois in-cone-nowrap drone-range 360
+  let t turtle get-leader-id-convoi
+  if t != nobody and not member? t convois-in-range and length zones > 1 [set zones remove-item 0 zones set-convoi-path-zone zones ]
+  ;print (word "(" breed " " who ") suivi convoi " item 0 zones ) 
+  drone-astar-to-zone item 0 zones true
+  
   
 end
