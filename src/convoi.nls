@@ -144,7 +144,7 @@ to convois-think
     set newdetect? false
   ]
   calcul-path-convoi-evite-zone-hotile
-  ask convois with [leader? and get-convoi-critic and resign-cpt = 1] [print "demande au drone de kill" set resign-cpt 0]
+  ;ask convois with [leader? and get-convoi-critic and resign-cpt = 1] [print "demande au drone de kill" set resign-cpt 0]
   deplacement-convoi
 end
 

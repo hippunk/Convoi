@@ -179,8 +179,8 @@ end
 GRAPHICS-WINDOW
 0
 0
-1430
-1451
+1030
+1051
 -1
 -1
 20.0
@@ -194,9 +194,9 @@ GRAPHICS-WINDOW
 1
 1
 0
-70
+50
 0
-70
+50
 0
 20
 1
@@ -373,7 +373,7 @@ simu-speed
 simu-speed
 0
 10
-5
+6
 1
 1
 NIL
@@ -528,7 +528,7 @@ convois-hp
 convois-hp
 2
 100
-12
+9
 1
 1
 NIL
@@ -543,7 +543,7 @@ hostiles-hp
 hostiles-hp
 2
 100
-2
+3
 1
 1
 NIL
@@ -584,7 +584,7 @@ drones-hp
 drones-hp
 2
 100
-100
+5
 1
 1
 NIL
@@ -599,7 +599,7 @@ hostile-range
 hostile-range
 3
 50
-26
+10
 1
 1
 NIL
@@ -874,7 +874,7 @@ proba-touche-drone
 proba-touche-drone
 0.1
 1
-1
+0.7
 0.1
 1
 NIL

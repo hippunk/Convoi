@@ -129,6 +129,7 @@ end
 to  random-basic-strategy
   foreach sort-on [(- who)] drones [
   ask ? [
+    
     ;get percept ces deux là sont liés aux messages
     ;update beliefs
     
@@ -136,9 +137,12 @@ to  random-basic-strategy
     if distance-nowrap p < 2 [set-drone-essence drones-max-carburant set intention-courante ""]   
     if leader? 
     [
+      ;send-message msg-droneL-inform-status-convoiL
+      ;print "edfsdfs"
       if ticks = 10
       [
         set fire? true
+        
         ;let msg msg-droneL-request-go-check-position [3 3 1] 3
         ;send-message msg
         set last-send-time ticks
@@ -159,6 +163,8 @@ to  random-basic-strategy
     ;forward-messages pb string instead of turtle number during run
     if timeout_has_expired last-send-time send-interval ;; on informe le leader de nos connaissance tout les send-interval ticks
     [
+      ;print "ggg"
+      if leader?[send-message msg-droneL-inform-status-convoiL]
       ;drop-assigned-explo-order
       drop-in-range 
       let msg msg-drone-inform-status-droneL
@@ -469,7 +475,7 @@ to drone-astar-to-zone [zone regen?]
   let goal (one-of patches with [not obstacle? and compare-list z_zone zone])
   
   let tmpplan plan-astar3D ( tmp-patch ) goal (false)
-  if empty? tmpplan [print "empty" stop]
+  if empty? tmpplan [stop]
   ;print (word "(" breed " " who ") je voulais aller "  zone " et je vais " [z_zone] of last tmpplan) 
   set as-path replace-item who as-path tmpplan
     if not empty? (item who as-path) [
@@ -558,7 +564,7 @@ to move-side-convoi
   let zones get-convoi-path-zone
   let convois-in-range convois in-cone-nowrap drone-range 360
   let t turtle get-leader-id-convoi
-  if t != nobody not member? t convois-in-range and length zones > 1 [set zones remove-item 0 zones set-convoi-path-zone zones ]
+  if t != nobody and not member? t convois-in-range and length zones > 1 [set zones remove-item 0 zones set-convoi-path-zone zones ]
   ;print (word "(" breed " " who ") suivi convoi " item 0 zones ) 
   drone-astar-to-zone item 0 zones true
   

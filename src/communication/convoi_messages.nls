@@ -187,7 +187,9 @@ to convoi-receive-new-leader-droneL-to-convoiL [msg]
 end
 
 to convoi-receive-request-regenpath-droneL [msg]
-  print (word "(" breed " " who ") convoi-receive-request-regenpath-droneL ") 
+  ;print (word "(" breed " " who ") convoi-receive-request-regenpath-droneL ") 
+  set regenpath? true
+  
 end
 
 
@@ -201,6 +203,8 @@ to convoi-receive-status-droneL [msg]
     if ? != "hostile"
     [add-hostile-belief ?]
   ]
+  if newdetect? [set regenpath? true set fake-zones get-convoi-path-zone]
+ 
   
 end
 

@@ -332,7 +332,7 @@ to calcul-path-convoi [zones?]
           set z get-hostile-belief
           set z sentence fake-zones z
           foreach fake-zones[
-            ask patches with [compare-list ? z_zone and pzcor = 0] [set pcolor pink]
+            ;ask patches with [compare-list ? z_zone and pzcor = 0] [set pcolor pink]
           ]
           set fake-zones []
         ]

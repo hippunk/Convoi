@@ -85,7 +85,7 @@ end
 to-report drone-create-message-to-convoi [performative content sujet]
   let receiver get-leader-id-convoi
   let msg create-message performative
-  set msg add-receiver who msg
+  set msg add-receiver receiver msg
   set msg add-content content msg
   set msg add-from who msg
   set msg add-to get-leader-id-convoi msg

@@ -61,7 +61,7 @@ end
 ;;;;;;;;;;;;;;;;
 to-report msg-droneL-inform-status-convoiL
   let my-id who
-  let l (list ticks get-leader-id-convoi get-hostile-belief get-drone-plan) 
+  let l (list ticks get-leader-id-convoi get-hostile-belief) 
   let msg drone-create-message-to-convoi "inform"  l "statusDrone"
   report msg
 end
@@ -213,7 +213,7 @@ end
 
 
 to drone-receive-hostile-inform-drone [msg]
-  print (word "(" breed " " who ") drone-receive-hostile-inform-drone : " msg) 
+  ;print (word "(" breed " " who ") drone-receive-hostile-inform-drone : " msg) 
   let id who
   let zone get-content msg
   add-hostile-belief zone
@@ -223,7 +223,7 @@ end
 to drone-receive-need-fuel-drone [msg]
   let id who
   let fuel item 1 get-content msg
-  printcom (word "(" breed " " who ") ammo " get-from msg " last" fuel) 
+  ;printcom (word "(" breed " " who ") ammo " get-from msg " last" fuel) 
   
 end
 
@@ -233,7 +233,7 @@ end
 
 to drone-receive-path-regen [msg]
   let content get-content msg
-  print (word "(" breed " " who ")  TODO : drone-receive-path-regen : "  content)
+  ;print (word "(" breed " " who ")  TODO : drone-receive-path-regen : "  content)
 end
 
 to drone-receive-path-convoi [msg]
