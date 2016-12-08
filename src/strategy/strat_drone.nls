@@ -5,9 +5,11 @@ to check-pos-intention [obj]
   [
 
     set intention-courante (word "check-pos " obj)
-    print "obj" print obj
+    print (word "(" breed " " who ") obj " obj) 
+    ;print "obj" print obj
     drone-astar-to-zone obj false
-    print item who as-path
+    print (word "(" breed " " who ") : " (item who as-path)) 
+    ;print item who as-path
   ]
   
 end
@@ -16,7 +18,8 @@ to-report check-pos-done
   ;revoie true si on est dans la zone à checker
   if finished? and intention-courante != ""[
     set intention-courante ""
-    print "pos-done"
+    print (word "(" breed " " who ") check-pos done!") 
+    ;print "pos-done"
   ]
   report finished?
 
@@ -37,7 +40,8 @@ end
 to-report kill-pos-done
   ;revoie true si on est dans la zone à checker
   if finished? and intention-courante != ""[
-    print (word "kill pos done" self)
+    ;print (word "kill pos done" self)
+    print (word "(" breed " " who ") kill pos done!") 
     set fire? false
     set intention-courante ""
     ;print "kill-done" print self 
@@ -80,7 +84,8 @@ to-report check-path-done
   ;revoie true si on est dans la zone à checker
   if finished? and intention-courante != ""[  
     set intention-courante ""
-    print "path-done"
+    ;print "path-done"
+    print (word "(" breed " " who ") path-done!") 
   ]
   report finished?
 
